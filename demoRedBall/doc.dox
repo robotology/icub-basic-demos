@@ -1,0 +1,43 @@
+/**
+\defgroup app_demoRedBall Red-Ball Demo
+
+The Red-Ball Demo application developed by IIT and ISR.
+
+\section intro_sec Description
+This application launches all the required modules in order to detect and track
+the 3-d position of a target within the image plane applying the particle filter 
+algorithm along with the controllers to move the head accordingly and both arms to
+reach for the object and eventually grasp it.
+
+A second mode is also available that allows to track a moving target relying on stereo
+vision which needs to be calibrated in advance using a feed-forward neural network.
+
+\section dep_sec Dependencies
+Assumes that robotInterface (with ICartesianControl 
+interface implemented) and iKinGazeCtrl are running.
+
+\section int_sec Instantiated Modules
+- pf3dTracker
+
+- motionCUT
+
+- demoRedBall
+
+\section config_sec Configuration Files
+The file ./conf/config.ini contains the initialization parameters for the 
+demoGraspManager module.
+The file ./conf/network.ini contains the network weights.
+
+\section howto_sec How to run the Application
+Customize the file ./app/scripts/*.template for your specific platform
+before launching them.
+
+- ./scripts/demoRedBall.xml.template: detection done via particle filter.
+- ./scripts/demoRedBall_Stereo.xml.template: detection done with stero.
+- ./scripts/demoRedBall_Impedance.xml.template: as demoGrasp.xml.template but with impedance control enabled.
+
+\note To enable/disable arms refer to the options available within the config.ini file.
+
+*/
+
+
