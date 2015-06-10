@@ -1,0 +1,33 @@
+\doxysection{pf3d\+Tracker\+Main.\+cpp}
+\label{pf3dTrackerMain_8cpp_source}\index{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/pf3dTracker/src/pf3dTrackerMain.cpp@{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/pf3dTracker/src/pf3dTrackerMain.cpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00160\ \textcolor{preprocessor}{\#include\ <yarp/os/Network.h>}}
+\DoxyCodeLine{00161\ \textcolor{preprocessor}{\#include\ <yarp/os/Log.h>}}
+\DoxyCodeLine{00162\ \textcolor{preprocessor}{\#include\ <yarp/os/RFModule.h>}}
+\DoxyCodeLine{00163\ }
+\DoxyCodeLine{00164\ \textcolor{preprocessor}{\#include\ <iCub/pf3dTracker.hpp>}}
+\DoxyCodeLine{00165\ }
+\DoxyCodeLine{00166\ \textcolor{keyword}{using\ namespace\ }std;}
+\DoxyCodeLine{00167\ \textcolor{keyword}{using\ namespace\ }yarp::os;}
+\DoxyCodeLine{00168\ }
+\DoxyCodeLine{00169\ \textcolor{keywordtype}{int}\ main(\textcolor{keywordtype}{int}\ argc,\ \textcolor{keywordtype}{char}\ *argv[])}
+\DoxyCodeLine{00170\ \{}
+\DoxyCodeLine{00171\ \ \ \ \ Network\ yarp;}
+\DoxyCodeLine{00172\ \ \ \ \ \textcolor{keywordflow}{if}\ (!yarp::os::Network::checkNetwork())}
+\DoxyCodeLine{00173\ \ \ \ \ \{}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ yError(\textcolor{stringliteral}{"{}YARP\ server\ not\ available!"{}});}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00176\ \ \ \ \ \}}
+\DoxyCodeLine{00177\ }
+\DoxyCodeLine{00178\ \ \ \ \ ResourceFinder\ rf;}
+\DoxyCodeLine{00179\ \ \ \ \ rf.setDefaultContext(\textcolor{stringliteral}{"{}pf3dTracker"{}});\ \ \ \ \ \ \ \ \textcolor{comment}{//\ overridden\ by\ -\/-\/context}}
+\DoxyCodeLine{00180\ \ \ \ \ rf.setDefaultConfigFile(\textcolor{stringliteral}{"{}pf3dTracker.ini"{}});\ \textcolor{comment}{//\ overridden\ by\ -\/-\/from}}
+\DoxyCodeLine{00181\ \ \ \ \ rf.configure(argc,\ argv);}
+\DoxyCodeLine{00182\ }
+\DoxyCodeLine{00183\ \ \ \ \ PF3DTracker\ tracker;\ \textcolor{comment}{//instantiate\ the\ tracker.}}
+\DoxyCodeLine{00184\ \ \ \ \ \textcolor{keywordflow}{return}\ tracker.runModule(rf);\ \textcolor{comment}{//execute\ the\ tracker.}}
+\DoxyCodeLine{00185\ \}}
+
+\end{DoxyCode}

@@ -1,0 +1,106 @@
+\doxysection{Scale\+Space.\+cpp}
+\label{ScaleSpace_8cpp_source}\index{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/pf3dBottomup/src/ScaleSpace.cpp@{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/pf3dBottomup/src/ScaleSpace.cpp}}
+\mbox{\hyperlink{ScaleSpace_8cpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{//\ -\/*-\/\ mode:C++;\ tab-\/width:4;\ c-\/basic-\/offset:4;\ indent-\/tabs-\/mode:nil\ -\/*-\/}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{comment}{//\ Copyright:\ (C)\ 2006-\/2007\ Alex\ Bernardino,\ ISR-\/IST}}
+\DoxyCodeLine{00004\ \textcolor{comment}{//\ Authors:\ Alex\ Bernardino}}
+\DoxyCodeLine{00005\ \textcolor{comment}{//\ CopyPolicy:\ Released\ under\ the\ terms\ of\ the\ GNU\ GPL\ v2.0.}}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#include\ <iCub/ScaleSpace.h>}}
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#include\ <cstring>}}
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#include\ <cstdlib>}}
+\DoxyCodeLine{00021\ \textcolor{preprocessor}{\#include\ <cmath>}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ ScaleSpace::ScaleSpace()}
+\DoxyCodeLine{00024\ \{}
+\DoxyCodeLine{00025\ \ \ \ \ \_width\ =\ \_height\ =\ \_levels\ =\ 0;}
+\DoxyCodeLine{00026\ \ \ \ \ \_allocated\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00027\ \ \ \ \ \_scales\ =\ NULL;}
+\DoxyCodeLine{00028\ \ \ \ \ \_scalespace\ =\ NULL;}
+\DoxyCodeLine{00029\ \ \ \ \ \_filters\ =\ NULL;}
+\DoxyCodeLine{00030\ \}}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ ScaleSpace::\string~ScaleSpace()}
+\DoxyCodeLine{00033\ \{}
+\DoxyCodeLine{00034\ \ \ \ \ FreeResources();}
+\DoxyCodeLine{00035\ \}}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{keywordtype}{bool}\ ScaleSpace::AllocateResources(\textcolor{keywordtype}{int}\ lines,\ \textcolor{keywordtype}{int}\ cols,\ \textcolor{keywordtype}{int}\ levels,\ \textcolor{keywordtype}{double}\ *scales)}
+\DoxyCodeLine{00038\ \{}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keywordtype}{int}\ i;}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keywordflow}{if}(lines\ <\ 10)\ \ \textcolor{comment}{//image\ too\ small}}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keywordflow}{if}(cols\ <\ 10)\ \ \ \textcolor{comment}{//image\ too\ small}}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keywordflow}{if}(levels\ <\ 1)\ \ \textcolor{comment}{//}}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordflow}{if}(\_allocated)}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ FreeResources();}
+\DoxyCodeLine{00049\ \ \ \ \ \_width\ =\ cols;}
+\DoxyCodeLine{00050\ \ \ \ \ \_height\ =\ lines;}
+\DoxyCodeLine{00051\ \ \ \ \ \_levels\ =\ levels;}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \ \ \ \ \_scales\ =\ (\textcolor{keywordtype}{double}*)malloc(\_levels*\textcolor{keyword}{sizeof}(\textcolor{keywordtype}{double}));}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keywordflow}{if}(scales\ ==\ 0)\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00055\ \ \ \ \ \_scalespace\ =\ (\textcolor{keywordtype}{float}**)malloc(\_levels*\textcolor{keyword}{sizeof}(\textcolor{keywordtype}{float}*));}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keywordflow}{if}(\_scalespace\ ==\ 0)\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00057\ \ \ \ \ \_filters\ =\ \textcolor{keyword}{new}\ FastGauss[levels];}
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keywordflow}{if}(\_filters\ ==\ 0)\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keywordflow}{for}(i=0;\ i\ <\ levels;\ i++)}
+\DoxyCodeLine{00060\ \ \ \ \ \{}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \_scales[i]\ =\ scales[i];}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \_filters[i].AllocateResources(lines,\ cols,\ \_scales[i]);}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \_scalespace[i]\ =\ (\textcolor{keywordtype}{float}*)malloc(\_width*\_height*\textcolor{keyword}{sizeof}(\textcolor{keywordtype}{float}));}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\_scalespace[i]\ ==\ 0)\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00065\ \ \ \ \ \}}
+\DoxyCodeLine{00066\ \ \ \ \ \_allocated\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00068\ \}}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \textcolor{keywordtype}{bool}\ ScaleSpace::FreeResources()}
+\DoxyCodeLine{00071\ \{}
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{keywordtype}{int}\ i;}
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{keywordflow}{if}(!\_allocated)}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keyword}{delete}\ []\ \_filters;}
+\DoxyCodeLine{00076\ \ \ \ \ free(\_scales);}
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{keywordflow}{for}(i=0;\ i\ <\ \_levels;\ i++)}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ free(\_scalespace[i]);}
+\DoxyCodeLine{00079\ \ \ \ \ free(\_scalespace);}
+\DoxyCodeLine{00080\ \ \ \ \ \_allocated\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00082\ \}}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00085\ \textcolor{keywordtype}{bool}\ ScaleSpace::BuildLevel(\textcolor{keywordtype}{int}\ level,\ \textcolor{keywordtype}{float}\ *in)}
+\DoxyCodeLine{00086\ \{}
+\DoxyCodeLine{00087\ \ \ \ \ \textcolor{keywordflow}{if}(!\_allocated)}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{keywordflow}{if}(\ level\ <\ 0\ ||\ level\ >=\ \_levels\ )}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{keywordflow}{return}\ \_filters[level].GaussFilt(in,\ \_scalespace[level]);}
+\DoxyCodeLine{00092\ \}}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00095\ \textcolor{keywordtype}{bool}\ ScaleSpace::BuildAll(\textcolor{keywordtype}{float}\ *in)\ }
+\DoxyCodeLine{00096\ \{}
+\DoxyCodeLine{00097\ \ \ \ \ \textcolor{keywordtype}{int}\ i;}
+\DoxyCodeLine{00098\ \ \ \ \ \textcolor{keywordtype}{bool}\ retval\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00099\ \ \ \ \ \textcolor{keywordflow}{if}(!\_allocated)}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00101\ \ \ \ \ \textcolor{keywordflow}{for}(i\ =\ 0;\ i\ <\ \_levels;\ i++)}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ retval\ =\ (retval\ \&\&\ \_filters[i].GaussFilt(in,\ \_scalespace[i]));}
+\DoxyCodeLine{00103\ \ \ \ \ \textcolor{keywordflow}{return}\ retval;}
+\DoxyCodeLine{00104\ \}}
+\DoxyCodeLine{00106\ \textcolor{keywordtype}{float}*\ ScaleSpace::GetLevel(\textcolor{keywordtype}{int}\ level)}
+\DoxyCodeLine{00107\ \{}
+\DoxyCodeLine{00108\ \ \ \ \ \textcolor{keywordflow}{if}(!\_allocated)}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00110\ \ \ \ \ \textcolor{keywordflow}{if}(\ level\ <\ 0\ ||\ level\ >=\ \_levels\ )}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00112\ \ \ \ \ \textcolor{keywordflow}{return}\ \_scalespace[level];}
+\DoxyCodeLine{00113\ \}}
+
+\end{DoxyCode}

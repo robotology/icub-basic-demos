@@ -1,0 +1,145 @@
+\doxysection{robot\+\_\+interfaces.\+cpp}
+\label{demoForceImitation_2src_2robot__interfaces_8cpp_source}\index{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/demoForceImitation/src/robot\_interfaces.cpp@{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/demoForceImitation/src/robot\_interfaces.cpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ \ *\ Copyright\ (C)\ 2011\ \ Department\ of\ Robotics\ Brain\ and\ Cognitive\ Sciences\ -\/\ Istituto\ Italiano\ di\ Tecnologia}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ \ *\ Author:\ Marco\ Randazzo}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ \ *\ email:\ marco.randazzo@iit.it}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ \ *\ Permission\ is\ granted\ to\ copy,\ distribute,\ and/or\ modify\ this\ program}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ \ *\ under\ the\ terms\ of\ the\ GNU\ General\ Public\ License,\ version\ 2\ or\ any}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ \ *\ later\ version\ published\ by\ the\ Free\ Software\ Foundation.}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ \ *}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ \ *\ A\ copy\ of\ the\ license\ can\ be\ found\ at}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ \ *\ http://www.robotcub.org/icub/license/gpl.txt}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ \ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ \ *\ This\ program\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,\ but}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ \ *\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ \ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ See\ the\ GNU\ General}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ \ *\ Public\ License\ for\ more\ details}}
+\DoxyCodeLine{00016\ \textcolor{comment}{*/}}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#include\ "{}robot\_interfaces.h"{}}}
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00021\ \textcolor{keyword}{using\ namespace\ }yarp::os;}
+\DoxyCodeLine{00022\ \textcolor{keyword}{using\ namespace\ }yarp::dev;}
+\DoxyCodeLine{00023\ \textcolor{keyword}{using\ namespace\ }iCub::skinDynLib;}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ robot\_interfaces::robot\_interfaces()}
+\DoxyCodeLine{00026\ \{}
+\DoxyCodeLine{00027\ \ \ \ \ bodyParts.resize(5);}
+\DoxyCodeLine{00028\ \ \ \ \ bodyParts[0]\ =\ TORSO;}
+\DoxyCodeLine{00029\ \ \ \ \ bodyParts[1]\ =\ LEFT\_ARM;}
+\DoxyCodeLine{00030\ \ \ \ \ bodyParts[2]\ =\ RIGHT\_ARM;}
+\DoxyCodeLine{00031\ \ \ \ \ bodyParts[3]\ =\ LEFT\_LEG;}
+\DoxyCodeLine{00032\ \ \ \ \ bodyParts[4]\ =\ RIGHT\_LEG;\ \ \ \ }
+\DoxyCodeLine{00033\ \}}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ robot\_interfaces::robot\_interfaces(iCub::skinDynLib::BodyPart\ bp1)}
+\DoxyCodeLine{00036\ \{}
+\DoxyCodeLine{00037\ \ \ \ \ bodyParts.resize(1);}
+\DoxyCodeLine{00038\ \ \ \ \ bodyParts[0]\ =\ bp1;}
+\DoxyCodeLine{00039\ \}}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ robot\_interfaces::robot\_interfaces(iCub::skinDynLib::BodyPart\ bp1,\ iCub::skinDynLib::BodyPart\ bp2)}
+\DoxyCodeLine{00042\ \{}
+\DoxyCodeLine{00043\ \ \ \ \ bodyParts.resize(2);}
+\DoxyCodeLine{00044\ \ \ \ \ bodyParts[0]\ =\ bp1;}
+\DoxyCodeLine{00045\ \ \ \ \ bodyParts[1]\ =\ bp2;}
+\DoxyCodeLine{00046\ \}}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ robot\_interfaces::robot\_interfaces(iCub::skinDynLib::BodyPart\ bp1,\ iCub::skinDynLib::BodyPart\ bp2,\ iCub::skinDynLib::BodyPart\ bp3)}
+\DoxyCodeLine{00049\ \{}
+\DoxyCodeLine{00050\ \ \ \ \ bodyParts.resize(3);}
+\DoxyCodeLine{00051\ \ \ \ \ bodyParts[0]\ =\ bp1;}
+\DoxyCodeLine{00052\ \ \ \ \ bodyParts[1]\ =\ bp2;}
+\DoxyCodeLine{00053\ \ \ \ \ bodyParts[2]\ =\ bp3;}
+\DoxyCodeLine{00054\ \}}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ robot\_interfaces::robot\_interfaces(iCub::skinDynLib::BodyPart\ bp1,\ iCub::skinDynLib::BodyPart\ bp2,\ iCub::skinDynLib::BodyPart\ bp3,\ }
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ iCub::skinDynLib::BodyPart\ bp4)}
+\DoxyCodeLine{00058\ \{}
+\DoxyCodeLine{00059\ \ \ \ \ bodyParts.resize(4);}
+\DoxyCodeLine{00060\ \ \ \ \ bodyParts[0]\ =\ bp1;}
+\DoxyCodeLine{00061\ \ \ \ \ bodyParts[1]\ =\ bp2;}
+\DoxyCodeLine{00062\ \ \ \ \ bodyParts[2]\ =\ bp3;}
+\DoxyCodeLine{00063\ \ \ \ \ bodyParts[3]\ =\ bp4;}
+\DoxyCodeLine{00064\ \}}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ robot\_interfaces::robot\_interfaces(iCub::skinDynLib::BodyPart\ bp1,\ iCub::skinDynLib::BodyPart\ bp2,\ iCub::skinDynLib::BodyPart\ bp3,\ }
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ iCub::skinDynLib::BodyPart\ bp4,\ iCub::skinDynLib::BodyPart\ bp5)}
+\DoxyCodeLine{00068\ \{}
+\DoxyCodeLine{00069\ \ \ \ \ bodyParts.resize(5);}
+\DoxyCodeLine{00070\ \ \ \ \ bodyParts[0]\ =\ bp1;}
+\DoxyCodeLine{00071\ \ \ \ \ bodyParts[1]\ =\ bp2;}
+\DoxyCodeLine{00072\ \ \ \ \ bodyParts[2]\ =\ bp3;}
+\DoxyCodeLine{00073\ \ \ \ \ bodyParts[3]\ =\ bp4;}
+\DoxyCodeLine{00074\ \ \ \ \ bodyParts[4]\ =\ bp5;}
+\DoxyCodeLine{00075\ \}}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ robot\_interfaces::robot\_interfaces(iCub::skinDynLib::BodyPart\ *bps,\ \textcolor{keywordtype}{int}\ size)}
+\DoxyCodeLine{00078\ \{}
+\DoxyCodeLine{00079\ \ \ \ \ bodyParts.resize(size);}
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int}\ i=0;\ i<size;\ i++)}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ bodyParts[i]\ =\ bps[i];}
+\DoxyCodeLine{00082\ \}}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \textcolor{keywordtype}{bool}\ robot\_interfaces::init()}
+\DoxyCodeLine{00085\ \{}
+\DoxyCodeLine{00086\ \ \ \ \ std::string\ part;}
+\DoxyCodeLine{00087\ \ \ \ \ std::string\ robot;}
+\DoxyCodeLine{00088\ \ \ \ \ std::string\ localPort;}
+\DoxyCodeLine{00089\ \ \ \ \ std::string\ remotePort;}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \ \ \ \ robot\ =\ \textcolor{stringliteral}{"{}icub"{}};}
+\DoxyCodeLine{00092\ \ \ \ \ BodyPart\ i;}
+\DoxyCodeLine{00093\ \ \ \ \ \textcolor{keywordtype}{bool}\ ok\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00094\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ iii=0;\ iii<bodyParts.size();\ iii++)}
+\DoxyCodeLine{00095\ \ \ \ \ \{}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ i\ =\ bodyParts[iii];}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ ipos[i]=0;}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ itrq[i]=0;}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ iimp[i]=0;}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ icmd[i]=0;}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ ienc[i]=0;}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ ipid[i]=0;}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ ivel[i]=0;}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ iamp[i]=0;}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ iint[i]=0;}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ idir[i]=0;}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ dd[i]=0;}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ part\ =\ BodyPart\_s[i];}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ localPort\ \ =\ \textcolor{stringliteral}{"{}/demoForceControl/"{}}\ +\ part;}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ remotePort\ =\ \textcolor{stringliteral}{"{}/"{}}\ +\ robot\ +\ \textcolor{stringliteral}{"{}/"{}}\ +\ part;}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ options[i].put(\textcolor{stringliteral}{"{}robot"{}},robot);}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ options[i].put(\textcolor{stringliteral}{"{}part"{}},part);}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ options[i].put(\textcolor{stringliteral}{"{}device"{}},\textcolor{stringliteral}{"{}remote\_controlboard"{}});}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ options[i].put(\textcolor{stringliteral}{"{}local"{}},localPort);}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ options[i].put(\textcolor{stringliteral}{"{}remote"{}},remotePort);}
+\DoxyCodeLine{00118\ }
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ dd[i]\ =\ \textcolor{keyword}{new}\ PolyDriver(options[i]);}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(!dd[i]\ ||\ !(dd[i]-\/>isValid()))}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \ \ yError(\textcolor{stringliteral}{"{}Problems\ instantiating\ the\ device\ driver\ \%s\(\backslash\)n"{}},\ part.c\_str());}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \}\ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ ok\ =\ ok\ \&\ dd[i]-\/>view(ipos[i]);}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ ok\ =\ ok\ \&\ dd[i]-\/>view(itrq[i]);}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ ok\ =\ ok\ \&\ dd[i]-\/>view(iimp[i]);}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ ok\ =\ ok\ \&\ dd[i]-\/>view(icmd[i]);}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ ok\ =\ ok\ \&\ dd[i]-\/>view(ivel[i]);}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ ok\ =\ ok\ \&\ dd[i]-\/>view(ienc[i]);}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ ok\ =\ ok\ \&\ dd[i]-\/>view(ipid[i]);}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ ok\ =\ ok\ \&\ dd[i]-\/>view(iamp[i]);}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ ok\ =\ ok\ \&\ dd[i]-\/>view(iint[i]);}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ ok\ =\ ok\ \&\ dd[i]-\/>view(idir[i]);}
+\DoxyCodeLine{00135\ \ \ \ \ \}}
+\DoxyCodeLine{00136\ \ \ \ \ \textcolor{keywordflow}{return}\ ok;}
+\DoxyCodeLine{00137\ \}}
+\DoxyCodeLine{00138\ }
+\DoxyCodeLine{00139\ }
+
+\end{DoxyCode}

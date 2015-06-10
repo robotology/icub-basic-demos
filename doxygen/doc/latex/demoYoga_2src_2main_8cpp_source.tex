@@ -1,0 +1,586 @@
+\doxysection{main.\+cpp}
+\label{demoYoga_2src_2main_8cpp_source}\index{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/demoYoga/src/main.cpp@{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/demoYoga/src/main.cpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *\ Copyright\ (C)\ 2010\ RobotCub\ Consortium,\ European\ Commission\ FP6\ Project\ IST-\/004370}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Author:\ Lorenzo\ Natale}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *\ email:\ \ lorenzo.natale@iit.it}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ website:\ www.robotcub.org}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *\ Permission\ is\ granted\ to\ copy,\ distribute,\ and/or\ modify\ this\ program}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ under\ the\ terms\ of\ the\ GNU\ General\ Public\ License,\ version\ 2\ or\ any}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ later\ version\ published\ by\ the\ Free\ Software\ Foundation.}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ A\ copy\ of\ the\ license\ can\ be\ found\ at}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *\ http://www.robotcub.org/icub/license/gpl.txt}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ This\ program\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,\ but}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ See\ the\ GNU\ General}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *\ Public\ License\ for\ more\ details}}
+\DoxyCodeLine{00017\ \textcolor{comment}{*/}}
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00071\ \textcolor{preprocessor}{\#include\ <list>}}
+\DoxyCodeLine{00072\ \textcolor{preprocessor}{\#include\ <map>}}
+\DoxyCodeLine{00073\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00074\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00075\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{00076\ \textcolor{preprocessor}{\#include\ <fstream>}}
+\DoxyCodeLine{00077\ \textcolor{preprocessor}{\#include\ <cmath>}}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \textcolor{preprocessor}{\#include\ <yarp/os/BufferedPort.h>}}
+\DoxyCodeLine{00080\ \textcolor{preprocessor}{\#include\ <yarp/os/Time.h>}}
+\DoxyCodeLine{00081\ \textcolor{preprocessor}{\#include\ <yarp/os/Network.h>}}
+\DoxyCodeLine{00082\ \textcolor{preprocessor}{\#include\ <yarp/os/PeriodicThread.h>}}
+\DoxyCodeLine{00083\ \textcolor{preprocessor}{\#include\ <yarp/os/Thread.h>}}
+\DoxyCodeLine{00084\ \textcolor{preprocessor}{\#include\ <yarp/os/Property.h>}}
+\DoxyCodeLine{00085\ \textcolor{preprocessor}{\#include\ <yarp/os/Vocab.h>}}
+\DoxyCodeLine{00086\ \textcolor{preprocessor}{\#include\ <yarp/os/Log.h>}}
+\DoxyCodeLine{00087\ \textcolor{preprocessor}{\#include\ <yarp/os/LogStream.h>}}
+\DoxyCodeLine{00088\ \textcolor{preprocessor}{\#include\ <yarp/os/Terminator.h>}}
+\DoxyCodeLine{00089\ \textcolor{preprocessor}{\#include\ <yarp/dev/ControlBoardInterfaces.h>}}
+\DoxyCodeLine{00090\ \textcolor{preprocessor}{\#include\ <yarp/dev/PolyDriver.h>}}
+\DoxyCodeLine{00091\ \textcolor{preprocessor}{\#include\ <yarp/sig/Vector.h>}}
+\DoxyCodeLine{00092\ \textcolor{preprocessor}{\#include\ <yarp/os/ResourceFinder.h>}}
+\DoxyCodeLine{00093\ \textcolor{preprocessor}{\#include\ <yarp/conf/version.h>}}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ \textcolor{keyword}{using\ namespace\ }std;}
+\DoxyCodeLine{00096\ \textcolor{keyword}{using\ namespace\ }yarp::dev;}
+\DoxyCodeLine{00097\ \textcolor{keyword}{using\ namespace\ }yarp::os;}
+\DoxyCodeLine{00098\ \textcolor{keyword}{using\ namespace\ }yarp::sig;}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00100\ \textcolor{keywordtype}{void}\ setTrajectorySpeeds(yarp::dev::IPositionControl*\ positionControl,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}*\ speeds)}
+\DoxyCodeLine{00101\ \{}
+\DoxyCodeLine{00102\ \textcolor{preprocessor}{\#if\ YARP\_VERSION\_MAJOR\ >=\ 4}}
+\DoxyCodeLine{00103\ \ \ \ \ positionControl-\/>setTrajSpeeds(speeds);}
+\DoxyCodeLine{00104\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00105\ \ \ \ \ positionControl-\/>setRefSpeeds(speeds);}
+\DoxyCodeLine{00106\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00107\ \}}
+\DoxyCodeLine{00108\ }
+\DoxyCodeLine{00109\ \textcolor{keywordtype}{void}\ getNumberOfAxes(yarp::dev::IPositionControl*\ positionControl,\ std::size\_t\&\ axes)}
+\DoxyCodeLine{00110\ \{}
+\DoxyCodeLine{00111\ \textcolor{preprocessor}{\#if\ YARP\_VERSION\_MAJOR\ >=\ 4}}
+\DoxyCodeLine{00112\ \ \ \ \ positionControl-\/>getAxes(axes);}
+\DoxyCodeLine{00113\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{keywordtype}{int}\ legacyAxes\ =\ 0;}
+\DoxyCodeLine{00115\ \ \ \ \ positionControl-\/>getAxes(\&legacyAxes);}
+\DoxyCodeLine{00116\ \ \ \ \ axes\ =\ \textcolor{keyword}{static\_cast<}std::size\_t\textcolor{keyword}{>}(legacyAxes);}
+\DoxyCodeLine{00117\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00118\ \}}
+\DoxyCodeLine{00119\ }
+\DoxyCodeLine{00120\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ FIXED\_TIME\_MOVE=5;}
+\DoxyCodeLine{00121\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ SAMPLER\_RATE=100;}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00124\ \textcolor{keyword}{struct\ }LimbInterfaces}
+\DoxyCodeLine{00125\ \{}
+\DoxyCodeLine{00126\ \ \ \ \ PolyDriver\ *dd;}
+\DoxyCodeLine{00127\ \ \ \ \ IPositionControl\ *ipos;}
+\DoxyCodeLine{00128\ \ \ \ \ IEncoders\ *ienc;}
+\DoxyCodeLine{00129\ \ \ \ \ Vector\ encoders;}
+\DoxyCodeLine{00130\ \ \ \ \ Vector\ speed;}
+\DoxyCodeLine{00131\ \ \ \ \ Vector\ cmd;}
+\DoxyCodeLine{00132\ \ \ \ \ \textcolor{keywordtype}{bool}\ *md;}
+\DoxyCodeLine{00133\ \ \ \ \ \textcolor{keywordtype}{int}\ nj;}
+\DoxyCodeLine{00134\ \ \ \ \ LimbInterfaces()\ :\ dd(0),\ ipos(0),\ ienc(0),\ md(0)}
+\DoxyCodeLine{00135\ \ \ \ \ \{\ \}}
+\DoxyCodeLine{00136\ }
+\DoxyCodeLine{00137\ \ \ \ \ \string~LimbInterfaces()}
+\DoxyCodeLine{00138\ \ \ \ \ \{}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!md)}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{delete}[]\ md;}
+\DoxyCodeLine{00141\ \ \ \ \ \}}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00143\ \ \ \ \ \textcolor{keywordtype}{void}\ resize(\textcolor{keywordtype}{int}\ n)}
+\DoxyCodeLine{00144\ \ \ \ \ \{}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ nj=n;}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ cmd.resize(nj);}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ encoders.resize(nj);}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ speed.resize(nj);}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ md=\textcolor{keyword}{new}\ \textcolor{keywordtype}{bool}[nj];}
+\DoxyCodeLine{00150\ \ \ \ \ \}}
+\DoxyCodeLine{00151\ }
+\DoxyCodeLine{00152\ \};}
+\DoxyCodeLine{00153\ }
+\DoxyCodeLine{00154\ \textcolor{keyword}{typedef}\ std::list<Vector>\ PositionList;}
+\DoxyCodeLine{00155\ \textcolor{keyword}{typedef}\ PositionList::iterator\ PositionListIterator;}
+\DoxyCodeLine{00156\ \textcolor{keyword}{typedef}\ std::vector<PositionList>\ RobotSequence;}
+\DoxyCodeLine{00157\ \textcolor{keyword}{typedef}\ std::vector<LimbInterfaces>\ RobotInterfaces;}
+\DoxyCodeLine{00158\ \textcolor{keyword}{typedef}\ RobotInterfaces::iterator\ RobotInterfacesIterator;}
+\DoxyCodeLine{00159\ }
+\DoxyCodeLine{00160\ uint8\_t\ LIMBS\ =\ 6;}
+\DoxyCodeLine{00161\ }
+\DoxyCodeLine{00162\ \textcolor{keyword}{enum}\ Index}
+\DoxyCodeLine{00163\ \{}
+\DoxyCodeLine{00164\ \ \ \ \ RIGHTARM=0,}
+\DoxyCodeLine{00165\ \ \ \ \ LEFTARM=1,}
+\DoxyCodeLine{00166\ \ \ \ \ HEAD=2,}
+\DoxyCodeLine{00167\ \ \ \ \ TORSO=3,}
+\DoxyCodeLine{00168\ \ \ \ \ RIGHTLEG=4,}
+\DoxyCodeLine{00169\ \ \ \ \ LEFTLEG=5\};}
+\DoxyCodeLine{00170\ }
+\DoxyCodeLine{00171\ \textcolor{keyword}{class\ }DemoSequences}
+\DoxyCodeLine{00172\ \{}
+\DoxyCodeLine{00173\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00174\ \ \ \ \ std::vector<std::string>\ tags;}
+\DoxyCodeLine{00175\ \ \ \ \ RobotSequence\ sequences;}
+\DoxyCodeLine{00176\ }
+\DoxyCodeLine{00177\ \ \ \ \ DemoSequences(\textcolor{keyword}{const}\ std::vector<std::string>\ \&t)}
+\DoxyCodeLine{00178\ \ \ \ \ \{}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ tags=t;}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ sequences.resize(LIMBS);}
+\DoxyCodeLine{00181\ \ \ \ \ \}}
+\DoxyCodeLine{00182\ }
+\DoxyCodeLine{00183\ \ \ \ \ \textcolor{keywordtype}{bool}\ fromFile(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *filename)}
+\DoxyCodeLine{00184\ \ \ \ \ \{}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ Property\ config;}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ config.fromConfigFile(filename);}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ ret=\textcolor{keyword}{true};}
+\DoxyCodeLine{00188\ }
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k=0;\ k<LIMBS;\ k++)}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ Bottle\ seqFile=config.findGroup(tags[k].c\_str());}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ length=(seqFile.findGroup(\textcolor{stringliteral}{"{}DIMENSIONS"{}}).find(\textcolor{stringliteral}{"{}numberOfPoses"{}})).asInt32();}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ nj=seqFile.findGroup(\textcolor{stringliteral}{"{}DIMENSIONS"{}}).find(\textcolor{stringliteral}{"{}numberOfJoints"{}}).asInt32();}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ ii=0;\ ii<length;\ ii++)}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{char}\ tmp[80];}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (seqFile.findGroup(\textcolor{stringliteral}{"{}REORDER"{}}).isNull())}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sprintf(tmp,\textcolor{stringliteral}{"{}POSITION\%d"{}},ii);}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sprintf(tmp,\textcolor{stringliteral}{"{}POSITION\%d"{}},seqFile.findGroup(\textcolor{stringliteral}{"{}REORDER"{}}).findGroup(\textcolor{stringliteral}{"{}order"{}}).get(ii+1).asInt32());}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Bottle\ \&xtmp=seqFile.findGroup(tmp).findGroup(\textcolor{stringliteral}{"{}jointPositions"{}});}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Vector\ vect;}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ vect.resize(nj);}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ xtmpSize\ =\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(xtmp.size());}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nj\ !=\ xtmpSize\ -\/\ 1)}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ yWarning(\textcolor{stringliteral}{"{}****\ WARNING:\ mismatch\ of\ sizes\ in\ the\ input\ file!\ nj=\%d,\ xtmp=\%d\ \(\backslash\)n"{}},\ nj,\ xtmpSize);}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ l=0;\ l<xtmpSize-\/1;\ l++)}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ vect[l]=xtmp.get(l+1).asFloat64();}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sequences[k].push\_back(vect);}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00212\ }
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{00214\ \ \ \ \ \}}
+\DoxyCodeLine{00215\ }
+\DoxyCodeLine{00216\ \ \ \ \ \textcolor{keywordtype}{void}\ dump()}
+\DoxyCodeLine{00217\ \ \ \ \ \{}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ l=0;\ l<LIMBS;\ l++)}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ yInfo(\textcolor{stringliteral}{"{}Sequence\ for\ \%s:"{}},tags[l].c\_str());}
+\DoxyCodeLine{00221\ }
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ s=sequences[l].size();}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \ \ \ \ PositionListIterator\ it=sequences[l].begin();}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (it!=sequences[l].end())}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Vector\ \&v=(*it);}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ yInfo(\textcolor{stringliteral}{"{}\%s"{}},v.toString().c\_str());}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ it++;}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00230\ }
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \ \ \ \ yInfo(\textcolor{stringliteral}{"{}-\/-\/-\/-\/-\/"{}});}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00233\ \ \ \ \ \}}
+\DoxyCodeLine{00234\ \};}
+\DoxyCodeLine{00235\ }
+\DoxyCodeLine{00236\ \textcolor{keyword}{class\ }Robot}
+\DoxyCodeLine{00237\ \{}
+\DoxyCodeLine{00238\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00239\ }
+\DoxyCodeLine{00240\ \ \ \ \ std::vector<std::string>\ tags;}
+\DoxyCodeLine{00241\ \ \ \ \ std::vector<Property>\ options;}
+\DoxyCodeLine{00242\ \ \ \ \ RobotInterfaces\ interfaces;}
+\DoxyCodeLine{00243\ }
+\DoxyCodeLine{00244\ \ \ \ \ Robot()}
+\DoxyCodeLine{00245\ \ \ \ \ \{}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ tags.resize(LIMBS);}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ options.resize(LIMBS);}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ interfaces.resize(LIMBS);}
+\DoxyCodeLine{00249\ \ \ \ \ \}}
+\DoxyCodeLine{00250\ }
+\DoxyCodeLine{00251\ \ \ \ \ \string~Robot()}
+\DoxyCodeLine{00252\ \ \ \ \ \{}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ RobotInterfacesIterator\ it;}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (it=interfaces.begin();\ it!=interfaces.end();\ it++)}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((*it).dd!=0)}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (*it).dd-\/>close();}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{delete}\ (*it).dd;}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00262\ \ \ \ \ \}}
+\DoxyCodeLine{00263\ }
+\DoxyCodeLine{00264\ \ \ \ \ \textcolor{keywordtype}{bool}\ createDevices()}
+\DoxyCodeLine{00265\ \ \ \ \ \{}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ success=\textcolor{keyword}{true};}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k=0;\ k<LIMBS;\ k++)}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ \ \ \ \ LimbInterfaces\ tmp;}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \ \ \ \ tmp.dd=\textcolor{keyword}{new}\ PolyDriver;}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \ \ \ \ tmp.dd-\/>open(options[k]);}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!tmp.dd-\/>isValid())}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ yError(\textcolor{stringliteral}{"{}Error\ opening\ \%s"{}},tags[k].c\_str());}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00277\ }
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ ret=\textcolor{keyword}{true};}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \ \ \ \ ret=ret\ \&\&\ tmp.dd-\/>view(tmp.ipos);}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \ \ \ \ ret=ret\ \&\&\ tmp.dd-\/>view(tmp.ienc);}
+\DoxyCodeLine{00281\ }
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \ \ \ \ interfaces[k]=tmp;}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \ \ \ \ success=success\ \&\&\ ret;}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ success;}
+\DoxyCodeLine{00286\ \ \ \ \ \}}
+\DoxyCodeLine{00287\ \};}
+\DoxyCodeLine{00288\ }
+\DoxyCodeLine{00289\ \textcolor{keyword}{class\ }RobotMover\ :\ \textcolor{keyword}{public}\ PeriodicThread}
+\DoxyCodeLine{00290\ \{}
+\DoxyCodeLine{00291\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00292\ \ \ \ \ RobotSequence\ sequences;}
+\DoxyCodeLine{00293\ \ \ \ \ \textcolor{keywordtype}{bool}\ sequencesF;}
+\DoxyCodeLine{00294\ }
+\DoxyCodeLine{00295\ \ \ \ \ \textcolor{keywordtype}{bool}\ motion\_done;}
+\DoxyCodeLine{00296\ \ \ \ \ \textcolor{keywordtype}{int}\ nJoints;}
+\DoxyCodeLine{00297\ }
+\DoxyCodeLine{00298\ \ \ \ \ \textcolor{keywordtype}{int}\ count;}
+\DoxyCodeLine{00299\ \ \ \ \ Robot\ *robot;}
+\DoxyCodeLine{00300\ \ \ \ \ \textcolor{keywordtype}{bool}\ done;}
+\DoxyCodeLine{00301\ }
+\DoxyCodeLine{00302\ \ \ \ \ \textcolor{keywordtype}{bool}\ verbose;}
+\DoxyCodeLine{00303\ }
+\DoxyCodeLine{00304\ \ \ \ \ PositionListIterator\ *its;}
+\DoxyCodeLine{00305\ \ \ \ \ PositionListIterator\ *itends;}
+\DoxyCodeLine{00306\ \ \ \ \ \textcolor{keywordtype}{double}\ motionTime;}
+\DoxyCodeLine{00307\ \ \ \ \ \textcolor{keywordtype}{bool}\ spoke;}
+\DoxyCodeLine{00308\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00309\ \ \ \ \ RobotMover(Robot\ *r,\ \textcolor{keywordtype}{int}\ rate)\ :\ PeriodicThread((double)rate/1000.0)}
+\DoxyCodeLine{00310\ \ \ \ \ \{}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ sequencesF=\textcolor{keyword}{false};}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ robot=r;}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ verbose=\textcolor{keyword}{false};}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ its=\textcolor{keyword}{new}\ PositionListIterator[LIMBS];}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ itends=\textcolor{keyword}{new}\ PositionListIterator[LIMBS];}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ motionTime=FIXED\_TIME\_MOVE;}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ spoke=\textcolor{keyword}{false};}
+\DoxyCodeLine{00318\ \ \ \ \ \}}
+\DoxyCodeLine{00319\ }
+\DoxyCodeLine{00320\ \ \ \ \ \string~RobotMover()}
+\DoxyCodeLine{00321\ \ \ \ \ \{}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \textcolor{keyword}{delete}[]\ its;}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ \textcolor{keyword}{delete}[]\ itends;}
+\DoxyCodeLine{00324\ \ \ \ \ \}}
+\DoxyCodeLine{00325\ }
+\DoxyCodeLine{00326\ \ \ \ \ \textcolor{keywordtype}{void}\ setVerbose(\textcolor{keywordtype}{bool}\ f)}
+\DoxyCodeLine{00327\ \ \ \ \ \{\ verbose=f;\ \}}
+\DoxyCodeLine{00328\ }
+\DoxyCodeLine{00329\ \ \ \ \ \textcolor{keywordtype}{void}\ waitMotion(\textcolor{keywordtype}{double}\ dT,\ \textcolor{keywordtype}{bool}\ checkDone=\textcolor{keyword}{false})}
+\DoxyCodeLine{00330\ \ \ \ \ \{}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ done=\textcolor{keyword}{false};}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ Time::delay(dT);}
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (checkDone)}
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ acc=0;}
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (!done)}
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00338\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ done=\textcolor{keyword}{true};}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k=0;\ k<LIMBS;\ k++)}
+\DoxyCodeLine{00340\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ d=\textcolor{keyword}{true};}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ *tmp=robot-\/>interfaces[k].md;}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;\ j<robot-\/>interfaces[k].nj;\ j++)}
+\DoxyCodeLine{00344\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//robot-\/>interfaces[k].ipos-\/>checkMotionDone(j,\ tmp);}}
+\DoxyCodeLine{00346\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *tmp=\textcolor{keyword}{true};}
+\DoxyCodeLine{00347\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ done=done\ \&\&\ (*tmp);}
+\DoxyCodeLine{00348\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tmp++;}
+\DoxyCodeLine{00349\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00350\ }
+\DoxyCodeLine{00351\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Time::delay(0.05);}
+\DoxyCodeLine{00352\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ acc+=0.05;}
+\DoxyCodeLine{00353\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00354\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Time::delay(0.1);}
+\DoxyCodeLine{00355\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ acc+=0.1;}
+\DoxyCodeLine{00356\ }
+\DoxyCodeLine{00357\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (acc>2)}
+\DoxyCodeLine{00358\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ done=\textcolor{keyword}{true};}
+\DoxyCodeLine{00359\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00360\ }
+\DoxyCodeLine{00361\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k=0;\ k<LIMBS;\ k++)}
+\DoxyCodeLine{00362\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00363\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ d=\textcolor{keyword}{true};}
+\DoxyCodeLine{00364\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ yInfo(\textcolor{stringliteral}{"{}\%s\ dumping\ MotionDone:"{}},robot-\/>tags[k].c\_str());}
+\DoxyCodeLine{00365\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;\ j<robot-\/>interfaces[k].nj;\ j++)}
+\DoxyCodeLine{00366\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ yInfo(\textcolor{stringliteral}{"{}\%s"{}},robot-\/>interfaces[k].md[j]?\textcolor{stringliteral}{"{}true"{}}:\textcolor{stringliteral}{"{}false"{}});}
+\DoxyCodeLine{00367\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00368\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00369\ \ \ \ \ \}}
+\DoxyCodeLine{00370\ }
+\DoxyCodeLine{00371\ \ \ \ \ \textcolor{keywordtype}{void}\ computeSpeed(\textcolor{keywordtype}{double}\ dT)}
+\DoxyCodeLine{00372\ \ \ \ \ \{}
+\DoxyCodeLine{00373\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dT<=0)}
+\DoxyCodeLine{00374\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00375\ }
+\DoxyCodeLine{00376\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ l=0;\ l<LIMBS;\ l++)}
+\DoxyCodeLine{00377\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00378\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ nj=robot-\/>interfaces[l].nj;}
+\DoxyCodeLine{00379\ \ \ \ \ \ \ \ \ \ \ \ \ Vector\ \&encs=robot-\/>interfaces[l].encoders;}
+\DoxyCodeLine{00380\ \ \ \ \ \ \ \ \ \ \ \ \ Vector\ \&sp=robot-\/>interfaces[l].speed;}
+\DoxyCodeLine{00381\ \ \ \ \ \ \ \ \ \ \ \ \ Vector\ \&cmd=robot-\/>interfaces[l].cmd;}
+\DoxyCodeLine{00382\ }
+\DoxyCodeLine{00383\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;\ j<nj;\ j++)}
+\DoxyCodeLine{00384\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00385\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ dp=fabs(encs[j]-\/cmd[j]);}
+\DoxyCodeLine{00386\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ tmp=dp/dT;}
+\DoxyCodeLine{00387\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tmp<0.1)}
+\DoxyCodeLine{00388\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tmp=0.1;}
+\DoxyCodeLine{00389\ }
+\DoxyCodeLine{00390\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sp[j]=tmp;}
+\DoxyCodeLine{00391\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00392\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00393\ \ \ \ \ \}}
+\DoxyCodeLine{00394\ }
+\DoxyCodeLine{00395\ \ \ \ \ \textcolor{keywordtype}{void}\ resetSequence()}
+\DoxyCodeLine{00396\ \ \ \ \ \{}
+\DoxyCodeLine{00397\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ l=0;\ l<LIMBS;\ l++)}
+\DoxyCodeLine{00398\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00399\ \ \ \ \ \ \ \ \ \ \ \ \ its[l]=sequences[l].begin();}
+\DoxyCodeLine{00400\ \ \ \ \ \ \ \ \ \ \ \ \ itends[l]=sequences[l].end();}
+\DoxyCodeLine{00401\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00402\ \ \ \ \ \}}
+\DoxyCodeLine{00403\ }
+\DoxyCodeLine{00404\ \ \ \ \ \textcolor{keywordtype}{bool}\ threadInit()}
+\DoxyCodeLine{00405\ \ \ \ \ \{}
+\DoxyCodeLine{00406\ \ \ \ \ \ \ \ \ yInfo(\textcolor{stringliteral}{"{}Starting\ controller..."{}});}
+\DoxyCodeLine{00407\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!sequencesF)}
+\DoxyCodeLine{00408\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00409\ \ \ \ \ \ \ \ \ \ \ \ \ yError(\textcolor{stringliteral}{"{}sequences\ not\ set,\ returning\ false"{}});}
+\DoxyCodeLine{00410\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00411\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00412\ }
+\DoxyCodeLine{00413\ \ \ \ \ \ \ \ \ resetSequence();}
+\DoxyCodeLine{00414\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ l=0;\ l<LIMBS;\ l++)}
+\DoxyCodeLine{00415\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00416\ \ \ \ \ \ \ \ \ \ \ \ \ std::size\_t\ nj\ =\ 0;}
+\DoxyCodeLine{00417\ \ \ \ \ \ \ \ \ \ \ \ \ getNumberOfAxes(robot-\/>interfaces[l].ipos,\ nj);}
+\DoxyCodeLine{00418\ \ \ \ \ \ \ \ \ \ \ \ \ robot-\/>interfaces[l].resize(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(nj));}
+\DoxyCodeLine{00419\ \ \ \ \ \ \ \ \ \ \ \ \ robot-\/>interfaces[l].speed=0;}
+\DoxyCodeLine{00420\ \ \ \ \ \ \ \ \ \ \ \ \ robot-\/>interfaces[l].encoders=0;}
+\DoxyCodeLine{00421\ \ \ \ \ \ \ \ \ \ \ \ \ robot-\/>interfaces[l].cmd=0;}
+\DoxyCodeLine{00422\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00423\ }
+\DoxyCodeLine{00424\ \ \ \ \ \ \ \ \ done=\textcolor{keyword}{false};}
+\DoxyCodeLine{00425\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00426\ \ \ \ \ \}}
+\DoxyCodeLine{00427\ }
+\DoxyCodeLine{00428\ \ \ \ \ \textcolor{keywordtype}{void}\ run()}
+\DoxyCodeLine{00429\ \ \ \ \ \{}
+\DoxyCodeLine{00430\ \ \ \ \ \ \ \ \ yInfo(\textcolor{stringliteral}{"{}Running..."{}});}
+\DoxyCodeLine{00431\ \ \ \ \ \ \ \ \ spoke=\textcolor{keyword}{false};}
+\DoxyCodeLine{00432\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!done)}
+\DoxyCodeLine{00433\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00434\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ l=0;\ l<LIMBS;\ l++)}
+\DoxyCodeLine{00435\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00436\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Vector\ \&p=*(its[l]);}
+\DoxyCodeLine{00437\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (!robot-\/>interfaces[l].ienc-\/>getEncoders(robot-\/>interfaces[l].encoders.data()))}
+\DoxyCodeLine{00438\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00439\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!spoke)}
+\DoxyCodeLine{00440\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00441\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ yDebug(\textcolor{stringliteral}{"{}Waiting\ for\ encoders!\(\backslash\)n"{}});}
+\DoxyCodeLine{00442\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ spoke=\textcolor{keyword}{true};}
+\DoxyCodeLine{00443\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00444\ }
+\DoxyCodeLine{00445\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00446\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ robot-\/>interfaces[l].cmd=p;}
+\DoxyCodeLine{00447\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ its[l]++;}
+\DoxyCodeLine{00448\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00449\ }
+\DoxyCodeLine{00450\ \ \ \ \ \ \ \ \ \ \ \ \ computeSpeed(motionTime);}
+\DoxyCodeLine{00451\ }
+\DoxyCodeLine{00452\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ l=0;\ l<LIMBS;\ l++)}
+\DoxyCodeLine{00453\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00454\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ setTrajectorySpeeds(robot-\/>interfaces[l].ipos,\ robot-\/>interfaces[l].speed.data());}
+\DoxyCodeLine{00455\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ robot-\/>interfaces[l].ipos-\/>positionMove(robot-\/>interfaces[l].cmd.data());}
+\DoxyCodeLine{00456\ }
+\DoxyCodeLine{00457\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (verbose)}
+\DoxyCodeLine{00458\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00459\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ yInfo(\textcolor{stringliteral}{"{}\%s"{}},robot-\/>tags[l].c\_str());}
+\DoxyCodeLine{00460\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ yInfo(\textcolor{stringliteral}{"{}going\ to:\ \%s\ "{}},robot-\/>interfaces[l].cmd.toString().c\_str());}
+\DoxyCodeLine{00461\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ yInfo(\textcolor{stringliteral}{"{}speed:\ \%s\ "{}},robot-\/>interfaces[l].speed.toString().c\_str());}
+\DoxyCodeLine{00462\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ yInfo(\textcolor{stringliteral}{"{}-\/-\/-\/-\/-\/-\/-\/"{}});}
+\DoxyCodeLine{00463\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00464\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00465\ }
+\DoxyCodeLine{00466\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//wait\ a\ bit\ less,\ adjustment}}
+\DoxyCodeLine{00467\ \ \ \ \ \ \ \ \ \ \ \ \ waitMotion(motionTime);}
+\DoxyCodeLine{00468\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00469\ }
+\DoxyCodeLine{00470\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (its[0]==itends[0])}
+\DoxyCodeLine{00471\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00472\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ count=1;}
+\DoxyCodeLine{00473\ \ \ \ \ \ \ \ \ \ \ \ \ resetSequence();}
+\DoxyCodeLine{00474\ \ \ \ \ \ \ \ \ \ \ \ \ yInfo(\textcolor{stringliteral}{"{}Sequence\ \%d\ completed"{}},count);}
+\DoxyCodeLine{00475\ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00476\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//done=true;}}
+\DoxyCodeLine{00477\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00478\ \ \ \ \ \}}
+\DoxyCodeLine{00479\ }
+\DoxyCodeLine{00480\ \ \ \ \ \textcolor{keywordtype}{void}\ setTime(\textcolor{keywordtype}{double}\ dT)}
+\DoxyCodeLine{00481\ \ \ \ \ \{}
+\DoxyCodeLine{00482\ \ \ \ \ \ \ \ \ motionTime=dT;}
+\DoxyCodeLine{00483\ \ \ \ \ \}}
+\DoxyCodeLine{00484\ }
+\DoxyCodeLine{00485\ \ \ \ \ \textcolor{keywordtype}{void}\ waitDone()}
+\DoxyCodeLine{00486\ \ \ \ \ \{}
+\DoxyCodeLine{00487\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (!done)}
+\DoxyCodeLine{00488\ \ \ \ \ \ \ \ \ \ \ \ \ Time::delay(0.5);}
+\DoxyCodeLine{00489\ \ \ \ \ \}}
+\DoxyCodeLine{00490\ }
+\DoxyCodeLine{00491\ \ \ \ \ \textcolor{keywordtype}{void}\ suspend()}
+\DoxyCodeLine{00492\ \ \ \ \ \{}
+\DoxyCodeLine{00493\ }
+\DoxyCodeLine{00494\ \ \ \ \ \}}
+\DoxyCodeLine{00495\ }
+\DoxyCodeLine{00496\ \ \ \ \ \textcolor{keywordtype}{void}\ resume()}
+\DoxyCodeLine{00497\ \ \ \ \ \{}
+\DoxyCodeLine{00498\ }
+\DoxyCodeLine{00499\ \ \ \ \ \}}
+\DoxyCodeLine{00500\ }
+\DoxyCodeLine{00501\ \ \ \ \ \textcolor{keywordtype}{void}\ threadRelease()}
+\DoxyCodeLine{00502\ \ \ \ \ \{}
+\DoxyCodeLine{00503\ \ \ \ \ \ \ \ \ yInfo(\textcolor{stringliteral}{"{}Stopping\ controller..."{}});}
+\DoxyCodeLine{00504\ \ \ \ \ \}}
+\DoxyCodeLine{00505\ }
+\DoxyCodeLine{00506\ \ \ \ \ \textcolor{keywordtype}{void}\ setSequences(\textcolor{keyword}{const}\ RobotSequence\ \&seq)}
+\DoxyCodeLine{00507\ \ \ \ \ \{}
+\DoxyCodeLine{00508\ \ \ \ \ \ \ \ \ sequences=seq;}
+\DoxyCodeLine{00509\ \ \ \ \ \ \ \ \ sequencesF=\textcolor{keyword}{true};}
+\DoxyCodeLine{00510\ \ \ \ \ \}}
+\DoxyCodeLine{00511\ \};}
+\DoxyCodeLine{00512\ }
+\DoxyCodeLine{00513\ }
+\DoxyCodeLine{00514\ \textcolor{keywordtype}{int}\ main(\textcolor{keywordtype}{int}\ argc,\ \textcolor{keywordtype}{char}\ *argv[])}
+\DoxyCodeLine{00515\ \{}
+\DoxyCodeLine{00516\ \ \ \ \ Network\ yarp;}
+\DoxyCodeLine{00517\ \ \ \ \ \textcolor{comment}{//\ pick\ up\ name\ of\ main\ configuration\ file}}
+\DoxyCodeLine{00518\ }
+\DoxyCodeLine{00519\ \ \ \ \ \textcolor{comment}{//\ find\ configuration\ file\ via\ ResourceFinder\ if\ needed}}
+\DoxyCodeLine{00520\ \ \ \ \ \textcolor{comment}{//\ This\ is\ trivial\ if\ full\ path\ has\ already\ been\ provided,}}
+\DoxyCodeLine{00521\ \ \ \ \ \textcolor{comment}{//\ but\ less\ trivial\ if\ just\ a\ filename\ has\ been\ given.}}
+\DoxyCodeLine{00522\ \ \ \ \ \textcolor{comment}{//\ There\ is\ also\ the\ possibility\ of\ user\ overrides\ in}}
+\DoxyCodeLine{00523\ \ \ \ \ \textcolor{comment}{//\ standardized\ forms\ not\ anticipated\ in\ this\ program.}}
+\DoxyCodeLine{00524\ \ \ \ \ ResourceFinder\ finder;}
+\DoxyCodeLine{00525\ \ \ \ \ \textcolor{keywordtype}{bool}\ no\_legs\{\ \textcolor{keyword}{false}\ \};}
+\DoxyCodeLine{00526\ \ \ \ \ finder.setDefaultContext(\textcolor{stringliteral}{"{}demoYoga"{}});}
+\DoxyCodeLine{00527\ \ \ \ \ finder.configure(argc,argv);}
+\DoxyCodeLine{00528\ \ \ \ \ finder.setDefault(\textcolor{stringliteral}{"{}positions"{}},\textcolor{stringliteral}{"{}yoga.ini"{}});}
+\DoxyCodeLine{00529\ \ \ \ \ finder.setDefault(\textcolor{stringliteral}{"{}robot"{}},\textcolor{stringliteral}{"{}icub"{}});}
+\DoxyCodeLine{00530\ \ \ \ \ std::string\ inifile=finder.findFile(\textcolor{stringliteral}{"{}positions"{}}).c\_str();}
+\DoxyCodeLine{00531\ \ \ \ \ std::string\ robotName=finder.find(\textcolor{stringliteral}{"{}robot"{}}).asString().c\_str();}
+\DoxyCodeLine{00532\ }
+\DoxyCodeLine{00533\ \ \ \ \ \textcolor{keywordtype}{bool}\ verbose=finder.check(\textcolor{stringliteral}{"{}verbose"{}});}
+\DoxyCodeLine{00534\ \ \ \ \ \textcolor{keywordtype}{bool}\ diagnostic=finder.check(\textcolor{stringliteral}{"{}diagnostic"{}});}
+\DoxyCodeLine{00535\ \ \ \ \ no\_legs\ =\ finder.check(\textcolor{stringliteral}{"{}no\_legs"{}});}
+\DoxyCodeLine{00536\ \ \ \ \ \textcolor{keywordflow}{if}\ (no\_legs)}
+\DoxyCodeLine{00537\ \ \ \ \ \ \ \ \ LIMBS\ =\ 4;}
+\DoxyCodeLine{00538\ }
+\DoxyCodeLine{00539\ \ \ \ \ \textcolor{keywordflow}{if}\ (inifile==\textcolor{stringliteral}{"{}"{}})}
+\DoxyCodeLine{00540\ \ \ \ \ \{}
+\DoxyCodeLine{00541\ \ \ \ \ \ \ \ \ yError(\textcolor{stringliteral}{"{}No\ position\ file\ specified"{}});}
+\DoxyCodeLine{00542\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00543\ \ \ \ \ \}}
+\DoxyCodeLine{00544\ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00545\ \ \ \ \ \{}
+\DoxyCodeLine{00546\ \ \ \ \ \ \ \ \ yInfo(\textcolor{stringliteral}{"{}Reading\ positions\ file\ from\ \%s"{}},inifile.c\_str());}
+\DoxyCodeLine{00547\ \ \ \ \ \}}
+\DoxyCodeLine{00548\ }
+\DoxyCodeLine{00549\ \ \ \ \ std::string\ prefix=string(\textcolor{stringliteral}{"{}/"{}})+robotName+\textcolor{stringliteral}{"{}/"{}};}
+\DoxyCodeLine{00550\ }
+\DoxyCodeLine{00551\ \ \ \ \ Robot\ icub;}
+\DoxyCodeLine{00552\ }
+\DoxyCodeLine{00553\ \ \ \ \ icub.options[0].put(\textcolor{stringliteral}{"{}device"{}},\textcolor{stringliteral}{"{}remote\_controlboard"{}});}
+\DoxyCodeLine{00554\ \ \ \ \ icub.options[0].put(\textcolor{stringliteral}{"{}local"{}},(prefix+\textcolor{stringliteral}{"{}demoYoga/right\_arm/client"{}}).c\_str());}
+\DoxyCodeLine{00555\ \ \ \ \ icub.options[0].put(\textcolor{stringliteral}{"{}remote"{}},(prefix+\textcolor{stringliteral}{"{}right\_arm"{}}).c\_str());}
+\DoxyCodeLine{00556\ \ \ \ \ icub.tags[0]=\textcolor{stringliteral}{"{}RIGHTARM"{}};}
+\DoxyCodeLine{00557\ }
+\DoxyCodeLine{00558\ \ \ \ \ icub.options[1].put(\textcolor{stringliteral}{"{}device"{}},\textcolor{stringliteral}{"{}remote\_controlboard"{}});}
+\DoxyCodeLine{00559\ \ \ \ \ icub.options[1].put(\textcolor{stringliteral}{"{}local"{}},(prefix+\textcolor{stringliteral}{"{}demoYoga/left\_arm/client"{}}).c\_str());}
+\DoxyCodeLine{00560\ \ \ \ \ icub.options[1].put(\textcolor{stringliteral}{"{}remote"{}},(prefix+\textcolor{stringliteral}{"{}left\_arm"{}}).c\_str());}
+\DoxyCodeLine{00561\ \ \ \ \ icub.tags[1]=\textcolor{stringliteral}{"{}LEFTARM"{}};}
+\DoxyCodeLine{00562\ }
+\DoxyCodeLine{00563\ \ \ \ \ icub.options[2].put(\textcolor{stringliteral}{"{}device"{}},\textcolor{stringliteral}{"{}remote\_controlboard"{}});}
+\DoxyCodeLine{00564\ \ \ \ \ icub.options[2].put(\textcolor{stringliteral}{"{}local"{}},(prefix+\textcolor{stringliteral}{"{}demoYoga/head/client"{}}).c\_str());}
+\DoxyCodeLine{00565\ \ \ \ \ icub.options[2].put(\textcolor{stringliteral}{"{}remote"{}},(prefix+\textcolor{stringliteral}{"{}head"{}}).c\_str());}
+\DoxyCodeLine{00566\ \ \ \ \ icub.tags[2]=\textcolor{stringliteral}{"{}HEAD"{}};}
+\DoxyCodeLine{00567\ }
+\DoxyCodeLine{00568\ \ \ \ \ icub.options[3].put(\textcolor{stringliteral}{"{}device"{}},\textcolor{stringliteral}{"{}remote\_controlboard"{}});}
+\DoxyCodeLine{00569\ \ \ \ \ icub.options[3].put(\textcolor{stringliteral}{"{}local"{}},(prefix+\textcolor{stringliteral}{"{}demoYoga/torso/client"{}}).c\_str());}
+\DoxyCodeLine{00570\ \ \ \ \ icub.options[3].put(\textcolor{stringliteral}{"{}remote"{}},(prefix+\textcolor{stringliteral}{"{}torso"{}}).c\_str());}
+\DoxyCodeLine{00571\ \ \ \ \ icub.tags[3]=\textcolor{stringliteral}{"{}TORSO"{}};}
+\DoxyCodeLine{00572\ }
+\DoxyCodeLine{00573\ \ \ \ \ \textcolor{keywordflow}{if}\ (!no\_legs)\ \{}
+\DoxyCodeLine{00574\ \ \ \ \ \ \ \ \ icub.options[4].put(\textcolor{stringliteral}{"{}device"{}},\ \textcolor{stringliteral}{"{}remote\_controlboard"{}});}
+\DoxyCodeLine{00575\ \ \ \ \ \ \ \ \ icub.options[4].put(\textcolor{stringliteral}{"{}local"{}},\ (prefix\ +\ \textcolor{stringliteral}{"{}demoYoga/right\_leg/client"{}}).c\_str());}
+\DoxyCodeLine{00576\ \ \ \ \ \ \ \ \ icub.options[4].put(\textcolor{stringliteral}{"{}remote"{}},\ (prefix\ +\ \textcolor{stringliteral}{"{}right\_leg"{}}).c\_str());}
+\DoxyCodeLine{00577\ \ \ \ \ \ \ \ \ icub.tags[4]\ =\ \textcolor{stringliteral}{"{}RIGHTLEG"{}};}
+\DoxyCodeLine{00578\ }
+\DoxyCodeLine{00579\ \ \ \ \ \ \ \ \ icub.options[5].put(\textcolor{stringliteral}{"{}device"{}},\ \textcolor{stringliteral}{"{}remote\_controlboard"{}});}
+\DoxyCodeLine{00580\ \ \ \ \ \ \ \ \ icub.options[5].put(\textcolor{stringliteral}{"{}local"{}},\ (prefix\ +\ \textcolor{stringliteral}{"{}demoYoga/left\_leg/client"{}}).c\_str());}
+\DoxyCodeLine{00581\ \ \ \ \ \ \ \ \ icub.options[5].put(\textcolor{stringliteral}{"{}remote"{}},\ (prefix\ +\ \textcolor{stringliteral}{"{}left\_leg"{}}).c\_str());}
+\DoxyCodeLine{00582\ \ \ \ \ \ \ \ \ icub.tags[5]\ =\ \textcolor{stringliteral}{"{}LEFTLEG"{}};}
+\DoxyCodeLine{00583\ \ \ \ \ \}}
+\DoxyCodeLine{00584\ }
+\DoxyCodeLine{00585\ \ \ \ \ \textcolor{keywordflow}{if}\ (diagnostic)}
+\DoxyCodeLine{00586\ \ \ \ \ \{}
+\DoxyCodeLine{00587\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k=0;\ k<LIMBS;\ k++)}
+\DoxyCodeLine{00588\ \ \ \ \ \ \ \ \ \ \ \ \ icub.options[k].put(\textcolor{stringliteral}{"{}diagnostic"{}},\textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{00589\ \ \ \ \ \}}
+\DoxyCodeLine{00590\ }
+\DoxyCodeLine{00591\ \ \ \ \ DemoSequences\ *sequences=\textcolor{keyword}{new}\ DemoSequences(icub.tags);}
+\DoxyCodeLine{00592\ }
+\DoxyCodeLine{00593\ \ \ \ \ sequences-\/>fromFile(inifile.c\_str());}
+\DoxyCodeLine{00594\ \ \ \ \ \textcolor{keywordflow}{if}\ (verbose)}
+\DoxyCodeLine{00595\ \ \ \ \ \ \ \ \ sequences-\/>dump();}
+\DoxyCodeLine{00596\ }
+\DoxyCodeLine{00597\ \ \ \ \ Property\ op;}
+\DoxyCodeLine{00598\ \ \ \ \ op.fromConfigFile(inifile.c\_str());}
+\DoxyCodeLine{00599\ \ \ \ \ \textcolor{keywordtype}{double}\ dT=-\/1;}
+\DoxyCodeLine{00600\ \ \ \ \ \textcolor{keywordflow}{if}\ (op.check(\textcolor{stringliteral}{"{}time"{}}))}
+\DoxyCodeLine{00601\ \ \ \ \ \ \ \ \ dT=op.find(\textcolor{stringliteral}{"{}time"{}}).asFloat64();}
+\DoxyCodeLine{00602\ }
+\DoxyCodeLine{00603\ \ \ \ \ \textcolor{keywordflow}{if}\ (!icub.createDevices())}
+\DoxyCodeLine{00604\ \ \ \ \ \{}
+\DoxyCodeLine{00605\ \ \ \ \ \ \ \ \ yError(\textcolor{stringliteral}{"{}Error\ creating\ devices,\ check\ parameters"{}});}
+\DoxyCodeLine{00606\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00607\ \ \ \ \ \}}
+\DoxyCodeLine{00608\ }
+\DoxyCodeLine{00609\ \ \ \ \ RobotMover\ *robot\_mover=\textcolor{keyword}{new}\ RobotMover(\&icub,SAMPLER\_RATE);}
+\DoxyCodeLine{00610\ \ \ \ \ robot\_mover-\/>setVerbose(verbose);}
+\DoxyCodeLine{00611\ \ \ \ \ robot\_mover-\/>setSequences(sequences-\/>sequences);}
+\DoxyCodeLine{00612\ \ \ \ \ \textcolor{keywordflow}{if}\ (dT>0)}
+\DoxyCodeLine{00613\ \ \ \ \ \{}
+\DoxyCodeLine{00614\ \ \ \ \ \ \ \ \ yInfo(\textcolor{stringliteral}{"{}Setting\ time\ to\ \%g"{}},dT);}
+\DoxyCodeLine{00615\ \ \ \ \ \ \ \ \ robot\_mover-\/>setTime(dT);}
+\DoxyCodeLine{00616\ \ \ \ \ \}}
+\DoxyCodeLine{00617\ }
+\DoxyCodeLine{00618\ \ \ \ \ robot\_mover-\/>start();}
+\DoxyCodeLine{00619\ }
+\DoxyCodeLine{00620\ \ \ \ \ std::string\ reply;}
+\DoxyCodeLine{00621\ \ \ \ \ \textcolor{keywordflow}{while}\ (reply!=\textcolor{stringliteral}{"{}quit"{}})}
+\DoxyCodeLine{00622\ \ \ \ \ \{}
+\DoxyCodeLine{00623\ \ \ \ \ \ \ \ \ std::cin>>reply;}
+\DoxyCodeLine{00624\ \ \ \ \ \}}
+\DoxyCodeLine{00625\ }
+\DoxyCodeLine{00626\ \ \ \ \ yInfo(\textcolor{stringliteral}{"{}Received\ a\ quit\ message"{}});}
+\DoxyCodeLine{00627\ \ \ \ \ robot\_mover-\/>stop();}
+\DoxyCodeLine{00628\ }
+\DoxyCodeLine{00629\ \ \ \ \ \textcolor{keyword}{delete}\ robot\_mover;}
+\DoxyCodeLine{00630\ \ \ \ \ \textcolor{keyword}{delete}\ sequences;}
+\DoxyCodeLine{00631\ }
+\DoxyCodeLine{00632\ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00633\ \}}
+
+\end{DoxyCode}

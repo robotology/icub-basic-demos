@@ -1,0 +1,103 @@
+\doxysection{mainwindow.\+h}
+\label{mainwindow_8h_source}\index{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/demoForceControl/src/mainwindow.h@{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/demoForceControl/src/mainwindow.h}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *\ Copyright\ (C)\ 2010\ RobotCub\ Consortium,\ European\ Commission\ FP6\ Project\ IST-\/004370}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ (C)\ 2016\ iCub\ Facility\ -\/\ Istituto\ Italiano\ di\ Tecnologia}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *\ Author:\ Marco\ Randazzo\ <marco.randazzo@iit.it>}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ CopyPolicy:\ Released\ under\ the\ terms\ of\ the\ GPLv2\ or\ later,\ see\ GPL.TXT}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#ifndef\ MAINWINDOW\_H}}
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#define\ MAINWINDOW\_H}}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#include\ <yarp/os/ResourceFinder.h>}}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#include\ <QMainWindow>}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <QResizeEvent>}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#include\ <QLabel>}}
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#include\ <QTimer>}}
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#include\ <QAction>}}
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#include\ <QMutex>}}
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#include\ <QTreeWidget>}}
+\DoxyCodeLine{00021\ \textcolor{preprocessor}{\#include\ "{}robot\_interfaces.h"{}}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{keyword}{namespace\ }Ui\ \{}
+\DoxyCodeLine{00024\ \textcolor{keyword}{class\ }MainWindow;}
+\DoxyCodeLine{00025\ \}}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \textcolor{keyword}{using\ namespace\ }yarp::os;}
+\DoxyCodeLine{00028\ \textcolor{keyword}{class\ }MainWindow\ :\ \textcolor{keyword}{public}\ QMainWindow}
+\DoxyCodeLine{00029\ \{}
+\DoxyCodeLine{00030\ \ \ \ \ Q\_OBJECT}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{keyword}{explicit}\ MainWindow(QWidget\ *parent\ =\ 0);}
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keywordtype}{bool}\ init(QString\ robotName,\ ResourceFinder\ *finder,\ robot\_interfaces\ *robot);}
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keywordtype}{bool}\ slot\_changed\_pos(\textcolor{keywordtype}{int}\ kk);}
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keywordtype}{bool}\ slot\_changed\_trq(\textcolor{keywordtype}{int}\ kk);}
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keywordtype}{bool}\ slot\_changed\_imp\_soft\ \ (\textcolor{keywordtype}{int}\ kk);}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keywordtype}{bool}\ slot\_changed\_imp\_medium(\textcolor{keywordtype}{int}\ kk);}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keywordtype}{bool}\ slot\_changed\_imp\_hard(\textcolor{keywordtype}{int}\ kk);}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keywordtype}{void}\ disable\_left\_arm();}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keywordtype}{void}\ disable\_left\_leg();}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keywordtype}{void}\ disable\_right\_arm();}
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keywordtype}{void}\ disable\_right\_leg();}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keywordtype}{void}\ disable\_torso();}
+\DoxyCodeLine{00045\ \ \ \ \ }
+\DoxyCodeLine{00046\ \ \ \ \ \string~MainWindow();}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordtype}{void}\ update\_labels();}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keywordtype}{void}\ closeEvent(QCloseEvent\ *event);}
+\DoxyCodeLine{00051\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00052\ \ \ \ \ Ui::MainWindow\ *ui;}
+\DoxyCodeLine{00053\ \ \ \ \ robot\_interfaces\ *m\_robot;}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \textcolor{keyword}{private}\ slots:}
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keywordtype}{void}\ Radio1Selected()\ \ \{\ slot\_changed\_pos(LEFT\_ARM);\ \}}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keywordtype}{void}\ Radio2Selected()\ \ \{\ slot\_changed\_trq(LEFT\_ARM);\ \}}
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{keywordtype}{void}\ Radio3Selected()\ \ \{\ slot\_changed\_imp\_soft(LEFT\_ARM);\ \}}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keywordtype}{void}\ Radio4Selected()\ \ \{\ slot\_changed\_imp\_medium(LEFT\_ARM);\ \}}
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keywordtype}{void}\ Radio5Selected()\ \ \{\ slot\_changed\_imp\_hard(LEFT\_ARM);\ \}}
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{keywordtype}{void}\ Radio6Selected()\ \ \{\ slot\_changed\_pos(RIGHT\_ARM);\ \}}
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keywordtype}{void}\ Radio7Selected()\ \ \{\ slot\_changed\_trq(RIGHT\_ARM);\ \}}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keywordtype}{void}\ Radio8Selected()\ \ \{\ slot\_changed\_imp\_soft(RIGHT\_ARM);\ \}}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{keywordtype}{void}\ Radio9Selected()\ \ \{\ slot\_changed\_imp\_medium(RIGHT\_ARM);\ \}}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keywordtype}{void}\ Radio10Selected()\ \{\ slot\_changed\_imp\_hard(RIGHT\_ARM);\ \}}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keywordtype}{void}\ Radio11Selected()\ \{\ slot\_changed\_pos(LEFT\_LEG);\ \}}
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keywordtype}{void}\ Radio12Selected()\ \{\ slot\_changed\_trq(LEFT\_LEG);\ \}}
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keywordtype}{void}\ Radio13Selected()\ \{\ slot\_changed\_imp\_soft(LEFT\_LEG);\ \}}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keywordtype}{void}\ Radio14Selected()\ \{\ slot\_changed\_imp\_medium(LEFT\_LEG);\ \}}
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{keywordtype}{void}\ Radio15Selected()\ \{\ slot\_changed\_imp\_hard(LEFT\_LEG);\ \}}
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{keywordtype}{void}\ Radio16Selected()\ \{\ slot\_changed\_pos(RIGHT\_LEG);\ \}}
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{keywordtype}{void}\ Radio17Selected()\ \{\ slot\_changed\_trq(RIGHT\_LEG);\ \}}
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keywordtype}{void}\ Radio18Selected()\ \{\ slot\_changed\_imp\_soft(RIGHT\_LEG);\ \}}
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{keywordtype}{void}\ Radio19Selected()\ \{\ slot\_changed\_imp\_medium(RIGHT\_LEG);\ \}}
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{keywordtype}{void}\ Radio20Selected()\ \{\ slot\_changed\_imp\_hard(RIGHT\_LEG);\ \}}
+\DoxyCodeLine{00078\ \ \ \ \ \textcolor{keywordtype}{void}\ Radio21Selected()\ \{\ slot\_changed\_pos(TORSO);\ \}}
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{keywordtype}{void}\ Radio22Selected()\ \{\ slot\_changed\_trq(TORSO);\ \}}
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{keywordtype}{void}\ Radio23Selected()\ \{\ slot\_changed\_imp\_soft(TORSO);\ \}}
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keywordtype}{void}\ Radio24Selected()\ \{\ slot\_changed\_imp\_medium(TORSO);\ \}}
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{keywordtype}{void}\ Radio25Selected()\ \{\ slot\_changed\_imp\_hard(TORSO);\ \}}
+\DoxyCodeLine{00083\ signals:}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \};}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00087\ \textcolor{keyword}{class\ }ModesTreeWidget\ :\ \textcolor{keyword}{public}\ QTreeWidget}
+\DoxyCodeLine{00088\ \{}
+\DoxyCodeLine{00089\ \ \ \ \ Q\_OBJECT}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00092\ \ \ \ \ ModesTreeWidget(QWidget\ *\ parent\ =\ 0);}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ \};}
+\DoxyCodeLine{00096\ }
+\DoxyCodeLine{00097\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{//\ MAINWINDOW\_H}}
+
+\end{DoxyCode}

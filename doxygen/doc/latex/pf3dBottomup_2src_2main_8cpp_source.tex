@@ -1,0 +1,35 @@
+\doxysection{main.\+cpp}
+\label{pf3dBottomup_2src_2main_8cpp_source}\index{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/pf3dBottomup/src/main.cpp@{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/pf3dBottomup/src/main.cpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00022\ \textcolor{comment}{//\ yarp}}
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#include\ <yarp/os/Network.h>}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{comment}{//\ iCub}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ <iCub/pf3dBottomup.hpp>}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{using\ namespace\ }std;}
+\DoxyCodeLine{00029\ \textcolor{keyword}{using\ namespace\ }yarp::os;}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keywordtype}{int}\ main(\textcolor{keywordtype}{int}\ argc,\ \textcolor{keywordtype}{char}\ *argv[])}
+\DoxyCodeLine{00032\ \{}
+\DoxyCodeLine{00033\ \ \ \ \ Network\ yarp;}
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keywordflow}{if}\ (!yarp::os::Network::checkNetwork())}
+\DoxyCodeLine{00035\ \ \ \ \ \{}
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ yError(\textcolor{stringliteral}{"{}YARP\ server\ not\ available!"{}});}
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00038\ \ \ \ \ \}}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \ \ \ \ ResourceFinder\ rf;}
+\DoxyCodeLine{00041\ \ \ \ \ rf.setDefaultContext(\textcolor{stringliteral}{"{}pf3dBottomup"{}});}
+\DoxyCodeLine{00042\ \ \ \ \ rf.setDefaultConfigFile(\textcolor{stringliteral}{"{}pf3dBottomup.ini"{}});}
+\DoxyCodeLine{00043\ \ \ \ \ rf.configure(argc,\ argv);}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \ \ \ \ pf3dBottomup\ bottomup;}
+\DoxyCodeLine{00046\ \ \ \ \ bottomup.setName(\textcolor{stringliteral}{"{}/pf3dBottomup"{}});}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordflow}{return}\ bottomup.runModule(rf);}
+\DoxyCodeLine{00048\ \}}
+\DoxyCodeLine{00049\ }
+
+\end{DoxyCode}

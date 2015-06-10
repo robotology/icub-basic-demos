@@ -1,0 +1,345 @@
+\doxysection{IIRGaus\+Deriv.\+cpp}
+\label{IIRGausDeriv_8cpp_source}\index{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/pf3dBottomup/src/IIRGausDeriv.cpp@{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/pf3dBottomup/src/IIRGausDeriv.cpp}}
+\mbox{\hyperlink{IIRGausDeriv_8cpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{//\ -\/*-\/\ mode:C++;\ tab-\/width:4;\ c-\/basic-\/offset:4;\ indent-\/tabs-\/mode:nil\ -\/*-\/}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{comment}{//\ Copyright:\ (C)\ 2006-\/2007\ Alex\ Bernardino,\ ISR-\/IST}}
+\DoxyCodeLine{00004\ \textcolor{comment}{//\ Authors:\ Alex\ Bernardino}}
+\DoxyCodeLine{00005\ \textcolor{comment}{//\ CopyPolicy:\ Released\ under\ the\ terms\ of\ the\ GNU\ GPL\ v2.0.}}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#include\ <complex>}}
+\DoxyCodeLine{00019\ \textcolor{keyword}{using\ namespace\ }std;}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00021\ \textcolor{preprocessor}{\#include\ <iCub/IIRFilt.h>}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{comment}{//}}
+\DoxyCodeLine{00024\ \textcolor{comment}{//Values\ of\ the\ pole\ locations\ for\ the\ iir\ recursive\ gaussian\ derivative\ filters\ of\ scale\ s\ =\ 2.}}
+\DoxyCodeLine{00025\ \textcolor{comment}{//From\ "{}Recursive\ Gaussian\ Derivative\ Filters"{},\ L.van.Vliet,Ian.T.Young\ and\ Piet.W.Verbeek}}
+\DoxyCodeLine{00026\ \textcolor{comment}{//}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{comment}{//\ d\ -\/\ differentiation\ order}}
+\DoxyCodeLine{00029\ \textcolor{comment}{//\ N\ -\/\ number\ of\ poles}}
+\DoxyCodeLine{00030\ \textcolor{comment}{//\ L\ -\/\ approximation\ norm}}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ complex<double>\ d0\_N3\_L2[]\ =\ \{}
+\DoxyCodeLine{00033\ \ \ \ \ complex<double>(1.41650,1.00829),}
+\DoxyCodeLine{00034\ \ \ \ \ complex<double>(1.41650,-\/1.00829),}
+\DoxyCodeLine{00035\ \ \ \ \ complex<double>(1.86543,0),}
+\DoxyCodeLine{00036\ \};}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ complex<double>\ d0\_N4\_L2[]\ =\ \{}
+\DoxyCodeLine{00039\ \ \ \ \ complex<double>(1.13228,1.28114),}
+\DoxyCodeLine{00040\ \ \ \ \ complex<double>(1.13228,-\/1.28114),}
+\DoxyCodeLine{00041\ \ \ \ \ complex<double>(1.78534,0.46763),}
+\DoxyCodeLine{00042\ \ \ \ \ complex<double>(1.78534,-\/0.46763),}
+\DoxyCodeLine{00043\ \};}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ complex<double>\ d0\_N5\_L2[]\ =\ \{}
+\DoxyCodeLine{00046\ \ \ \ \ complex<double>(0.86430,1.45389),}
+\DoxyCodeLine{00047\ \ \ \ \ complex<double>(0.86430,-\/1.45389),}
+\DoxyCodeLine{00048\ \ \ \ \ complex<double>(1.61433,0.83134),}
+\DoxyCodeLine{00049\ \ \ \ \ complex<double>(1.61433,-\/0.83134),}
+\DoxyCodeLine{00050\ \ \ \ \ complex<double>(1.87504,0),}
+\DoxyCodeLine{00051\ \};}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \textcolor{keyword}{extern}\ \textcolor{keyword}{const}\ complex<double>\ d0\_N3\_Linf[]\ =\ \{}
+\DoxyCodeLine{00054\ \ \ \ \ complex<double>(1.40098,1.00236),}
+\DoxyCodeLine{00055\ \ \ \ \ complex<double>(1.40098,-\/1.00236),}
+\DoxyCodeLine{00056\ \ \ \ \ complex<double>(1.85132,0),}
+\DoxyCodeLine{00057\ \};}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ complex<double>\ d0\_N4\_Linf[]\ =\ \{}
+\DoxyCodeLine{00060\ \ \ \ \ complex<double>(1.12075,1.27788),}
+\DoxyCodeLine{00061\ \ \ \ \ complex<double>(1.12075,-\/1.27788),}
+\DoxyCodeLine{00062\ \ \ \ \ complex<double>(1.76952,0.46611),}
+\DoxyCodeLine{00063\ \ \ \ \ complex<double>(1.76952,-\/0.46611),}
+\DoxyCodeLine{00064\ \};}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ complex<double>\ d0\_N5\_Linf[]\ =\ \{}
+\DoxyCodeLine{00067\ \ \ \ \ complex<double>(0.85480,1.43749),}
+\DoxyCodeLine{00068\ \ \ \ \ complex<double>(0.85480,-\/1.43749),}
+\DoxyCodeLine{00069\ \ \ \ \ complex<double>(1.61231,0.82053),}
+\DoxyCodeLine{00070\ \ \ \ \ complex<double>(1.61231,-\/0.82053),}
+\DoxyCodeLine{00071\ \ \ \ \ complex<double>(1.87415,0)}
+\DoxyCodeLine{00072\ \};}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ complex<double>\ d1\_N3\_Linf[]\ =\ \{}
+\DoxyCodeLine{00075\ \ \ \ \ complex<double>(1.31553,0.97057),}
+\DoxyCodeLine{00076\ \ \ \ \ complex<double>(1.31553,-\/0.97057),}
+\DoxyCodeLine{00077\ \ \ \ \ complex<double>(1.77635,0),}
+\DoxyCodeLine{00078\ \};}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ complex<double>\ d1\_N4\_Linf[]\ =\ \{}
+\DoxyCodeLine{00081\ \ \ \ \ complex<double>(1.04185,1.24034),}
+\DoxyCodeLine{00082\ \ \ \ \ complex<double>(1.04185,-\/1.24034),}
+\DoxyCodeLine{00083\ \ \ \ \ complex<double>(1.69747,0.44790),}
+\DoxyCodeLine{00084\ \ \ \ \ complex<double>(1.69747,-\/0.44790),}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \};}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ complex<double>\ d1\_N5\_Linf[]\ =\ \{}
+\DoxyCodeLine{00089\ \ \ \ \ complex<double>(0.77934,1.41423),}
+\DoxyCodeLine{00090\ \ \ \ \ complex<double>(0.77934,-\/1.41423),}
+\DoxyCodeLine{00091\ \ \ \ \ complex<double>(1.50941,0.80828),}
+\DoxyCodeLine{00092\ \ \ \ \ complex<double>(1.50941,-\/0.80828),}
+\DoxyCodeLine{00093\ \ \ \ \ complex<double>(1.77181,0)}
+\DoxyCodeLine{00094\ \};}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ }
+\DoxyCodeLine{00097\ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ complex<double>\ d3\_N3\_Linf[]\ =\ \{}
+\DoxyCodeLine{00098\ \ \ \ \ complex<double>(1.22886,0.93058),}
+\DoxyCodeLine{00099\ \ \ \ \ complex<double>(1.22886,-\/0.93058),}
+\DoxyCodeLine{00100\ \ \ \ \ complex<double>(1.70493,0),}
+\DoxyCodeLine{00101\ \};}
+\DoxyCodeLine{00102\ }
+\DoxyCodeLine{00103\ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ complex<double>\ d2\_N4\_Linf[]\ =\ \{}
+\DoxyCodeLine{00104\ \ \ \ \ complex<double>(0.94570,1.21064),}
+\DoxyCodeLine{00105\ \ \ \ \ complex<double>(0.94570,-\/1.21064),}
+\DoxyCodeLine{00106\ \ \ \ \ complex<double>(1.60161,0.42647),}
+\DoxyCodeLine{00107\ \ \ \ \ complex<double>(1.60161,-\/0.42647),}
+\DoxyCodeLine{00108\ \};}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00110\ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ complex<double>\ d2\_N5\_Linf[]\ =\ \{}
+\DoxyCodeLine{00111\ \ \ \ \ complex<double>(0.69843,1.37655),}
+\DoxyCodeLine{00112\ \ \ \ \ complex<double>(0.69843,-\/1.37655),}
+\DoxyCodeLine{00113\ \ \ \ \ complex<double>(1.42631,0.77399),}
+\DoxyCodeLine{00114\ \ \ \ \ complex<double>(1.42631,-\/0.77399),}
+\DoxyCodeLine{00115\ \ \ \ \ complex<double>(1.69668,0)}
+\DoxyCodeLine{00116\ \};}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ }
+\DoxyCodeLine{00119\ }
+\DoxyCodeLine{00120\ \textcolor{comment}{//compute\ the\ poles\ of\ the\ filter\ for\ scale\ s\ given\ the\ poles\ at\ scale\ 2}}
+\DoxyCodeLine{00121\ \textcolor{keywordtype}{void}\ calc\_poles(\textcolor{keywordtype}{int}\ taps,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ scale,\ \textcolor{keyword}{const}\ complex<double>\ oldpoles[],\ complex<double>\ newpoles[])}
+\DoxyCodeLine{00122\ \{}
+\DoxyCodeLine{00123\ \ \ \ \ \textcolor{keywordflow}{if}((taps\ <\ 3)||(taps>5))}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{stringliteral}{"{}Invalid\ number\ of\ taps\ in\ calc\_poles"{}};}
+\DoxyCodeLine{00125\ \ \ \ \ }
+\DoxyCodeLine{00126\ \ \ \ \ \textcolor{keywordflow}{if}(newpoles\ ==\ NULL)}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{stringliteral}{"{}NULL\ Pointer\ argument\ in\ calc\_poles"{}};}
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00129\ \ \ \ \ complex\ <double>\ d1\_2,\ d2\_2,\ d3\_2,\ d4\_2,\ d5\_2;}
+\DoxyCodeLine{00130\ \ \ \ \ d1\_2\ =\ oldpoles[0];}
+\DoxyCodeLine{00131\ \ \ \ \ d2\_2\ =\ oldpoles[1];}
+\DoxyCodeLine{00132\ \ \ \ \ d3\_2\ =\ oldpoles[2];}
+\DoxyCodeLine{00133\ \ \ \ \ \textcolor{keywordflow}{if}(taps\ >\ 3)}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ d4\_2\ =\ oldpoles[3];}
+\DoxyCodeLine{00135\ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ d4\_2\ =\ 0;}
+\DoxyCodeLine{00137\ \ \ \ \ \textcolor{keywordflow}{if}(taps\ >\ 4)}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ d5\_2\ =\ oldpoles[4];}
+\DoxyCodeLine{00139\ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ d5\_2\ =\ 0;}
+\DoxyCodeLine{00141\ \ \ \ \ }
+\DoxyCodeLine{00142\ \ \ \ \ \textcolor{keywordtype}{double}\ q,\ std,\ lambda;}
+\DoxyCodeLine{00143\ \ \ \ \ \textcolor{keywordtype}{double}\ tol\ =\ 0.01;}
+\DoxyCodeLine{00144\ \ \ \ \ complex\ <double>\ j(0,1),\ var;}
+\DoxyCodeLine{00145\ \ \ \ \ complex\ <double>\ d1\_s,\ d2\_s,\ d3\_s,\ d4\_s,\ d5\_s;}
+\DoxyCodeLine{00146\ \ \ \ \ \textcolor{comment}{//\ computing\ new\ values\ for\ the\ poles}}
+\DoxyCodeLine{00147\ \ \ \ \ q\ =\ scale/2;}
+\DoxyCodeLine{00148\ \ \ \ \ d1\_s\ =\ exp(log(abs(d1\_2))/q)*exp(j*arg(d1\_2)/q);}
+\DoxyCodeLine{00149\ \ \ \ \ d2\_s\ =\ exp(log(abs(d2\_2))/q)*exp(j*arg(d2\_2)/q);}
+\DoxyCodeLine{00150\ \ \ \ \ d3\_s\ =\ exp(log(abs(d3\_2))/q)*exp(j*arg(d3\_2)/q);}
+\DoxyCodeLine{00151\ \ \ \ \ \textcolor{keywordflow}{if}(\ abs(d4\_2)\ !=\ 0\ )}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ d4\_s\ =\ exp(log(abs(d4\_2))/q)*exp(j*arg(d4\_2)/q);}
+\DoxyCodeLine{00153\ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ d4\_s\ =\ 0;}
+\DoxyCodeLine{00155\ \ \ \ \ \textcolor{keywordflow}{if}(\ abs(d5\_2)\ !=\ 0\ )}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ d5\_s\ =\ exp(log(abs(d5\_2))/q)*exp(j*arg(d5\_2)/q);}
+\DoxyCodeLine{00157\ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ d5\_s\ =\ 0;}
+\DoxyCodeLine{00159\ \ \ \ \ \textcolor{comment}{//\ computing\ the\ variance\ of\ the\ new\ filter}}
+\DoxyCodeLine{00160\ \ \ \ \ var\ =\ \ d1\_s*2.0/(d1\_s-\/1.0)/(d1\_s-\/1.0)\ +\ d2\_s*2.0/(d2\_s-\/1.0)/(d2\_s-\/1.0)\ +\ d3\_s*2.0/(d3\_s-\/1.0)/(d3\_s-\/1.0)+d4\_s*2.0/(d4\_s-\/1.0)/(d4\_s-\/1.0)+d5\_s*2.0/(d5\_s-\/1.0)/(d5\_s-\/1.0);}
+\DoxyCodeLine{00161\ \ \ \ \ std\ =\ sqrt(var.real());}
+\DoxyCodeLine{00162\ \ \ \ \ \textcolor{keywordflow}{while}(\ fabs(scale-\/std)\ >\ tol\ )}
+\DoxyCodeLine{00163\ \ \ \ \ \{}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ lambda\ =\ scale/std;}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ q\ =\ q*lambda;}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ computing\ new\ values\ for\ the\ poles}}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ d1\_s\ =\ exp(log(abs(d1\_2))/q)*exp(j*arg(d1\_2)/q);}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ d2\_s\ =\ exp(log(abs(d2\_2))/q)*exp(j*arg(d2\_2)/q);}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ d3\_s\ =\ exp(log(abs(d3\_2))/q)*exp(j*arg(d3\_2)/q);}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ abs(d4\_2)\ !=\ 0)}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ \ \ d4\_s\ =\ exp(log(abs(d4\_2))/q)*exp(j*arg(d4\_2)/q);}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \ \ \ \ d4\_s\ =\ 0;}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ abs(d5\_2)\ !=\ 0)}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \ \ \ \ d5\_s\ =\ exp(log(abs(d5\_2))/q)*exp(j*arg(d5\_2)/q);}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \ \ \ \ d5\_s\ =\ 0;}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ computing\ the\ variance\ of\ the\ new\ filter}}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ var\ =\ \ d1\_s*2.0/(d1\_s-\/1.0)/(d1\_s-\/1.0)\ +\ d2\_s*2.0/(d2\_s-\/1.0)/(d2\_s-\/1.0)\ +\ d3\_s*2.0/(d3\_s-\/1.0)/(d3\_s-\/1.0)+d4\_s*2.0/(d4\_s-\/1.0)/(d4\_s-\/1.0)+d5\_s*2.0/(d5\_s-\/1.0)/(d5\_s-\/1.0);}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ std\ =\ sqrt(var.real());}
+\DoxyCodeLine{00181\ \ \ \ \ \}}
+\DoxyCodeLine{00182\ \ \ \ \ newpoles[0]\ =\ d1\_s;}
+\DoxyCodeLine{00183\ \ \ \ \ newpoles[1]\ =\ d2\_s;}
+\DoxyCodeLine{00184\ \ \ \ \ newpoles[2]\ =\ d3\_s;}
+\DoxyCodeLine{00185\ \ \ \ \ newpoles[3]\ =\ d4\_s;}
+\DoxyCodeLine{00186\ \ \ \ \ newpoles[4]\ =\ d5\_s;}
+\DoxyCodeLine{00187\ \}}
+\DoxyCodeLine{00188\ }
+\DoxyCodeLine{00189\ \textcolor{comment}{//compute\ the\ coefficients\ of\ the\ filter,\ given\ its\ poles}}
+\DoxyCodeLine{00190\ \textcolor{comment}{//the\ output\ is\ written\ in\ array\ coeffs\ -\/\ the\ first\ element\ is\ the\ gain\ and\ }}
+\DoxyCodeLine{00191\ \textcolor{comment}{//the\ remaining\ elements\ correspond\ to\ the\ autoregressive\ coefficients\ }}
+\DoxyCodeLine{00192\ \textcolor{keywordtype}{void}\ calc\_coeffs(\textcolor{keywordtype}{int}\ taps,\ \textcolor{keyword}{const}\ complex<double>\ poles[],\ \textcolor{keywordtype}{float}\ *coeffs)}
+\DoxyCodeLine{00193\ \{}
+\DoxyCodeLine{00194\ \ \ \ \ \textcolor{keywordflow}{if}((taps\ <\ 3)||(taps>5))}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{stringliteral}{"{}Invalid\ number\ of\ taps\ in\ calc\_coeffs"{}};}
+\DoxyCodeLine{00196\ \ \ \ \ }
+\DoxyCodeLine{00197\ \ \ \ \ \textcolor{keywordflow}{if}(coeffs\ ==\ NULL)}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{stringliteral}{"{}NULL\ Pointer\ argument\ in\ calc\_coeffs"{}};}
+\DoxyCodeLine{00199\ }
+\DoxyCodeLine{00200\ \ \ \ \ complex\ <double>\ d1\_s,\ d2\_s,\ d3\_s,\ d4\_s,\ d5\_s;}
+\DoxyCodeLine{00201\ \ \ \ \ d1\_s\ =\ poles[0];}
+\DoxyCodeLine{00202\ \ \ \ \ d2\_s\ =\ poles[1];}
+\DoxyCodeLine{00203\ \ \ \ \ d3\_s\ =\ poles[2];}
+\DoxyCodeLine{00204\ \ \ \ \ \textcolor{keywordflow}{if}(taps\ >\ 3)}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ d4\_s\ =\ poles[3];}
+\DoxyCodeLine{00206\ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ d4\_s\ =\ 0;}
+\DoxyCodeLine{00208\ \ \ \ \ \textcolor{keywordflow}{if}(taps\ >\ 4)}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ d5\_s\ =\ poles[4];}
+\DoxyCodeLine{00210\ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ d5\_s\ =\ 0;}
+\DoxyCodeLine{00212\ \ \ \ \ }
+\DoxyCodeLine{00213\ \ \ \ \ \textcolor{comment}{//computing\ the\ filter\ coeffs}}
+\DoxyCodeLine{00214\ \ \ \ \ \textcolor{keywordflow}{if}(\ taps\ ==\ 3\ )}
+\DoxyCodeLine{00215\ \ \ \ \ \{}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ complex<double>\ b\ =\ complex<double>(1.0,0.0)/d1\_s/d2\_s/d3\_s;}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ coeffs[1]\ =\ (float)real(-\/b*(d2\_s*d1\_s\ +\ d3\_s*d1\_s\ +\ d3\_s*d2\_s));}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ coeffs[2]\ =\ (float)real(b*(d1\_s\ +\ d2\_s\ +\ d3\_s));}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ coeffs[3]\ =\ (float)real(-\/b);}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ coeffs[4]\ =\ 0.0f;}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ coeffs[5]\ =\ 0.0f;}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ coeffs[0]\ =\ 1.0f\ +\ coeffs[1]\ +\ coeffs[2]\ +\ coeffs[3];}
+\DoxyCodeLine{00223\ \ \ \ \ \}}
+\DoxyCodeLine{00224\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}(taps\ ==\ 4)}
+\DoxyCodeLine{00225\ \ \ \ \ \{}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ complex<double>\ b\ =\ complex<double>(1.0,0.0)/d1\_s/d2\_s/d3\_s/d4\_s;}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ coeffs[1]\ =\ (float)real(-\/b*(d3\_s*d2\_s*d1\_s\ +\ d4\_s*d2\_s*d1\_s\ +\ d4\_s*d3\_s*d1\_s\ +\ d4\_s*d3\_s*d2\_s));}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ coeffs[2]\ =\ (float)real(b*(d2\_s*d1\_s\ +\ d3\_s*d1\_s\ +\ d3\_s*d2\_s\ +\ d4\_s*d1\_s\ +\ d4\_s*d2\_s\ +\ d4\_s*d3\_s));}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ coeffs[3]\ =\ (float)real(-\/b*(d1\_s\ +\ d2\_s\ +\ d3\_s\ +\ d4\_s));}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ coeffs[4]\ =\ (float)real(b);}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ coeffs[5]\ =\ 0.0f;}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ coeffs[0]\ =\ 1.0f\ +\ coeffs[1]\ +\ coeffs[2]\ +\ coeffs[3]\ +\ coeffs[4];}
+\DoxyCodeLine{00233\ \ \ \ \ \}}
+\DoxyCodeLine{00234\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}(taps\ ==\ 5)}
+\DoxyCodeLine{00235\ \ \ \ \ \{}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ complex\ <double>\ b\ =\ complex<double>(1.0,0.0)/d1\_s/d2\_s/d3\_s/d4\_s/d5\_s;}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ coeffs[1]\ =\ (float)real(-\/b*(d4\_s*d3\_s*d2\_s*d1\_s\ +\ d5\_s*d3\_s*d2\_s*d1\_s\ +\ d5\_s*d4\_s*d2\_s*d1\_s\ +\ d5\_s*d4\_s*d3\_s*d1\_s\ +\ d5\_s*d4\_s*d3\_s*d2\_s));}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ coeffs[2]\ =\ (float)real(b*(d3\_s*d2\_s*d1\_s\ +\ d4\_s*d2\_s*d1\_s\ +\ d4\_s*d3\_s*d1\_s\ +\ d4\_s*d3\_s*d2\_s\ +\ d5\_s*d2\_s*d1\_s\ +\ d5\_s*d3\_s*d1\_s\ +\ d5\_s*d3\_s*d2\_s\ +\ d5\_s*d4\_s*d1\_s\ +\ d5\_s*d4\_s*d2\_s\ +\ d5\_s*d4\_s*d3\_s));}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ coeffs[3]\ =\ (float)real(-\/b*(d2\_s*d1\_s\ +\ d3\_s*d1\_s\ +\ d3\_s*d2\_s\ +\ d4\_s*d1\_s\ +\ d4\_s*d2\_s\ +\ d4\_s*d3\_s\ +\ d5\_s*d1\_s\ +\ d5\_s*d2\_s\ +\ d5\_s*d3\_s\ +\ d5\_s*d4\_s));}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ coeffs[4]\ =\ (float)real(b*(d1\_s\ +\ d2\_s\ +\ d3\_s\ +\ d4\_s\ +\ d5\_s));}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ coeffs[5]\ =\ (float)real(-\/b);}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ coeffs[0]\ =\ 1.0f\ +\ coeffs[1]\ +\ coeffs[2]\ +\ coeffs[3]\ +\ coeffs[4]\ +\ coeffs[5];\ \ \ \ }
+\DoxyCodeLine{00243\ \ \ \ \ \}}
+\DoxyCodeLine{00244\ \}}
+\DoxyCodeLine{00245\ }
+\DoxyCodeLine{00246\ }
+\DoxyCodeLine{00247\ }
+\DoxyCodeLine{00248\ \textcolor{comment}{//compute\ the\ coefficients\ of\ the\ filter\ for\ scale\ s\ given\ the\ poles\ at\ scale\ 2}}
+\DoxyCodeLine{00249\ \textcolor{comment}{//the\ output\ is\ written\ in\ array\ coeffs\ -\/\ the\ first\ element\ is\ the\ gain\ and\ }}
+\DoxyCodeLine{00250\ \textcolor{comment}{//the\ remaining\ elements\ correspond\ to\ the\ autoregressive\ coefficients\ }}
+\DoxyCodeLine{00251\ \textcolor{keywordtype}{void}\ calc\_coeffs(\textcolor{keywordtype}{int}\ taps,\ \textcolor{keyword}{const}\ complex<double>\ poles[],\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ s,\ \textcolor{keywordtype}{float}\ *coeffs)}
+\DoxyCodeLine{00252\ \{}
+\DoxyCodeLine{00253\ }
+\DoxyCodeLine{00254\ \ \ \ \ \textcolor{keywordflow}{if}((taps\ <\ 3)||(taps>5))}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{stringliteral}{"{}Invalid\ number\ of\ taps\ in\ calc\_coeffs"{}};}
+\DoxyCodeLine{00256\ \ \ \ \ }
+\DoxyCodeLine{00257\ \ \ \ \ \textcolor{keywordflow}{if}(coeffs\ ==\ NULL)}
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{stringliteral}{"{}NULL\ Pointer\ argument\ in\ calc\_coeffs"{}};}
+\DoxyCodeLine{00259\ }
+\DoxyCodeLine{00260\ \ \ \ \ complex\ <double>\ d1\_2,\ d2\_2,\ d3\_2,\ d4\_2,\ d5\_2;}
+\DoxyCodeLine{00261\ \ \ \ \ d1\_2\ =\ poles[0];}
+\DoxyCodeLine{00262\ \ \ \ \ d2\_2\ =\ poles[1];}
+\DoxyCodeLine{00263\ \ \ \ \ d3\_2\ =\ poles[2];}
+\DoxyCodeLine{00264\ \ \ \ \ \textcolor{keywordflow}{if}(taps\ >\ 3)}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ d4\_2\ =\ poles[3];}
+\DoxyCodeLine{00266\ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ d4\_2\ =\ 0;}
+\DoxyCodeLine{00268\ \ \ \ \ \textcolor{keywordflow}{if}(taps\ >\ 4)}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ d5\_2\ =\ poles[4];}
+\DoxyCodeLine{00270\ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ d5\_2\ =\ 0;}
+\DoxyCodeLine{00272\ \ \ \ \ }
+\DoxyCodeLine{00273\ \ \ \ \ \textcolor{keywordtype}{double}\ q,\ std,\ lambda;}
+\DoxyCodeLine{00274\ \ \ \ \ \textcolor{keywordtype}{double}\ tol\ =\ 0.01;}
+\DoxyCodeLine{00275\ \ \ \ \ complex\ <double>\ j(0,1),\ var;}
+\DoxyCodeLine{00276\ \ \ \ \ complex\ <double>\ d1\_s,\ d2\_s,\ d3\_s,\ d4\_s,\ d5\_s;}
+\DoxyCodeLine{00277\ \ \ \ \ \textcolor{comment}{//\ computing\ new\ values\ for\ the\ poles}}
+\DoxyCodeLine{00278\ \ \ \ \ q\ =\ s/2;}
+\DoxyCodeLine{00279\ \ \ \ \ d1\_s\ =\ exp(log(abs(d1\_2))/q)*exp(j*arg(d1\_2)/q);}
+\DoxyCodeLine{00280\ \ \ \ \ d2\_s\ =\ exp(log(abs(d2\_2))/q)*exp(j*arg(d2\_2)/q);}
+\DoxyCodeLine{00281\ \ \ \ \ d3\_s\ =\ exp(log(abs(d3\_2))/q)*exp(j*arg(d3\_2)/q);}
+\DoxyCodeLine{00282\ \ \ \ \ \textcolor{keywordflow}{if}(\ abs(d4\_2)\ !=\ 0\ )}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ d4\_s\ =\ exp(log(abs(d4\_2))/q)*exp(j*arg(d4\_2)/q);}
+\DoxyCodeLine{00284\ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ d4\_s\ =\ 0;}
+\DoxyCodeLine{00286\ \ \ \ \ \textcolor{keywordflow}{if}(\ abs(d5\_2)\ !=\ 0\ )}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ d5\_s\ =\ exp(log(abs(d5\_2))/q)*exp(j*arg(d5\_2)/q);}
+\DoxyCodeLine{00288\ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ d5\_s\ =\ 0;}
+\DoxyCodeLine{00290\ \ \ \ \ \textcolor{comment}{//\ computing\ the\ variance\ of\ the\ new\ filter}}
+\DoxyCodeLine{00291\ \ \ \ \ var\ =\ \ d1\_s*2.0/(d1\_s-\/1.0)/(d1\_s-\/1.0)\ +\ d2\_s*2.0/(d2\_s-\/1.0)/(d2\_s-\/1.0)\ +\ d3\_s*2.0/(d3\_s-\/1.0)/(d3\_s-\/1.0)+d4\_s*2.0/(d4\_s-\/1.0)/(d4\_s-\/1.0)+d5\_s*2.0/(d5\_s-\/1.0)/(d5\_s-\/1.0);}
+\DoxyCodeLine{00292\ \ \ \ \ std\ =\ sqrt(var.real());}
+\DoxyCodeLine{00293\ \ \ \ \ \textcolor{keywordflow}{while}(\ fabs(s-\/std)\ >\ tol\ )}
+\DoxyCodeLine{00294\ \ \ \ \ \{}
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ lambda\ =\ s/std;}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ q\ =\ q*lambda;}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ computing\ new\ values\ for\ the\ poles}}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ d1\_s\ =\ exp(log(abs(d1\_2))/q)*exp(j*arg(d1\_2)/q);}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ d2\_s\ =\ exp(log(abs(d2\_2))/q)*exp(j*arg(d2\_2)/q);}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ d3\_s\ =\ exp(log(abs(d3\_2))/q)*exp(j*arg(d3\_2)/q);}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ abs(d4\_2)\ !=\ 0)}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \ \ \ \ d4\_s\ =\ exp(log(abs(d4\_2))/q)*exp(j*arg(d4\_2)/q);}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \ \ \ \ d4\_s\ =\ 0;}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ abs(d5\_2)\ !=\ 0)}
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ \ \ \ \ d5\_s\ =\ exp(log(abs(d5\_2))/q)*exp(j*arg(d5\_2)/q);}
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ \ \ \ \ d5\_s\ =\ 0;}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ computing\ the\ variance\ of\ the\ new\ filter}}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ var\ =\ \ d1\_s*2.0/(d1\_s-\/1.0)/(d1\_s-\/1.0)\ +\ d2\_s*2.0/(d2\_s-\/1.0)/(d2\_s-\/1.0)\ +\ d3\_s*2.0/(d3\_s-\/1.0)/(d3\_s-\/1.0)+d4\_s*2.0/(d4\_s-\/1.0)/(d4\_s-\/1.0)+d5\_s*2.0/(d5\_s-\/1.0)/(d5\_s-\/1.0);}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ std\ =\ sqrt(var.real());}
+\DoxyCodeLine{00312\ \ \ \ \ \}}
+\DoxyCodeLine{00313\ }
+\DoxyCodeLine{00314\ \ \ \ \ \textcolor{comment}{//computing\ the\ filter\ coeffs}}
+\DoxyCodeLine{00315\ \ \ \ \ \textcolor{keywordflow}{if}(\ taps\ ==\ 3\ )}
+\DoxyCodeLine{00316\ \ \ \ \ \{}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ complex<double>\ b\ =\ complex<double>(1.0,0.0)/d1\_s/d2\_s/d3\_s;}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ coeffs[1]\ =\ (float)real(-\/b*(d2\_s*d1\_s\ +\ d3\_s*d1\_s\ +\ d3\_s*d2\_s));}
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ coeffs[2]\ =\ (float)real(b*(d1\_s\ +\ d2\_s\ +\ d3\_s));}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ coeffs[3]\ =\ (float)real(-\/b);}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ coeffs[4]\ =\ 0.0f;}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ coeffs[5]\ =\ 0.0f;}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ coeffs[0]\ =\ 1.0f\ +\ coeffs[1]\ +\ coeffs[2]\ +\ coeffs[3];}
+\DoxyCodeLine{00324\ \ \ \ \ \}}
+\DoxyCodeLine{00325\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}(taps\ ==\ 4)}
+\DoxyCodeLine{00326\ \ \ \ \ \{}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ complex<double>\ b\ =\ complex<double>(1.0,0.0)/d1\_s/d2\_s/d3\_s/d4\_s;}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ coeffs[1]\ =\ (float)real(-\/b*(d3\_s*d2\_s*d1\_s\ +\ d4\_s*d2\_s*d1\_s\ +\ d4\_s*d3\_s*d1\_s\ +\ d4\_s*d3\_s*d2\_s));}
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ coeffs[2]\ =\ (float)real(b*(d2\_s*d1\_s\ +\ d3\_s*d1\_s\ +\ d3\_s*d2\_s\ +\ d4\_s*d1\_s\ +\ d4\_s*d2\_s\ +\ d4\_s*d3\_s));}
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ coeffs[3]\ =\ (float)real(-\/b*(d1\_s\ +\ d2\_s\ +\ d3\_s\ +\ d4\_s));}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ coeffs[4]\ =\ (float)real(b);}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ coeffs[5]\ =\ 0.0f;}
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ coeffs[0]\ =\ 1.0f\ +\ coeffs[1]\ +\ coeffs[2]\ +\ coeffs[3]\ +\ coeffs[4];}
+\DoxyCodeLine{00334\ \ \ \ \ \}}
+\DoxyCodeLine{00335\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}(taps\ ==\ 5)}
+\DoxyCodeLine{00336\ \ \ \ \ \{}
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ complex\ <double>\ b\ =\ complex<double>(1.0,0.0)/d1\_s/d2\_s/d3\_s/d4\_s/d5\_s;}
+\DoxyCodeLine{00338\ \ \ \ \ \ \ \ \ coeffs[1]\ =\ (float)real(-\/b*(d4\_s*d3\_s*d2\_s*d1\_s\ +\ d5\_s*d3\_s*d2\_s*d1\_s\ +\ d5\_s*d4\_s*d2\_s*d1\_s\ +\ d5\_s*d4\_s*d3\_s*d1\_s\ +\ d5\_s*d4\_s*d3\_s*d2\_s));}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \ \ coeffs[2]\ =\ (float)real(b*(d3\_s*d2\_s*d1\_s\ +\ d4\_s*d2\_s*d1\_s\ +\ d4\_s*d3\_s*d1\_s\ +\ d4\_s*d3\_s*d2\_s\ +\ d5\_s*d2\_s*d1\_s\ +\ d5\_s*d3\_s*d1\_s\ +\ d5\_s*d3\_s*d2\_s\ +\ d5\_s*d4\_s*d1\_s\ +\ d5\_s*d4\_s*d2\_s\ +\ d5\_s*d4\_s*d3\_s));}
+\DoxyCodeLine{00340\ \ \ \ \ \ \ \ \ coeffs[3]\ =\ (float)real(-\/b*(d2\_s*d1\_s\ +\ d3\_s*d1\_s\ +\ d3\_s*d2\_s\ +\ d4\_s*d1\_s\ +\ d4\_s*d2\_s\ +\ d4\_s*d3\_s\ +\ d5\_s*d1\_s\ +\ d5\_s*d2\_s\ +\ d5\_s*d3\_s\ +\ d5\_s*d4\_s));}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ coeffs[4]\ =\ (float)real(b*(d1\_s\ +\ d2\_s\ +\ d3\_s\ +\ d4\_s\ +\ d5\_s));}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ coeffs[5]\ =\ (float)real(-\/b);}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ coeffs[0]\ =\ 1.0f\ +\ coeffs[1]\ +\ coeffs[2]\ +\ coeffs[3]\ +\ coeffs[4]\ +\ coeffs[5];\ \ \ \ }
+\DoxyCodeLine{00344\ \ \ \ \ \}}
+\DoxyCodeLine{00345\ \}}
+\DoxyCodeLine{00346\ }
+\DoxyCodeLine{00347\ }
+\DoxyCodeLine{00348\ }
+\DoxyCodeLine{00349\ }
+\DoxyCodeLine{00350\ }
+
+\end{DoxyCode}

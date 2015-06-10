@@ -1,0 +1,61 @@
+\doxysection{generate\+\_\+shape\+\_\+model.\+py}
+\label{generate__shape__model_8py_source}\index{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/pf3dTracker/app/conf/models/generate\_shape\_model.py@{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/pf3dTracker/app/conf/models/generate\_shape\_model.py}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{\#\ Copyright:\ (C)\ 2019\ iCub\ Tech\ Facility\ -\/\ Istituto\ Italiano\ di\ Tecnologia}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\#\ Authors:\ Ugo\ Pattacini\ <ugo.pattacini@iit.it>}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\#\ CopyPolicy:\ Released\ under\ the\ terms\ of\ the\ GNU\ GPL\ v3.0.}}
+\DoxyCodeLine{00004\ }
+\DoxyCodeLine{00005\ \textcolor{comment}{\#\ This\ script\ generates\ the\ ball\ shape\ model}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\#\ composed\ of\ initial\ estimates\ of\ its\ radius}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ argparse}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ math}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ parser\ =\ argparse.ArgumentParser()}
+\DoxyCodeLine{00012\ parser.add\_argument(\textcolor{stringliteral}{"{}-\/r"{}},\ \textcolor{stringliteral}{"{}-\/-\/radius"{}},\ type=float,}
+\DoxyCodeLine{00013\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ help=\textcolor{stringliteral}{"{}ball\ radius\ in\ millimeters\ (default:\ 30)"{}},\ default=30)}
+\DoxyCodeLine{00014\ parser.add\_argument(\textcolor{stringliteral}{"{}-\/p"{}},\ \textcolor{stringliteral}{"{}-\/-\/percentage"{}},\ type=float,}
+\DoxyCodeLine{00015\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ help=\textcolor{stringliteral}{"{}percentage\ in\ [0,\ 100]\ for\ inner\ and\ outer\ radii\ (default:\ 20)"{}},\ default=20)}
+\DoxyCodeLine{00016\ parser.add\_argument(\textcolor{stringliteral}{"{}-\/n"{}},\ \textcolor{stringliteral}{"{}-\/-\/points"{}},\ type=int,}
+\DoxyCodeLine{00017\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ help=\textcolor{stringliteral}{"{}number\ of\ points\ generated\ (default:\ 50)"{}},\ default=50)}
+\DoxyCodeLine{00018\ parser.add\_argument(\textcolor{stringliteral}{"{}-\/f"{}},\ \textcolor{stringliteral}{"{}-\/-\/file"{}},\ type=str,}
+\DoxyCodeLine{00019\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ help=\textcolor{stringliteral}{"{}name\ of\ the\ generated\ file\ (default:\ shape\_model.csv)"{}},\ default=\textcolor{stringliteral}{'shape\_model.csv'})}
+\DoxyCodeLine{00020\ args\ =\ parser.parse\_args()}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ print(\textcolor{stringliteral}{'using:'})}
+\DoxyCodeLine{00023\ print(\textcolor{stringliteral}{'radius\ \ \ \ \ =\ \{\}\ [mm]'}.format(args.radius))}
+\DoxyCodeLine{00024\ print(\textcolor{stringliteral}{'percentage\ =\ \{\}\ [\%]'}.format(args.percentage))}
+\DoxyCodeLine{00025\ print(\textcolor{stringliteral}{'points\ \ \ \ \ =\ \{\}'}.format(args.points))}
+\DoxyCodeLine{00026\ print(\textcolor{stringliteral}{'file\ \ \ \ \ \ \ =\ "{}\{\}"{}'}.format(args.file))}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ R\_i\ =\ (1.0\ -\/\ (args.percentage\ /\ 100.0))\ *\ args.radius}
+\DoxyCodeLine{00029\ R\_o\ =\ (1.0\ +\ (args.percentage\ /\ 100.0))\ *\ args.radius}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ x\ =\ []}
+\DoxyCodeLine{00032\ y\ =\ []}
+\DoxyCodeLine{00033\ z\ =\ []}
+\DoxyCodeLine{00034\ t\ =\ 0.0}
+\DoxyCodeLine{00035\ t\_delta\ =\ (2.0\ *\ math.pi)\ /\ args.points}
+\DoxyCodeLine{00036\ \textcolor{keywordflow}{for}\ i\ \textcolor{keywordflow}{in}\ range(args.points):}
+\DoxyCodeLine{00037\ \ \ \ \ x.append(0.0)}
+\DoxyCodeLine{00038\ \ \ \ \ y.append(math.sin(t))}
+\DoxyCodeLine{00039\ \ \ \ \ z.append(math.cos(t))}
+\DoxyCodeLine{00040\ \ \ \ \ t\ +=\ t\_delta}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ fout\ =\ open(args.file,\ \textcolor{stringliteral}{"{}w"{}})}
+\DoxyCodeLine{00043\ \textcolor{keywordflow}{for}\ i\ \textcolor{keywordflow}{in}\ range(args.points):}
+\DoxyCodeLine{00044\ \ \ \ \ fout.write(\textcolor{stringliteral}{'\{0:.3f\}\(\backslash\)n'}.format(x[i]))}
+\DoxyCodeLine{00045\ \textcolor{keywordflow}{for}\ i\ \textcolor{keywordflow}{in}\ range(args.points):}
+\DoxyCodeLine{00046\ \ \ \ \ fout.write(\textcolor{stringliteral}{'\{0:.3f\}\(\backslash\)n'}.format(x[i]))}
+\DoxyCodeLine{00047\ \textcolor{keywordflow}{for}\ i\ \textcolor{keywordflow}{in}\ range(args.points):}
+\DoxyCodeLine{00048\ \ \ \ \ fout.write(\textcolor{stringliteral}{'\{0:.3f\}\(\backslash\)n'}.format(R\_i\ *\ y[i]))}
+\DoxyCodeLine{00049\ \textcolor{keywordflow}{for}\ i\ \textcolor{keywordflow}{in}\ range(args.points):}
+\DoxyCodeLine{00050\ \ \ \ \ fout.write(\textcolor{stringliteral}{'\{0:.3f\}\(\backslash\)n'}.format(R\_o\ *\ y[i]))}
+\DoxyCodeLine{00051\ \textcolor{keywordflow}{for}\ i\ \textcolor{keywordflow}{in}\ range(args.points):}
+\DoxyCodeLine{00052\ \ \ \ \ fout.write(\textcolor{stringliteral}{'\{0:.3f\}\(\backslash\)n'}.format(R\_i\ *\ z[i]))}
+\DoxyCodeLine{00053\ \textcolor{keywordflow}{for}\ i\ \textcolor{keywordflow}{in}\ range(args.points):}
+\DoxyCodeLine{00054\ \ \ \ \ fout.write(\textcolor{stringliteral}{'\{0:.3f\}\(\backslash\)n'}.format(R\_o\ *\ z[i]))}
+\DoxyCodeLine{00055\ fout.close()}
+
+\end{DoxyCode}

@@ -1,0 +1,44 @@
+\doxysection{IIRGaus\+Deriv.\+h}
+\label{IIRGausDeriv_8h_source}\index{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/pf3dBottomup/include/iCub/IIRGausDeriv.h@{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/pf3dBottomup/include/iCub/IIRGausDeriv.h}}
+\mbox{\hyperlink{IIRGausDeriv_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{//\ -\/*-\/\ mode:C++;\ tab-\/width:4;\ c-\/basic-\/offset:4;\ indent-\/tabs-\/mode:nil\ -\/*-\/}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{comment}{//\ Copyright:\ (C)\ 2006-\/2007\ Alex\ Bernardino,\ ISR-\/IST}}
+\DoxyCodeLine{00004\ \textcolor{comment}{//\ Authors:\ Alex\ Bernardino}}
+\DoxyCodeLine{00005\ \textcolor{comment}{//\ CopyPolicy:\ Released\ under\ the\ terms\ of\ the\ GNU\ GPL\ v2.0.}}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#ifndef\ \_IIRGAUSDERIV\_H\_}}
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#define\ \_IIRGAUSDERIV\_H\_}}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00021\ \textcolor{preprocessor}{\#include\ <complex>}}
+\DoxyCodeLine{00022\ \textcolor{keyword}{using\ namespace\ }std;}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{extern}\ \textcolor{keyword}{const}\ complex<double>\ d0\_N3\_L2[];\ \ \ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{extern}\ \textcolor{keyword}{const}\ complex<double>\ d0\_N4\_L2[];\ \ \ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{extern}\ \textcolor{keyword}{const}\ complex<double>\ d0\_N5\_L2[];\ \ \ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{extern}\ \textcolor{keyword}{const}\ complex<double>\ d0\_N3\_Linf[];\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{extern}\ \textcolor{keyword}{const}\ complex<double>\ d0\_N4\_Linf[];\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{extern}\ \textcolor{keyword}{const}\ complex<double>\ d0\_N5\_Linf[];\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{extern}\ \textcolor{keyword}{const}\ complex<double>\ d1\_N3\_Linf[];\ }
+\DoxyCodeLine{00035\ \textcolor{keyword}{extern}\ \textcolor{keyword}{const}\ complex<double>\ d1\_N4\_Linf[];\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{extern}\ \textcolor{keyword}{const}\ complex<double>\ d1\_N5\_Linf[];\ }
+\DoxyCodeLine{00037\ \textcolor{keyword}{extern}\ \textcolor{keyword}{const}\ complex<double>\ d2\_N3\_Linf[];\ }
+\DoxyCodeLine{00038\ \textcolor{keyword}{extern}\ \textcolor{keyword}{const}\ complex<double>\ d2\_N4\_Linf[];\ }
+\DoxyCodeLine{00039\ \textcolor{keyword}{extern}\ \textcolor{keyword}{const}\ complex<double>\ d2\_N5\_Linf[];\ }
+\DoxyCodeLine{00048\ \textcolor{keywordtype}{void}\ calc\_poles(\textcolor{keywordtype}{int}\ taps,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ scale,\ \textcolor{keyword}{const}\ complex<double>\ oldpoles[],\ complex<double>\ newpoles[]\ );}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \textcolor{comment}{//compute\ the\ coefficients\ of\ the\ filter\ for\ scale\ s\ given\ the\ poles\ at\ scale\ 2}}
+\DoxyCodeLine{00053\ \textcolor{comment}{//the\ output\ is\ written\ in\ array\ coeffs\ -\/\ the\ first\ element\ is\ the\ gain\ and\ }}
+\DoxyCodeLine{00054\ \textcolor{comment}{//the\ remaining\ elements\ correspond\ to\ the\ autoregressive\ coefficients\ }}
+\DoxyCodeLine{00065\ \textcolor{keywordtype}{void}\ calc\_coeffs(\textcolor{keywordtype}{int}\ taps,\ \textcolor{keyword}{const}\ complex<double>\ poles[],\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ s,\ \textcolor{keywordtype}{float}\ *coeffs);}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00077\ \textcolor{keywordtype}{void}\ calc\_coeffs(\textcolor{keywordtype}{int}\ taps,\ \textcolor{keyword}{const}\ complex<double>\ poles[],\ \textcolor{keywordtype}{float}\ *coeffs);}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

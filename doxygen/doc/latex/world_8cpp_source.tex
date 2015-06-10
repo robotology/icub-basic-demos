@@ -1,0 +1,106 @@
+\doxysection{world.\+cpp}
+\label{world_8cpp_source}\index{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/demoRedBall/src/world.cpp@{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/demoRedBall/src/world.cpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/******************************************************************************}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ (C)\ 2020\ Fondazione\ Istituto\ Italiano\ di\ Tecnologia\ (IIT)\ \ \ \ \ \ \ \ *}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *\ All\ Rights\ Reserved.\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ ******************************************************************************/}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ <cmath>}}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#include\ <gazebo/common/Plugin.hh>}}
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ <gazebo/physics/Model.hh>}}
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#include\ <gazebo/physics/Link.hh>}}
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ <gazebo/physics/Joint.hh>}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#include\ <gazebo/common/Events.hh>}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <ignition/math/Pose3.hh>}}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#include\ <boost/bind.hpp>}}
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#include\ <yarp/os/Bottle.h>}}
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#include\ <yarp/os/BufferedPort.h>}}
+\DoxyCodeLine{00021\ \textcolor{preprocessor}{\#include\ <yarp/os/LogStream.h>}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{keyword}{namespace\ }gazebo\ \{}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{comment}{/******************************************************************************/}}
+\DoxyCodeLine{00026\ \textcolor{keyword}{class\ }ModelMover\ :\ \textcolor{keyword}{public}\ gazebo::ModelPlugin}
+\DoxyCodeLine{00027\ \{}
+\DoxyCodeLine{00028\ \ \ \ \ gazebo::physics::ModelPtr\ model;}
+\DoxyCodeLine{00029\ \ \ \ \ gazebo::event::ConnectionPtr\ renderer\_connection;}
+\DoxyCodeLine{00030\ \ \ \ \ yarp::os::BufferedPort<yarp::os::Bottle>\ port;}
+\DoxyCodeLine{00031\ \ \ \ \ ignition::math::Vector3d\ starting\_pos;}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{comment}{\ \ \ \ /**************************************************************************/}}
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keywordtype}{void}\ onWorldFrame()}
+\DoxyCodeLine{00035\ \ \ \ \ \{}
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{auto}*\ b\ =\ port.read(\textcolor{keyword}{false}))}
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (b-\/>size()\ >=\ 3)}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (model-\/>GetJoint(\textcolor{stringliteral}{"{}fixed\_to\_ground"{}}))}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (model-\/>RemoveJoint(\textcolor{stringliteral}{"{}fixed\_to\_ground"{}}))}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ yInfo()\ <<\ \textcolor{stringliteral}{"{}Removed\ fixed\_to\_ground\ joint"{}};}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ x\ =\ starting\_pos.X()\ +\ b-\/>get(0).asFloat64();}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ y\ =\ starting\_pos.Y()\ +\ b-\/>get(1).asFloat64();}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\ z\ =\ starting\_pos.Z()\ +\ b-\/>get(2).asFloat64();}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ignition::math::Pose3d\ new\_pose(x,\ y,\ z,\ 0.0,\ 0.0,\ 0.0);}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ yInfo()\ <<\ \textcolor{stringliteral}{"{}New\ pose:"{}}\ <<\ x\ <<\ y\ <<\ z;}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ model-\/>SetWorldPose(new\_pose);}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ physics::LinkPtr\ child\ =\ model-\/>GetLink(\textcolor{stringliteral}{"{}red-\/ball::root\_link"{}});}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ physics::LinkPtr\ parent\ =\ model-\/>GetLink(\textcolor{stringliteral}{"{}world"{}});}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (child\ ||\ parent)}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (model-\/>CreateJoint(\textcolor{stringliteral}{"{}fixed\_to\_ground"{}},\ \textcolor{stringliteral}{"{}fixed"{}},\ parent,\ child))}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ yInfo()\ <<\ \textcolor{stringliteral}{"{}Added\ fixed\_to\_ground\ joint"{}};}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00066\ \ \ \ \ \}}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00069\ \textcolor{comment}{\ \ \ \ /**************************************************************************/}}
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keywordtype}{void}\ Load(gazebo::physics::ModelPtr\ model,\ sdf::ElementPtr)}
+\DoxyCodeLine{00071\ \ \ \ \ \{}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ this-\/>model\ =\ model;}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ model\_sdf\ =\ model-\/>GetSDF();}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ model\_sdf-\/>HasElement(\textcolor{stringliteral}{"{}pose"{}})\ )}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \ \ \ \ starting\_pos\ =\ model\_sdf-\/>Get<ignition::math::Vector3d>(\textcolor{stringliteral}{"{}pose"{}});}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ starting\_pos\ =\ ignition::math::Vector3d(0.0,\ 0.0,\ 0.0);}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ port.open(\textcolor{stringliteral}{"{}/"{}}\ +\ model-\/>GetName()\ +\ \textcolor{stringliteral}{"{}/mover:i"{}});}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ bind\ =\ boost::bind(\&ModelMover::onWorldFrame,\ \textcolor{keyword}{this});}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ renderer\_connection\ =\ gazebo::event::Events::ConnectWorldUpdateBegin(bind);}
+\DoxyCodeLine{00086\ \ \ \ \ \}}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \textcolor{comment}{\ \ \ \ /**************************************************************************/}}
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{keyword}{virtual}\ \string~ModelMover()}
+\DoxyCodeLine{00090\ \ \ \ \ \{}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!port.isClosed())}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ port.close();}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00095\ \ \ \ \ \}}
+\DoxyCodeLine{00096\ \};}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00098\ \}}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00100\ GZ\_REGISTER\_MODEL\_PLUGIN(gazebo::ModelMover)}
+
+\end{DoxyCode}

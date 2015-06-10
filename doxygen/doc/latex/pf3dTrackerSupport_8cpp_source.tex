@@ -1,0 +1,139 @@
+\doxysection{pf3d\+Tracker\+Support.\+cpp}
+\label{pf3dTrackerSupport_8cpp_source}\index{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/pf3dTracker/src/pf3dTrackerSupport.cpp@{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/pf3dTracker/src/pf3dTrackerSupport.cpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <iCub/pf3dTrackerSupport.hpp>}}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \textcolor{keyword}{using\ namespace\ }std;}
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00019\ \textcolor{keywordtype}{void}\ rgbToYuvBin(\textcolor{keywordtype}{int}\ \&R,\ \textcolor{keywordtype}{int}\ \&G,\ \textcolor{keywordtype}{int}\ \&B,\ \textcolor{keywordtype}{int}\ \&YBin,\ \textcolor{keywordtype}{int}\ \&UBin,\ \textcolor{keywordtype}{int}\ \&VBin)}
+\DoxyCodeLine{00020\ \{}
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{comment}{//I\ copied\ the\ transformation\ from\ the\ wikipedia.\ WARNING\ ???\ !!!}}
+\DoxyCodeLine{00022\ \ \ \ \ \textcolor{keywordtype}{float}\ Y,\ U,\ V;}
+\DoxyCodeLine{00023\ \ \ \ \ Y=\ \ 0.299F\ \ *(float)R\ +0.587F\ *\ (\textcolor{keywordtype}{float})G\ +\ 0.114F\ *(float)B;}
+\DoxyCodeLine{00024\ \ \ \ \ U=\ -\/0.147F*float(R)\ -\/0.289F*float(G)\ +0.436F*float(B);\ \textcolor{comment}{//-\/255*436<U<255*436}}
+\DoxyCodeLine{00025\ \ \ \ \ U+=0.436F*255.0F;\ \textcolor{comment}{//0<U<255*2*0.436}}
+\DoxyCodeLine{00026\ \ \ \ \ U=U/(2.0F*0.436F);\textcolor{comment}{//0<U<255}}
+\DoxyCodeLine{00027\ \ \ \ \ V=\ ((0.615F*float(R)\ -\/0.515F*float(G)+0.100F*float(B)+0.615F*255.0F)/(2.0F*0.615F+0.1F));\ \ \ \ }
+\DoxyCodeLine{00028\ \ \ \ \ }
+\DoxyCodeLine{00029\ \ \ \ \ YBin=(int)Y/\ 64;\ \textcolor{comment}{//I\ want\ Y\ to\ vary\ between\ 0\ and\ 3.}}
+\DoxyCodeLine{00030\ \ \ \ \ UBin=(int)U/\ 32;\ \textcolor{comment}{//I\ want\ U\ to\ vary\ between\ 0\ and\ 7.}}
+\DoxyCodeLine{00031\ \ \ \ \ VBin=(int)V/\ 32;\ \textcolor{comment}{//I\ want\ V\ to\ vary\ between\ 0\ and\ 7.}}
+\DoxyCodeLine{00032\ \ \ \ \ }
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{keywordflow}{if}(YBin<0||YBin>3)}
+\DoxyCodeLine{00034\ \ \ \ \ \ \ \ \ yWarning()<<\textcolor{stringliteral}{"{}something's\ wrong\ with\ Y:\ "{}}<<YBin<<\textcolor{stringliteral}{"{}\ "{}}<<Y;}
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keywordflow}{if}(UBin<0||UBin>7)}
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ yWarning()<<\textcolor{stringliteral}{"{}something's\ wrong\ with\ U:\ "{}}<<UBin<<\textcolor{stringliteral}{"{}\ "{}}<<U;}
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keywordflow}{if}(VBin<0||VBin>7)}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ yWarning()<<\textcolor{stringliteral}{"{}something's\ wrong\ with\ V:\ "{}}<<VBin<<\textcolor{stringliteral}{"{}\ "{}}<<V<<\textcolor{stringliteral}{"{}\ R=\ "{}}<<R<<\textcolor{stringliteral}{"{}\ G=\ "{}}<<G<<\textcolor{stringliteral}{"{}\ B=\ "{}}<<B;}
+\DoxyCodeLine{00039\ \}}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \textcolor{keywordtype}{void}\ rgbToYuvBinImage(IplImage\ *image,IplImage*\ transformedImage)}
+\DoxyCodeLine{00042\ \{}
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keywordtype}{int}\ a1,a2,r,g,b,\ s,t,u;}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keywordflow}{for}(a1=0;a1<transformedImage-\/>width;a1++)}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(a2=0;a2<transformedImage-\/>height;a2++)}
+\DoxyCodeLine{00046\ \ \ \ \ \{}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ r=(((uchar*)(image-\/>imageData\ +\ image-\/>widthStep*a2))[a1*3+0]);}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ g=(((uchar*)(image-\/>imageData\ +\ image-\/>widthStep*a2))[a1*3+1]);}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ b=(((uchar*)(image-\/>imageData\ +\ image-\/>widthStep*a2))[a1*3+2]);}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ rgbToYuvBin(r,g,b,\ s,t,u);}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ (((uchar*)(transformedImage-\/>imageData\ +\ transformedImage-\/>widthStep*a2))[a1*3+0])=s;}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ (((uchar*)(transformedImage-\/>imageData\ +\ transformedImage-\/>widthStep*a2))[a1*3+1])=t;}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ (((uchar*)(transformedImage-\/>imageData\ +\ transformedImage-\/>widthStep*a2))[a1*3+2])=u;}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \textcolor{comment}{//yuvBinsImage[a1][a2][0],\ yuvBinsImage[a1][a2][1],\ yuvBinsImage[a1][a2][2]);}}
+\DoxyCodeLine{00055\ \ \ \ \ \}}
+\DoxyCodeLine{00056\ \}}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \textcolor{keywordtype}{void}\ setPixel(\textcolor{keywordtype}{int}\ u,\ \textcolor{keywordtype}{int}\ v,\ \textcolor{keywordtype}{int}\ r,\ \textcolor{keywordtype}{int}\ g,\ \textcolor{keywordtype}{int}\ b,\ IplImage\ *image)}
+\DoxyCodeLine{00059\ \{}
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{comment}{//std::cout<<"{}u=\ "{}<<u<<"{}\ \ v=\ "{}<<v<<std::endl;}}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keywordflow}{if}(u>-\/1\&\&u<image-\/>width\ \&\&\ v>-\/1\&\&v<image-\/>height)}
+\DoxyCodeLine{00062\ \ \ \ \ \{}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ (((uchar*)(image-\/>imageData\ +\ image-\/>widthStep*v))[u*3+0])=r;}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ (((uchar*)(image-\/>imageData\ +\ image-\/>widthStep*v))[u*3+1])=g;}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ (((uchar*)(image-\/>imageData\ +\ image-\/>widthStep*v))[u*3+2])=b;}
+\DoxyCodeLine{00066\ \ \ \ \ \}}
+\DoxyCodeLine{00067\ \}\ \ \ \ \ \ }
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \textcolor{keywordtype}{void}\ fillLut(Lut\ *lut)}
+\DoxyCodeLine{00070\ \{}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keywordtype}{int}\ r,g,b,\ y,u,v;}
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{keywordtype}{int}\ index;}
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{keywordflow}{for}(r=0;r<256;r++)}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(g=0;g<256;g++)}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(b=0;b<256;b++)}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rgbToYuvBin(r,g,b,\ y,u,v);}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ index=r*65536+g*256+b;}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ lut[index].y=y;}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ lut[index].u=u;}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ lut[index].v=v;}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00083\ \}}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \textcolor{keywordtype}{void}\ rgbToYuvBinMatLut(\textcolor{keyword}{const}\ cv::Mat\&\ image,\ cv::Mat\&\ transformedImage,\ Lut\ *lut)}
+\DoxyCodeLine{00086\ \{}
+\DoxyCodeLine{00087\ \ \ \ \ \textcolor{keywordtype}{int}\ a1,a2,r,g,b;}
+\DoxyCodeLine{00088\ \ \ \ \ \textcolor{keywordtype}{int}\ index;}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00090\ \ \ \ \ \textcolor{keywordflow}{for}(a1=0;a1<image.cols;a1++)}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(a2=0;a2<image.rows;a2++)}
+\DoxyCodeLine{00092\ \ \ \ \ \{}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ r=(((uchar*)(image.data\ +\ image.step*a2))[a1*3+0]);}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ g=(((uchar*)(image.data\ +\ image.step*a2))[a1*3+1]);}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ b=(((uchar*)(image.data\ +\ image.step*a2))[a1*3+2]);}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ index=r*65536+g*256+b;}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ (((uchar*)(transformedImage.data\ +\ transformedImage.step*a2))[a1*3+0])=lut[index].y;}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ (((uchar*)(transformedImage.data\ +\ transformedImage.step*a2))[a1*3+1])=lut[index].u;}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ (((uchar*)(transformedImage.data\ +\ transformedImage.step*a2))[a1*3+2])=lut[index].v;}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \textcolor{comment}{//rgbToYuvBin(r,g,b,\ yuvBinsImage[a1][a2][0],\ yuvBinsImage[a1][a2][1],\ yuvBinsImage[a1][a2][2]);}}
+\DoxyCodeLine{00101\ \ \ \ \ \}}
+\DoxyCodeLine{00102\ }
+\DoxyCodeLine{00103\ \}}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00105\ \textcolor{keywordtype}{void}\ rgbToYuvBinImageLut(IplImage\ *image,IplImage\ *transformedImage,\ Lut\ *lut)}
+\DoxyCodeLine{00106\ \{}
+\DoxyCodeLine{00107\ \ \ \ \ \textcolor{keywordtype}{int}\ a1,a2,r,g,b;}
+\DoxyCodeLine{00108\ \ \ \ \ \textcolor{keywordtype}{int}\ index;}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00110\ \ \ \ \ \textcolor{keywordflow}{for}(a1=0;a1<image-\/>width;a1++)}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(a2=0;a2<image-\/>height;a2++)}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ r=(((uchar*)(image-\/>imageData\ +\ image-\/>widthStep*a2))[a1*3+0]);}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \ \ \ \ g=(((uchar*)(image-\/>imageData\ +\ image-\/>widthStep*a2))[a1*3+1]);}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \ \ \ \ b=(((uchar*)(image-\/>imageData\ +\ image-\/>widthStep*a2))[a1*3+2]);}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \ \ \ \ index=r*65536+g*256+b;}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \ \ \ \ (((uchar*)(transformedImage-\/>imageData\ +\ transformedImage-\/>widthStep*a2))[a1*3+0])=lut[index].y;}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ (((uchar*)(transformedImage-\/>imageData\ +\ transformedImage-\/>widthStep*a2))[a1*3+1])=lut[index].u;}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ (((uchar*)(transformedImage-\/>imageData\ +\ transformedImage-\/>widthStep*a2))[a1*3+2])=lut[index].v;}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//rgbToYuvBin(r,g,b,\ yuvBinsImage[a1][a2][0],\ yuvBinsImage[a1][a2][1],\ yuvBinsImage[a1][a2][2]);}}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00122\ }
+\DoxyCodeLine{00123\ \}}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00125\ \textcolor{keywordtype}{void}\ rgbToYuvBinLut(\textcolor{keywordtype}{int}\ \&R,\ \textcolor{keywordtype}{int}\ \&G,\ \textcolor{keywordtype}{int}\ \&B,\ \textcolor{keywordtype}{int}\ \&YBin,\ \textcolor{keywordtype}{int}\ \&UBin,\ \textcolor{keywordtype}{int}\ \&VBin,\ Lut\ *lut)}
+\DoxyCodeLine{00126\ \{}
+\DoxyCodeLine{00127\ \ \ \ \ \textcolor{comment}{//I\ copied\ the\ transformation\ from\ the\ wikipedia.\ WARNING\ ???\ !!!}}
+\DoxyCodeLine{00128\ \ \ \ \ \textcolor{keywordtype}{float}\ Y,\ U,\ V;}
+\DoxyCodeLine{00129\ \ \ \ \ Y=\ \ 0.299F\ \ *(float)R\ +0.587F\ *\ (\textcolor{keywordtype}{float})G\ +\ 0.114F\ *(float)B;}
+\DoxyCodeLine{00130\ \ \ \ \ U=\ -\/0.147F*float(R)\ -\/0.289F*float(G)\ +0.436F*float(B);\ \textcolor{comment}{//-\/255*436<U<255*436}}
+\DoxyCodeLine{00131\ \ \ \ \ U+=0.436F*255.0F;\ \textcolor{comment}{//0<U<255*2*0.436}}
+\DoxyCodeLine{00132\ \ \ \ \ U=U/(2.0F*0.436F);\textcolor{comment}{//0<U<255}}
+\DoxyCodeLine{00133\ \ \ \ \ V=\ ((0.615F*float(R)\ -\/0.515F*float(G)+0.100F*float(B)+0.615F*255.0F)/(2.0F*0.615F+0.1F));}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00135\ \ \ \ \ YBin=(int)Y/\ 64;\ \textcolor{comment}{//I\ want\ Y\ to\ vary\ between\ 0\ and\ 3.}}
+\DoxyCodeLine{00136\ \ \ \ \ UBin=(int)U/\ 32;\ \textcolor{comment}{//I\ want\ U\ to\ vary\ between\ 0\ and\ 7.}}
+\DoxyCodeLine{00137\ \ \ \ \ VBin=(int)V/\ 32;\ \textcolor{comment}{//I\ want\ V\ to\ vary\ between\ 0\ and\ 7.}}
+\DoxyCodeLine{00138\ }
+\DoxyCodeLine{00139\ \ \ \ \ \textcolor{keywordflow}{if}(YBin<0||YBin>3)}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ yWarning()<<\textcolor{stringliteral}{"{}something's\ wrong\ with\ Y:\ "{}}<<YBin<<\textcolor{stringliteral}{"{}\ "{}}<<Y;}
+\DoxyCodeLine{00141\ \ \ \ \ \textcolor{keywordflow}{if}(UBin<0||UBin>7)}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ yWarning()<<\textcolor{stringliteral}{"{}something's\ wrong\ with\ U:\ "{}}<<UBin<<\textcolor{stringliteral}{"{}\ "{}}<<U;}
+\DoxyCodeLine{00143\ \ \ \ \ \textcolor{keywordflow}{if}(VBin<0||VBin>7)}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ yWarning()<<\textcolor{stringliteral}{"{}something's\ wrong\ with\ V:\ "{}}<<VBin<<\textcolor{stringliteral}{"{}\ "{}}<<V<<\textcolor{stringliteral}{"{}\ R=\ "{}}<<R<<\textcolor{stringliteral}{"{}\ G=\ "{}}<<G<<\textcolor{stringliteral}{"{}\ B=\ "{}}<<B;}
+\DoxyCodeLine{00145\ \}}
+
+\end{DoxyCode}

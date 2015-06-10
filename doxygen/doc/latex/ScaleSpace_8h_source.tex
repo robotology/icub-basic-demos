@@ -1,0 +1,47 @@
+\doxysection{Scale\+Space.\+h}
+\label{ScaleSpace_8h_source}\index{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/pf3dBottomup/include/iCub/ScaleSpace.h@{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/pf3dBottomup/include/iCub/ScaleSpace.h}}
+\mbox{\hyperlink{ScaleSpace_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{//\ -\/*-\/\ mode:C++;\ tab-\/width:4;\ c-\/basic-\/offset:4;\ indent-\/tabs-\/mode:nil\ -\/*-\/}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{comment}{//\ Copyright:\ (C)\ 2006-\/2007\ Alex\ Bernardino,\ ISR-\/IST}}
+\DoxyCodeLine{00004\ \textcolor{comment}{//\ Authors:\ Alex\ Bernardino}}
+\DoxyCodeLine{00005\ \textcolor{comment}{//\ CopyPolicy:\ Released\ under\ the\ terms\ of\ the\ GNU\ GPL\ v2.0.}}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#include\ <iCub/FastGauss.h>}}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#ifndef\ \_SCALESPACE\_H\_}}
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#define\ \_SCALESPACE\_H\_}}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00021\ \textcolor{keyword}{class\ }ScaleSpace}
+\DoxyCodeLine{00022\ \{}
+\DoxyCodeLine{00023\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00024\ \ \ \ \ \textcolor{keywordtype}{int}\ \_width;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00025\ \ \ \ \ \textcolor{keywordtype}{int}\ \_height;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keywordtype}{int}\ \_levels;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{keywordtype}{double}\ *\_scales;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{keywordtype}{bool}\ \_allocated;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00029\ \ \ \ \ \textcolor{keywordtype}{float}\ **\_scalespace;\ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00030\ \ \ \ \ FastGauss\ *\_filters;\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{keywordtype}{int}\ GetHeigth()\ \{\textcolor{keywordflow}{return}\ \_height;\};\ \ }
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keywordtype}{int}\ GetLines()\ \{\textcolor{keywordflow}{return}\ \_height;\};\ \ }
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keywordtype}{int}\ GetWidth()\ \{\textcolor{keywordflow}{return}\ \_width;\};\ }
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keywordtype}{int}\ GetCols()\ \{\textcolor{keywordflow}{return}\ \_width;\};\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keywordtype}{int}\ GetLevels()\ \{\textcolor{keywordflow}{return}\ \_levels;\};\ \ \ }
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keywordtype}{bool}\ IsAllocated()\ \{\textcolor{keywordflow}{return}\ \_allocated;\};\ \ \ }
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \ \ \ \ ScaleSpace(\textcolor{keywordtype}{void});\ \ \ \ \ \ }
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keyword}{virtual}\ \string~ScaleSpace(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordtype}{bool}\ AllocateResources(\textcolor{keywordtype}{int}\ lines,\ \textcolor{keywordtype}{int}\ cols,\ \textcolor{keywordtype}{int}\ levels,\ \textcolor{keywordtype}{double}\ *scales\ );}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordtype}{bool}\ FreeResources();\ \ \ \ }
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keywordtype}{bool}\ BuildLevel(\textcolor{keywordtype}{int}\ level,\ \textcolor{keywordtype}{float}\ *in);}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keywordtype}{bool}\ BuildAll(\textcolor{keywordtype}{float}\ *in);\ }
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keywordtype}{float}*\ GetLevel(\textcolor{keywordtype}{int}\ level);}
+\DoxyCodeLine{00057\ \};}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\_SCALESPACE\_H\_*/}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}
