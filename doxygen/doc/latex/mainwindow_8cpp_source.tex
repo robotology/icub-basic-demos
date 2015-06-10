@@ -1,0 +1,545 @@
+\doxysection{mainwindow.\+cpp}
+\label{mainwindow_8cpp_source}\index{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/demoForceControl/src/mainwindow.cpp@{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/demoForceControl/src/mainwindow.cpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *\ Copyright\ (C)\ 2010\ RobotCub\ Consortium,\ European\ Commission\ FP6\ Project\ IST-\/004370}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ Copyright\ (C)\ 2016\ iCub\ Facility\ -\/\ Istituto\ Italiano\ di\ Tecnologia}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *\ Author:\ Marco\ Randazzo\ <marco.randazzo@iit.it>}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ CopyPolicy:\ Released\ under\ the\ terms\ of\ the\ GPLv2\ or\ later,\ see\ GPL.TXT}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ "{}mainwindow.h"{}}}
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#include\ "{}ui\_mainwindow.h"{}}}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#include\ <QToolBar>}}
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ <QDebug>}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#include\ <QHBoxLayout>}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <QScrollArea>}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#include\ <QFont>}}
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#include\ <QFontMetrics>}}
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#include\ <QMessageBox>}}
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#include\ <QSettings>}}
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#include\ <QFileDialog>}}
+\DoxyCodeLine{00021\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00022\ \textcolor{preprocessor}{\#include\ "{}robot\_interfaces.h"{}}}
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#include\ <yarp/conf/version.h>}}
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#include\ <yarp/os/LogStream.h>}}
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ <yarp/dev/all.h>}}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \textcolor{keyword}{using\ namespace\ }std;}
+\DoxyCodeLine{00028\ \textcolor{keyword}{using\ namespace\ }yarp::dev;}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#if\ YARP\_VERSION\_MAJOR\ >=\ 4}}
+\DoxyCodeLine{00031\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{auto}\ positionControlMode\ =\ yarp::dev::SelectableControlModeEnum::VOCAB\_CM\_POSITION;}
+\DoxyCodeLine{00032\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{auto}\ torqueControlMode\ =\ yarp::dev::SelectableControlModeEnum::VOCAB\_CM\_TORQUE;}
+\DoxyCodeLine{00033\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{auto}\ stiffInteractionMode\ =\ yarp::dev::InteractionModeEnum::VOCAB\_IM\_STIFF;}
+\DoxyCodeLine{00034\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{auto}\ compliantInteractionMode\ =\ yarp::dev::InteractionModeEnum::VOCAB\_IM\_COMPLIANT;}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00036\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{auto}\ positionControlMode\ =\ VOCAB\_CM\_POSITION;}
+\DoxyCodeLine{00037\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{auto}\ torqueControlMode\ =\ VOCAB\_CM\_TORQUE;}
+\DoxyCodeLine{00038\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{auto}\ stiffInteractionMode\ =\ VOCAB\_IM\_STIFF;}
+\DoxyCodeLine{00039\ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{auto}\ compliantInteractionMode\ =\ VOCAB\_IM\_COMPLIANT;}
+\DoxyCodeLine{00040\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ MainWindow::MainWindow(QWidget\ *parent)\ :}
+\DoxyCodeLine{00043\ \ \ \ \ QMainWindow(parent),\ \ ui(new\ Ui::MainWindow)}
+\DoxyCodeLine{00044\ \{}
+\DoxyCodeLine{00045\ \ \ \ \ m\_robot\ =\ 0;}
+\DoxyCodeLine{00046\ \ \ \ \ ui-\/>setupUi(\textcolor{keyword}{this});}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \ \ \ \ connect(ui-\/>radioButton,\ \ \ \ SIGNAL(clicked()),\ \textcolor{keyword}{this},\ SLOT(Radio1Selected()));}
+\DoxyCodeLine{00049\ \ \ \ \ connect(ui-\/>radioButton\_2,\ \ SIGNAL(clicked()),\ \textcolor{keyword}{this},\ SLOT(Radio2Selected()));}
+\DoxyCodeLine{00050\ \ \ \ \ connect(ui-\/>radioButton\_3,\ \ SIGNAL(clicked()),\ \textcolor{keyword}{this},\ SLOT(Radio3Selected()));}
+\DoxyCodeLine{00051\ \ \ \ \ connect(ui-\/>radioButton\_4,\ \ SIGNAL(clicked()),\ \textcolor{keyword}{this},\ SLOT(Radio4Selected()));}
+\DoxyCodeLine{00052\ \ \ \ \ connect(ui-\/>radioButton\_5,\ \ SIGNAL(clicked()),\ \textcolor{keyword}{this},\ SLOT(Radio5Selected()));}
+\DoxyCodeLine{00053\ \ \ \ \ connect(ui-\/>radioButton\_6,\ \ SIGNAL(clicked()),\ \textcolor{keyword}{this},\ SLOT(Radio6Selected()));}
+\DoxyCodeLine{00054\ \ \ \ \ connect(ui-\/>radioButton\_7,\ \ SIGNAL(clicked()),\ \textcolor{keyword}{this},\ SLOT(Radio7Selected()));}
+\DoxyCodeLine{00055\ \ \ \ \ connect(ui-\/>radioButton\_8,\ \ SIGNAL(clicked()),\ \textcolor{keyword}{this},\ SLOT(Radio8Selected()));}
+\DoxyCodeLine{00056\ \ \ \ \ connect(ui-\/>radioButton\_9,\ \ SIGNAL(clicked()),\ \textcolor{keyword}{this},\ SLOT(Radio9Selected()));}
+\DoxyCodeLine{00057\ \ \ \ \ connect(ui-\/>radioButton\_10,\ SIGNAL(clicked()),\ \textcolor{keyword}{this},\ SLOT(Radio10Selected()));}
+\DoxyCodeLine{00058\ \ \ \ \ connect(ui-\/>radioButton\_11,\ SIGNAL(clicked()),\ \textcolor{keyword}{this},\ SLOT(Radio11Selected()));}
+\DoxyCodeLine{00059\ \ \ \ \ connect(ui-\/>radioButton\_12,\ SIGNAL(clicked()),\ \textcolor{keyword}{this},\ SLOT(Radio12Selected()));}
+\DoxyCodeLine{00060\ \ \ \ \ connect(ui-\/>radioButton\_13,\ SIGNAL(clicked()),\ \textcolor{keyword}{this},\ SLOT(Radio13Selected()));}
+\DoxyCodeLine{00061\ \ \ \ \ connect(ui-\/>radioButton\_14,\ SIGNAL(clicked()),\ \textcolor{keyword}{this},\ SLOT(Radio14Selected()));}
+\DoxyCodeLine{00062\ \ \ \ \ connect(ui-\/>radioButton\_15,\ SIGNAL(clicked()),\ \textcolor{keyword}{this},\ SLOT(Radio15Selected()));}
+\DoxyCodeLine{00063\ \ \ \ \ connect(ui-\/>radioButton\_16,\ SIGNAL(clicked()),\ \textcolor{keyword}{this},\ SLOT(Radio16Selected()));}
+\DoxyCodeLine{00064\ \ \ \ \ connect(ui-\/>radioButton\_17,\ SIGNAL(clicked()),\ \textcolor{keyword}{this},\ SLOT(Radio17Selected()));}
+\DoxyCodeLine{00065\ \ \ \ \ connect(ui-\/>radioButton\_18,\ SIGNAL(clicked()),\ \textcolor{keyword}{this},\ SLOT(Radio18Selected()));}
+\DoxyCodeLine{00066\ \ \ \ \ connect(ui-\/>radioButton\_19,\ SIGNAL(clicked()),\ \textcolor{keyword}{this},\ SLOT(Radio19Selected()));}
+\DoxyCodeLine{00067\ \ \ \ \ connect(ui-\/>radioButton\_20,\ SIGNAL(clicked()),\ \textcolor{keyword}{this},\ SLOT(Radio20Selected()));}
+\DoxyCodeLine{00068\ \ \ \ \ connect(ui-\/>radioButton\_21,\ SIGNAL(clicked()),\ \textcolor{keyword}{this},\ SLOT(Radio21Selected()));}
+\DoxyCodeLine{00069\ \ \ \ \ connect(ui-\/>radioButton\_22,\ SIGNAL(clicked()),\ \textcolor{keyword}{this},\ SLOT(Radio22Selected()));}
+\DoxyCodeLine{00070\ \ \ \ \ connect(ui-\/>radioButton\_23,\ SIGNAL(clicked()),\ \textcolor{keyword}{this},\ SLOT(Radio23Selected()));}
+\DoxyCodeLine{00071\ \ \ \ \ connect(ui-\/>radioButton\_24,\ SIGNAL(clicked()),\ \textcolor{keyword}{this},\ SLOT(Radio24Selected()));}
+\DoxyCodeLine{00072\ \ \ \ \ connect(ui-\/>radioButton\_25,\ SIGNAL(clicked()),\ \textcolor{keyword}{this},\ SLOT(Radio25Selected()));}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ \ \ QLocale::setDefault(QLocale::C);}
+\DoxyCodeLine{00075\ \ \ \ \ setWindowTitle(\textcolor{stringliteral}{"{}demoForceControl"{}});}
+\DoxyCodeLine{00076\ \}}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ MainWindow::\string~MainWindow()}
+\DoxyCodeLine{00079\ \{}
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{keyword}{delete}\ ui;}
+\DoxyCodeLine{00081\ \}}
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00083\ \textcolor{keywordtype}{void}\ MainWindow::disable\_left\_arm()}
+\DoxyCodeLine{00084\ \{}
+\DoxyCodeLine{00085\ \ \ \ \ ui-\/>radioButton-\/>setDisabled(\textcolor{keyword}{true});}
+\DoxyCodeLine{00086\ \ \ \ \ ui-\/>radioButton\_2-\/>setDisabled(\textcolor{keyword}{true});}
+\DoxyCodeLine{00087\ \ \ \ \ ui-\/>radioButton\_3-\/>setDisabled(\textcolor{keyword}{true});}
+\DoxyCodeLine{00088\ \ \ \ \ ui-\/>radioButton\_4-\/>setDisabled(\textcolor{keyword}{true});}
+\DoxyCodeLine{00089\ \ \ \ \ ui-\/>radioButton\_5-\/>setDisabled(\textcolor{keyword}{true});}
+\DoxyCodeLine{00090\ \}}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \textcolor{keywordtype}{void}\ MainWindow::disable\_right\_arm()}
+\DoxyCodeLine{00093\ \{}
+\DoxyCodeLine{00094\ \ \ \ \ ui-\/>radioButton\_6-\/>setDisabled(\textcolor{keyword}{true});}
+\DoxyCodeLine{00095\ \ \ \ \ ui-\/>radioButton\_7-\/>setDisabled(\textcolor{keyword}{true});}
+\DoxyCodeLine{00096\ \ \ \ \ ui-\/>radioButton\_8-\/>setDisabled(\textcolor{keyword}{true});}
+\DoxyCodeLine{00097\ \ \ \ \ ui-\/>radioButton\_9-\/>setDisabled(\textcolor{keyword}{true});}
+\DoxyCodeLine{00098\ \ \ \ \ ui-\/>radioButton\_10-\/>setDisabled(\textcolor{keyword}{true});}
+\DoxyCodeLine{00099\ \}}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00101\ \textcolor{keywordtype}{void}\ MainWindow::disable\_left\_leg()}
+\DoxyCodeLine{00102\ \{}
+\DoxyCodeLine{00103\ \ \ \ \ ui-\/>radioButton\_11-\/>setDisabled(\textcolor{keyword}{true});}
+\DoxyCodeLine{00104\ \ \ \ \ ui-\/>radioButton\_12-\/>setDisabled(\textcolor{keyword}{true});}
+\DoxyCodeLine{00105\ \ \ \ \ ui-\/>radioButton\_13-\/>setDisabled(\textcolor{keyword}{true});}
+\DoxyCodeLine{00106\ \ \ \ \ ui-\/>radioButton\_14-\/>setDisabled(\textcolor{keyword}{true});}
+\DoxyCodeLine{00107\ \ \ \ \ ui-\/>radioButton\_15-\/>setDisabled(\textcolor{keyword}{true});}
+\DoxyCodeLine{00108\ \}}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00110\ \textcolor{keywordtype}{void}\ MainWindow::disable\_right\_leg()}
+\DoxyCodeLine{00111\ \{}
+\DoxyCodeLine{00112\ \ \ \ \ ui-\/>radioButton\_16-\/>setDisabled(\textcolor{keyword}{true});}
+\DoxyCodeLine{00113\ \ \ \ \ ui-\/>radioButton\_17-\/>setDisabled(\textcolor{keyword}{true});}
+\DoxyCodeLine{00114\ \ \ \ \ ui-\/>radioButton\_18-\/>setDisabled(\textcolor{keyword}{true});}
+\DoxyCodeLine{00115\ \ \ \ \ ui-\/>radioButton\_19-\/>setDisabled(\textcolor{keyword}{true});}
+\DoxyCodeLine{00116\ \ \ \ \ ui-\/>radioButton\_20-\/>setDisabled(\textcolor{keyword}{true});}
+\DoxyCodeLine{00117\ \}}
+\DoxyCodeLine{00118\ }
+\DoxyCodeLine{00119\ \textcolor{keywordtype}{void}\ MainWindow::disable\_torso()}
+\DoxyCodeLine{00120\ \{}
+\DoxyCodeLine{00121\ \ \ \ \ ui-\/>radioButton\_21-\/>setDisabled(\textcolor{keyword}{true});}
+\DoxyCodeLine{00122\ \ \ \ \ ui-\/>radioButton\_22-\/>setDisabled(\textcolor{keyword}{true});}
+\DoxyCodeLine{00123\ \ \ \ \ ui-\/>radioButton\_23-\/>setDisabled(\textcolor{keyword}{true});}
+\DoxyCodeLine{00124\ \ \ \ \ ui-\/>radioButton\_24-\/>setDisabled(\textcolor{keyword}{true});}
+\DoxyCodeLine{00125\ \ \ \ \ ui-\/>radioButton\_25-\/>setDisabled(\textcolor{keyword}{true});}
+\DoxyCodeLine{00126\ \}}
+\DoxyCodeLine{00127\ }
+\DoxyCodeLine{00128\ \textcolor{keywordtype}{bool}\ MainWindow::slot\_changed\_trq(\textcolor{keywordtype}{int}\ kk)}
+\DoxyCodeLine{00129\ \{}
+\DoxyCodeLine{00130\ \ \ \ \ \textcolor{keywordflow}{if}\ (kk<0\ ||\ kk\ >=\ 5\ ||\ !m\_robot-\/>icmd[kk])}
+\DoxyCodeLine{00131\ \ \ \ \ \{}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ yError()\ <<\ \textcolor{stringliteral}{"{}Critical\ fail"{}};}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00134\ \ \ \ \ \}}
+\DoxyCodeLine{00135\ }
+\DoxyCodeLine{00136\ \ \ \ \ \textcolor{keywordflow}{switch}\ (kk)}
+\DoxyCodeLine{00137\ \ \ \ \ \{}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ LEFT\_ARM:}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ RIGHT\_ARM:}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(0,\ 0.0,\ 0.0);}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(1,\ 0.0,\ 0.0);}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(2,\ 0.0,\ 0.0);}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(3,\ 0.0,\ 0.0);}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(4,\ 0.0,\ 0.0);}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(0,torqueControlMode);}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(1,torqueControlMode);}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(2,torqueControlMode);}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(3,torqueControlMode);}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(4,torqueControlMode);}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ LEFT\_LEG:}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ RIGHT\_LEG:}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(0,\ 0.0,\ 0.0);}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(1,\ 0.0,\ 0.0);}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(2,\ 0.0,\ 0.0);}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(3,\ 0.0,\ 0.0);}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(4,\ 0.0,\ 0.0);}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(5,\ 0.0,\ 0.0);}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(0,torqueControlMode);}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(1,torqueControlMode);}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(2,torqueControlMode);}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(3,torqueControlMode);}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(4,torqueControlMode);}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(5,torqueControlMode);}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ TORSO:}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(0,\ 0.0,\ 0.0);}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(1,\ 0.0,\ 0.0);}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(2,\ 0.1,\ 0.0);}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(0,torqueControlMode);}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(1,torqueControlMode);}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(2,positionControlMode);}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(2,\ compliantInteractionMode);}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00176\ \ \ \ \ update\_labels();}
+\DoxyCodeLine{00177\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00178\ \}}
+\DoxyCodeLine{00179\ }
+\DoxyCodeLine{00180\ \textcolor{keywordtype}{bool}\ MainWindow::slot\_changed\_imp\_soft(\textcolor{keywordtype}{int}\ kk)}
+\DoxyCodeLine{00181\ \{}
+\DoxyCodeLine{00182\ \ \ \ \ \textcolor{keywordflow}{if}\ (kk<0\ ||\ kk\ >=\ 5\ ||\ !m\_robot-\/>icmd[kk])}
+\DoxyCodeLine{00183\ \ \ \ \ \{}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ yError()\ <<\ \textcolor{stringliteral}{"{}Critical\ fail"{}};}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00186\ \ \ \ \ \}}
+\DoxyCodeLine{00187\ }
+\DoxyCodeLine{00188\ \ \ \ \ \textcolor{keywordflow}{switch}\ (kk)}
+\DoxyCodeLine{00189\ \ \ \ \ \{}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ LEFT\_ARM:}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ RIGHT\_ARM:}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(0,0.2,0.0);}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(1,0.2,0.0);}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(2,0.2,0.0);}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(3,0.2,0.0);}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(4,0.1,0.0);}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(0,positionControlMode);}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(1,positionControlMode);}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(2,positionControlMode);}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(3,positionControlMode);}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(4,positionControlMode);}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(0,\ compliantInteractionMode);}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(1,\ compliantInteractionMode);}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(2,\ compliantInteractionMode);}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(3,\ compliantInteractionMode);}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(4,\ compliantInteractionMode);}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ LEFT\_LEG:}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ RIGHT\_LEG:}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(0,0.3,0.0);}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(1,0.3,0.0);}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(2,0.2,0.0);}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(3,0.2,0.0);}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(4,0.2,0.0);}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(5,0.2,0.0);}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(0,positionControlMode);}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(1,positionControlMode);}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(2,positionControlMode);}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(3,positionControlMode);}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(4,positionControlMode);}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(5,positionControlMode);}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(0,\ compliantInteractionMode);}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(1,\ compliantInteractionMode);}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(2,\ compliantInteractionMode);}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(3,\ compliantInteractionMode);}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(4,\ compliantInteractionMode);}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(5,\ compliantInteractionMode);}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ TORSO:}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(0,0.1,0.0);}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(1,0.1,0.0);}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(2,0.1,0.0);}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(0,positionControlMode);}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(1,positionControlMode);}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(2,positionControlMode);}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(0,\ compliantInteractionMode);}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(1,\ compliantInteractionMode);}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(2,\ compliantInteractionMode);}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00240\ \ \ \ \ \}}
+\DoxyCodeLine{00241\ }
+\DoxyCodeLine{00242\ \ \ \ \ update\_labels();}
+\DoxyCodeLine{00243\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00244\ \}}
+\DoxyCodeLine{00245\ }
+\DoxyCodeLine{00246\ }
+\DoxyCodeLine{00247\ \textcolor{keywordtype}{bool}\ MainWindow::slot\_changed\_imp\_medium(\textcolor{keywordtype}{int}\ kk)}
+\DoxyCodeLine{00248\ \{}
+\DoxyCodeLine{00249\ \ \ \ \ \textcolor{keywordflow}{if}\ (kk<0\ ||\ kk\ >=\ 5\ ||\ !m\_robot-\/>icmd[kk])}
+\DoxyCodeLine{00250\ \ \ \ \ \{}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ yError()\ <<\ \textcolor{stringliteral}{"{}Critical\ fail"{}};}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00253\ \ \ \ \ \}}
+\DoxyCodeLine{00254\ }
+\DoxyCodeLine{00255\ \ \ \ \ \textcolor{keywordflow}{switch}\ (kk)}
+\DoxyCodeLine{00256\ \ \ \ \ \{}
+\DoxyCodeLine{00257\ \ \ \ \ \textcolor{keywordflow}{case}\ LEFT\_ARM:}
+\DoxyCodeLine{00258\ \ \ \ \ \textcolor{keywordflow}{case}\ RIGHT\_ARM:}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(0,0.4,0.03);}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(1,0.4,0.03);}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(2,0.4,0.03);}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(3,0.2,0.01);}
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(4,0.2,0.00);}
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(0,positionControlMode);}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(1,positionControlMode);}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(2,positionControlMode);}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(3,positionControlMode);}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(4,positionControlMode);}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(0,\ compliantInteractionMode);}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(1,\ compliantInteractionMode);}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(2,\ compliantInteractionMode);}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(3,\ compliantInteractionMode);}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(4,\ compliantInteractionMode);}
+\DoxyCodeLine{00274\ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00275\ \ \ \ \ \textcolor{keywordflow}{case}\ LEFT\_LEG:}
+\DoxyCodeLine{00276\ \ \ \ \ \textcolor{keywordflow}{case}\ RIGHT\_LEG:}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(0,0.6,0.01);}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(1,0.6,0.01);}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(2,0.4,0.01);}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(3,0.4,0.01);}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(4,0.4,0.01);}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(5,0.4,0.01);}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(0,positionControlMode);}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(1,positionControlMode);}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(2,positionControlMode);}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(3,positionControlMode);}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(4,positionControlMode);}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(5,positionControlMode);}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(0,\ compliantInteractionMode);}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(1,\ compliantInteractionMode);}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(2,\ compliantInteractionMode);}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(3,\ compliantInteractionMode);}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(4,\ compliantInteractionMode);}
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(5,\ compliantInteractionMode);}
+\DoxyCodeLine{00295\ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00296\ \ \ \ \ \textcolor{keywordflow}{case}\ TORSO:}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(0,0.3,0.0);}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(1,0.3,0.0);}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(2,0.3,0.0);}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(0,positionControlMode);}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(1,positionControlMode);}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(2,positionControlMode);}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(0,\ compliantInteractionMode);}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(1,\ compliantInteractionMode);}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(2,\ compliantInteractionMode);}
+\DoxyCodeLine{00306\ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00307\ \ \ \ \ \}}
+\DoxyCodeLine{00308\ }
+\DoxyCodeLine{00309\ \ \ \ \ update\_labels();}
+\DoxyCodeLine{00310\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00311\ \}}
+\DoxyCodeLine{00312\ }
+\DoxyCodeLine{00313\ }
+\DoxyCodeLine{00314\ }
+\DoxyCodeLine{00315\ \textcolor{keywordtype}{bool}\ \ MainWindow::slot\_changed\_imp\_hard(\textcolor{keywordtype}{int}\ kk)}
+\DoxyCodeLine{00316\ \{}
+\DoxyCodeLine{00317\ \ \ \ \ \textcolor{keywordflow}{if}\ (kk<0\ ||\ kk\ >=\ 5\ ||\ !m\_robot-\/>icmd[kk])}
+\DoxyCodeLine{00318\ \ \ \ \ \{}
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ yError()\ <<\ \textcolor{stringliteral}{"{}Critical\ fail"{}};}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00321\ \ \ \ \ \}}
+\DoxyCodeLine{00322\ }
+\DoxyCodeLine{00323\ \ \ \ \ \textcolor{keywordflow}{switch}\ (kk)}
+\DoxyCodeLine{00324\ \ \ \ \ \{}
+\DoxyCodeLine{00325\ \ \ \ \ \textcolor{keywordflow}{case}\ LEFT\_ARM:}
+\DoxyCodeLine{00326\ \ \ \ \ \textcolor{keywordflow}{case}\ RIGHT\_ARM:}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(0,0.6,0.06);}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(1,0.6,0.06);}
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(2,0.6,0.06);}
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(3,0.3,0.02);}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(4,0.2,0.00);}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(0,positionControlMode);}
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(1,positionControlMode);}
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(2,positionControlMode);}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(3,positionControlMode);}
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(4,positionControlMode);}
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(0,\ compliantInteractionMode);}
+\DoxyCodeLine{00338\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(1,\ compliantInteractionMode);}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(2,\ compliantInteractionMode);}
+\DoxyCodeLine{00340\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(3,\ compliantInteractionMode);}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(4,\ compliantInteractionMode);}
+\DoxyCodeLine{00342\ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00343\ \ \ \ \ \textcolor{keywordflow}{case}\ LEFT\_LEG:}
+\DoxyCodeLine{00344\ \ \ \ \ \textcolor{keywordflow}{case}\ RIGHT\_LEG:}
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(0,1.0,0.02);}
+\DoxyCodeLine{00346\ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(1,1.0,0.02);}
+\DoxyCodeLine{00347\ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(2,0.7,0.02);}
+\DoxyCodeLine{00348\ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(3,0.6,0.02);}
+\DoxyCodeLine{00349\ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(4,0.6,0.02);}
+\DoxyCodeLine{00350\ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(5,0.6,0.02);}
+\DoxyCodeLine{00351\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(0,positionControlMode);}
+\DoxyCodeLine{00352\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(1,positionControlMode);}
+\DoxyCodeLine{00353\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(2,positionControlMode);}
+\DoxyCodeLine{00354\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(3,positionControlMode);}
+\DoxyCodeLine{00355\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(4,positionControlMode);}
+\DoxyCodeLine{00356\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(5,positionControlMode);}
+\DoxyCodeLine{00357\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(0,\ compliantInteractionMode);}
+\DoxyCodeLine{00358\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(1,\ compliantInteractionMode);}
+\DoxyCodeLine{00359\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(2,\ compliantInteractionMode);}
+\DoxyCodeLine{00360\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(3,\ compliantInteractionMode);}
+\DoxyCodeLine{00361\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(4,\ compliantInteractionMode);}
+\DoxyCodeLine{00362\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(5,\ compliantInteractionMode);}
+\DoxyCodeLine{00363\ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00364\ \ \ \ \ \textcolor{keywordflow}{case}\ TORSO:}
+\DoxyCodeLine{00365\ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(0,0.7,0.015);}
+\DoxyCodeLine{00366\ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(1,0.7,0.015);}
+\DoxyCodeLine{00367\ \ \ \ \ \ \ \ \ m\_robot-\/>iimp[kk]-\/>setImpedance(2,0.7,0.015);}
+\DoxyCodeLine{00368\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(0,positionControlMode);}
+\DoxyCodeLine{00369\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(1,positionControlMode);}
+\DoxyCodeLine{00370\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(2,positionControlMode);}
+\DoxyCodeLine{00371\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(0,\ compliantInteractionMode);}
+\DoxyCodeLine{00372\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(1,\ compliantInteractionMode);}
+\DoxyCodeLine{00373\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(2,\ compliantInteractionMode);}
+\DoxyCodeLine{00374\ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00375\ \ \ \ \ \}}
+\DoxyCodeLine{00376\ }
+\DoxyCodeLine{00377\ \ \ \ \ update\_labels();}
+\DoxyCodeLine{00378\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00379\ \}}
+\DoxyCodeLine{00380\ }
+\DoxyCodeLine{00381\ \textcolor{keywordtype}{bool}\ MainWindow::slot\_changed\_pos(\textcolor{keywordtype}{int}\ kk)}
+\DoxyCodeLine{00382\ \{}
+\DoxyCodeLine{00383\ \ \ \ \ \textcolor{keywordflow}{if}\ (kk<0\ ||\ kk>=5\ ||\ !m\_robot-\/>icmd[kk])}
+\DoxyCodeLine{00384\ \ \ \ \ \{}
+\DoxyCodeLine{00385\ \ \ \ \ \ \ \ \ yError()\ <<\ \textcolor{stringliteral}{"{}Critical\ fail"{}};}
+\DoxyCodeLine{00386\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00387\ \ \ \ \ \}}
+\DoxyCodeLine{00388\ }
+\DoxyCodeLine{00389\ \ \ \ \ \textcolor{keywordflow}{switch}\ (kk)}
+\DoxyCodeLine{00390\ \ \ \ \ \{}
+\DoxyCodeLine{00391\ \ \ \ \ \textcolor{keywordflow}{case}\ LEFT\_ARM:}
+\DoxyCodeLine{00392\ \ \ \ \ \textcolor{keywordflow}{case}\ RIGHT\_ARM:}
+\DoxyCodeLine{00393\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(0,positionControlMode);}
+\DoxyCodeLine{00394\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(1,positionControlMode);}
+\DoxyCodeLine{00395\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(2,positionControlMode);}
+\DoxyCodeLine{00396\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(3,positionControlMode);}
+\DoxyCodeLine{00397\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(4,positionControlMode);}
+\DoxyCodeLine{00398\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(0,\ stiffInteractionMode);}
+\DoxyCodeLine{00399\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(1,\ stiffInteractionMode);}
+\DoxyCodeLine{00400\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(2,\ stiffInteractionMode);}
+\DoxyCodeLine{00401\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(3,\ stiffInteractionMode);}
+\DoxyCodeLine{00402\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(4,\ stiffInteractionMode);}
+\DoxyCodeLine{00403\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00404\ \ \ \ \ \textcolor{keywordflow}{case}\ LEFT\_LEG:}
+\DoxyCodeLine{00405\ \ \ \ \ \textcolor{keywordflow}{case}\ RIGHT\_LEG:}
+\DoxyCodeLine{00406\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(0,positionControlMode);}
+\DoxyCodeLine{00407\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(1,positionControlMode);}
+\DoxyCodeLine{00408\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(2,positionControlMode);}
+\DoxyCodeLine{00409\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(3,positionControlMode);}
+\DoxyCodeLine{00410\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(4,positionControlMode);}
+\DoxyCodeLine{00411\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(5,positionControlMode);}
+\DoxyCodeLine{00412\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(0,\ stiffInteractionMode);}
+\DoxyCodeLine{00413\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(1,\ stiffInteractionMode);}
+\DoxyCodeLine{00414\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(2,\ stiffInteractionMode);}
+\DoxyCodeLine{00415\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(3,\ stiffInteractionMode);}
+\DoxyCodeLine{00416\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(4,\ stiffInteractionMode);}
+\DoxyCodeLine{00417\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(5,\ stiffInteractionMode);}
+\DoxyCodeLine{00418\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00419\ \ \ \ \ \textcolor{keywordflow}{case}\ TORSO:}
+\DoxyCodeLine{00420\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(0,positionControlMode);}
+\DoxyCodeLine{00421\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(1,positionControlMode);}
+\DoxyCodeLine{00422\ \ \ \ \ \ \ \ \ m\_robot-\/>icmd[kk]-\/>setControlMode(2,positionControlMode);}
+\DoxyCodeLine{00423\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(0,\ stiffInteractionMode);}
+\DoxyCodeLine{00424\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(1,\ stiffInteractionMode);}
+\DoxyCodeLine{00425\ \ \ \ \ \ \ \ \ m\_robot-\/>iint[kk]-\/>setInteractionMode(2,\ stiffInteractionMode);}
+\DoxyCodeLine{00426\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00427\ \ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00428\ \ \ \ \ \ \ \ \ yError()\ <<\ \textcolor{stringliteral}{"{}Critical\ error"{}};}
+\DoxyCodeLine{00429\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00430\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00431\ \ \ \ \ \}}
+\DoxyCodeLine{00432\ \ \ \ \ }
+\DoxyCodeLine{00433\ \ \ \ \ update\_labels();}
+\DoxyCodeLine{00434\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00435\ \}}
+\DoxyCodeLine{00436\ }
+\DoxyCodeLine{00437\ \textcolor{keywordtype}{bool}\ MainWindow::init(QString\ robotName,\ ResourceFinder\ *finder,\ robot\_interfaces\ *robot)}
+\DoxyCodeLine{00438\ \{}
+\DoxyCodeLine{00439\ \ \ \ \ m\_robot\ =\ robot;}
+\DoxyCodeLine{00440\ }
+\DoxyCodeLine{00441\ \ \ \ \ \textcolor{keywordflow}{if}\ (m\_robot-\/>dd[LEFT\_ARM]\ ==\ 0)}
+\DoxyCodeLine{00442\ \ \ \ \ \{}
+\DoxyCodeLine{00443\ \ \ \ \ \ \ \ \ disable\_left\_arm();}
+\DoxyCodeLine{00444\ \ \ \ \ \}}
+\DoxyCodeLine{00445\ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00446\ \ \ \ \ \{}
+\DoxyCodeLine{00447\ \ \ \ \ \ \ \ \ ui-\/>radioButton-\/>setChecked(\textcolor{keyword}{true});}
+\DoxyCodeLine{00448\ \ \ \ \ \ \ \ \ slot\_changed\_pos(LEFT\_ARM);}
+\DoxyCodeLine{00449\ \ \ \ \ \}}
+\DoxyCodeLine{00450\ }
+\DoxyCodeLine{00451\ \ \ \ \ \textcolor{keywordflow}{if}\ (m\_robot-\/>dd[RIGHT\_ARM]\ ==\ 0)}
+\DoxyCodeLine{00452\ \ \ \ \ \{}
+\DoxyCodeLine{00453\ \ \ \ \ \ \ \ \ disable\_right\_arm();}
+\DoxyCodeLine{00454\ \ \ \ \ \}}
+\DoxyCodeLine{00455\ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00456\ \ \ \ \ \{}
+\DoxyCodeLine{00457\ \ \ \ \ \ \ \ \ ui-\/>radioButton\_6-\/>setChecked(\textcolor{keyword}{true});}
+\DoxyCodeLine{00458\ \ \ \ \ \ \ \ \ slot\_changed\_pos(RIGHT\_ARM);}
+\DoxyCodeLine{00459\ \ \ \ \ \}}
+\DoxyCodeLine{00460\ }
+\DoxyCodeLine{00461\ \ \ \ \ \textcolor{keywordflow}{if}\ (m\_robot-\/>dd[LEFT\_LEG]\ ==\ 0)}
+\DoxyCodeLine{00462\ \ \ \ \ \{}
+\DoxyCodeLine{00463\ \ \ \ \ \ \ \ \ disable\_left\_leg();}
+\DoxyCodeLine{00464\ \ \ \ \ \}}
+\DoxyCodeLine{00465\ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00466\ \ \ \ \ \{}
+\DoxyCodeLine{00467\ \ \ \ \ \ \ \ \ ui-\/>radioButton\_11-\/>setChecked(\textcolor{keyword}{true});}
+\DoxyCodeLine{00468\ \ \ \ \ \ \ \ \ slot\_changed\_pos(LEFT\_LEG);}
+\DoxyCodeLine{00469\ \ \ \ \ \}}
+\DoxyCodeLine{00470\ }
+\DoxyCodeLine{00471\ \ \ \ \ \textcolor{keywordflow}{if}\ (m\_robot-\/>dd[RIGHT\_LEG]\ ==\ 0)}
+\DoxyCodeLine{00472\ \ \ \ \ \{}
+\DoxyCodeLine{00473\ \ \ \ \ \ \ \ \ disable\_right\_leg();}
+\DoxyCodeLine{00474\ \ \ \ \ \}}
+\DoxyCodeLine{00475\ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00476\ \ \ \ \ \{}
+\DoxyCodeLine{00477\ \ \ \ \ \ \ \ \ ui-\/>radioButton\_16-\/>setChecked(\textcolor{keyword}{true});}
+\DoxyCodeLine{00478\ \ \ \ \ \ \ \ \ slot\_changed\_pos(RIGHT\_LEG);}
+\DoxyCodeLine{00479\ \ \ \ \ \}}
+\DoxyCodeLine{00480\ }
+\DoxyCodeLine{00481\ \ \ \ \ \textcolor{keywordflow}{if}\ (m\_robot-\/>dd[TORSO]\ ==\ 0)}
+\DoxyCodeLine{00482\ \ \ \ \ \{}
+\DoxyCodeLine{00483\ \ \ \ \ \ \ \ \ disable\_torso();}
+\DoxyCodeLine{00484\ \ \ \ \ \}}
+\DoxyCodeLine{00485\ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00486\ \ \ \ \ \{}
+\DoxyCodeLine{00487\ \ \ \ \ \ \ \ \ ui-\/>radioButton\_21-\/>setChecked(\textcolor{keyword}{true});}
+\DoxyCodeLine{00488\ \ \ \ \ \ \ \ \ slot\_changed\_pos(TORSO);}
+\DoxyCodeLine{00489\ \ \ \ \ \}}
+\DoxyCodeLine{00490\ }
+\DoxyCodeLine{00491\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00492\ \}}
+\DoxyCodeLine{00493\ }
+\DoxyCodeLine{00494\ \textcolor{keywordtype}{void}\ MainWindow::closeEvent(QCloseEvent\ *event)}
+\DoxyCodeLine{00495\ \{}
+\DoxyCodeLine{00496\ \ \ \ \ this-\/>setVisible(\textcolor{keyword}{false});}
+\DoxyCodeLine{00497\ \ \ \ \ QMainWindow::closeEvent(event);}
+\DoxyCodeLine{00498\ \}}
+\DoxyCodeLine{00499\ }
+\DoxyCodeLine{00500\ \textcolor{keywordtype}{void}\ MainWindow::update\_labels()}
+\DoxyCodeLine{00501\ \{}
+\DoxyCodeLine{00502\ \ \ \ \ QLabel*\ ql[5];}
+\DoxyCodeLine{00503\ \ \ \ \ ql[0]\ =\ ui-\/>label1;}
+\DoxyCodeLine{00504\ \ \ \ \ ql[1]\ =\ ui-\/>label2;}
+\DoxyCodeLine{00505\ \ \ \ \ ql[2]\ =\ ui-\/>label3;}
+\DoxyCodeLine{00506\ \ \ \ \ ql[3]\ =\ ui-\/>label4;}
+\DoxyCodeLine{00507\ \ \ \ \ ql[4]\ =\ ui-\/>label5;}
+\DoxyCodeLine{00508\ }
+\DoxyCodeLine{00509\ \ \ \ \ \textcolor{keywordtype}{char}\ buff[255];}
+\DoxyCodeLine{00510\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ 0;\ i<5;\ i++)}
+\DoxyCodeLine{00511\ \ \ \ \ \{}
+\DoxyCodeLine{00512\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ jmax\ =\ 0;}
+\DoxyCodeLine{00513\ \ \ \ \ \ \ \ \ std::string\ txt;}
+\DoxyCodeLine{00514\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}\ (i)}
+\DoxyCodeLine{00515\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00516\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ LEFT\_ARM:}
+\DoxyCodeLine{00517\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ RIGHT\_ARM:}
+\DoxyCodeLine{00518\ \ \ \ \ \ \ \ \ \ \ \ \ jmax\ =\ 5;}
+\DoxyCodeLine{00519\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00520\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ LEFT\_LEG:}
+\DoxyCodeLine{00521\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ RIGHT\_LEG:}
+\DoxyCodeLine{00522\ \ \ \ \ \ \ \ \ \ \ \ \ jmax\ =\ 6;}
+\DoxyCodeLine{00523\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00524\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ TORSO:}
+\DoxyCodeLine{00525\ \ \ \ \ \ \ \ \ \ \ \ \ jmax\ =\ 3;}
+\DoxyCodeLine{00526\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00527\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00528\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j\ =\ 0;\ j<jmax;\ j++)}
+\DoxyCodeLine{00529\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00530\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ stiff\ =\ 0;}
+\DoxyCodeLine{00531\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ damp\ =\ 0;}
+\DoxyCodeLine{00532\ \ \ \ \ \ \ \ \ \ \ \ \ sprintf(buff,\ \textcolor{stringliteral}{"{}\(\backslash\)n\ \(\backslash\)nJ\%d:\(\backslash\)n"{}},\ j);\ txt\ +=\ std::string(buff);}
+\DoxyCodeLine{00533\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (m\_robot-\/>iimp[i])\ m\_robot-\/>iimp[i]-\/>getImpedance(j,\ \&stiff,\ \&damp);}
+\DoxyCodeLine{00534\ \ \ \ \ \ \ \ \ \ \ \ \ sprintf(buff,\ \textcolor{stringliteral}{"{}stiff:\ \%3.3f\ Nm/deg\ \(\backslash\)n"{}},\ stiff);\ txt\ +=\ std::string(buff);}
+\DoxyCodeLine{00535\ \ \ \ \ \ \ \ \ \ \ \ \ sprintf(buff,\ \textcolor{stringliteral}{"{}damp:\ \ \%3.3f\ Nm/(deg/s)\ \(\backslash\)n"{}},\ damp);\ txt\ +=\ std::string(buff);}
+\DoxyCodeLine{00536\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00537\ \ \ \ \ \ \ \ \ ql[i]-\/>setText(QString(txt.c\_str()));}
+\DoxyCodeLine{00538\ \ \ \ \ \}}
+\DoxyCodeLine{00539\ \}}
+
+\end{DoxyCode}

@@ -1,0 +1,9 @@
+var searchData=
+[
+  ['calc_5fcoeffs_0',['calc_coeffs',['../IIRGausDeriv_8h.html#a3e168333285d90a0bfd848d9791ca427',1,'calc_coeffs(int taps, const complex&lt; double &gt; poles[], const double s, float *coeffs):&#160;IIRGausDeriv.cpp'],['../IIRGausDeriv_8h.html#a3e7f009d38086e228c6ba8b3e5b6055f',1,'calc_coeffs(int taps, const complex&lt; double &gt; poles[], float *coeffs):&#160;IIRGausDeriv.cpp'],['../IIRGausDeriv_8cpp.html#a3e7f009d38086e228c6ba8b3e5b6055f',1,'calc_coeffs(int taps, const complex&lt; double &gt; poles[], float *coeffs):&#160;IIRGausDeriv.cpp'],['../IIRGausDeriv_8cpp.html#a3e168333285d90a0bfd848d9791ca427',1,'calc_coeffs(int taps, const complex&lt; double &gt; poles[], const double s, float *coeffs):&#160;IIRGausDeriv.cpp']]],
+  ['calc_5fpoles_1',['calc_poles',['../IIRGausDeriv_8h.html#a2741eb625282f8d68ba971a4431407a5',1,'calc_poles(int taps, const double scale, const complex&lt; double &gt; oldpoles[], complex&lt; double &gt; newpoles[]):&#160;IIRGausDeriv.cpp'],['../IIRGausDeriv_8cpp.html#a2741eb625282f8d68ba971a4431407a5',1,'calc_poles(int taps, const double scale, const complex&lt; double &gt; oldpoles[], complex&lt; double &gt; newpoles[]):&#160;IIRGausDeriv.cpp']]],
+  ['commands_2',['Available commands',['../group__src__demoRedBall.html#commands_sec',1,'']]],
+  ['conf_20models_20generate_5fshape_5fmodel_20py_20generate_5fshape_5fmodel_20py_20a_3',[':warning: This method has been superseded by &lt;a href=&quot;../app/conf/models/generate_shape_model.py&quot; &gt;generate_shape_model.py&lt;/a&gt;.',['../md__2home_2runner_2work_2icub-basic-demos_2icub-basic-demos_2gh-pages_2pf3dTracker_2matlab__files_2README.html',1,'']]],
+  ['configuration_20files_4',['configuration files',['../group__app__demoRedBall.html#config_sec',1,'Configuration Files'],['../group__src__demoYoga.html#conf_file_sec',1,'Configuration Files']]],
+  ['created_5',['Ports Created',['../group__src__demoYoga.html#portsc_sec',1,'']]]
+];

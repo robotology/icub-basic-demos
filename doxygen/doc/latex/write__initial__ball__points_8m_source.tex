@@ -1,0 +1,28 @@
+\doxysection{write\+\_\+initial\+\_\+ball\+\_\+points.\+m}
+\label{write__initial__ball__points_8m_source}\index{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/pf3dTracker/matlab\_files/write\_initial\_ball\_points.m@{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/pf3dTracker/matlab\_files/write\_initial\_ball\_points.m}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \%I\ think\ \textcolor{keyword}{this}\ is\ the\ most\ up-\/to-\/date\ script\ to\ generate\ the\ initial\ ball\ points.}
+\DoxyCodeLine{00002\ \%generate\ points\ along\ two\ circumferences\ at\ 0.9\ and\ 1.1\ the\ radius\ of\ the\ actual\ ball.}
+\DoxyCodeLine{00003\ }
+\DoxyCodeLine{00004\ R=198/(2*pi)\ \%ball\ radius.}
+\DoxyCodeLine{00005\ R1=(1-\/0.20)*R;\ \%ray\ \textcolor{keywordflow}{for}\ placing\ the\ \textcolor{keyword}{internal}\ points\ [mm]}
+\DoxyCodeLine{00006\ R2=(1+0.20)*R;\ \%ray\ \textcolor{keywordflow}{for}\ placing\ the\ external\ points\ [mm]}
+\DoxyCodeLine{00007\ nPoints=50;}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ t=0:(2*pi/nPoints):2*pi;}
+\DoxyCodeLine{00010\ z=cos(t(1:nPoints));}
+\DoxyCodeLine{00011\ y=sin(t(1:nPoints));}
+\DoxyCodeLine{00012\ p1=R1*[zeros(1,nPoints);y;z];}
+\DoxyCodeLine{00013\ p2=R2*[zeros(1,nPoints);y;z];}
+\DoxyCodeLine{00014\ points=[p1,p2];}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ ID=fopen(\textcolor{stringliteral}{'initial\_ball\_points\_smiley\_31mm\_20percent.csv'},\textcolor{charliteral}{'w'});}
+\DoxyCodeLine{00017\ \textcolor{keywordflow}{for}(a=1:3)}
+\DoxyCodeLine{00018\ \ \ for(b=1:nPoints*2)}
+\DoxyCodeLine{00019\ \ \ \ \ \ \ \ fprintf(ID,\textcolor{stringliteral}{'\%f\(\backslash\)n'},points(a,b));}
+\DoxyCodeLine{00020\ \ \ end;}
+\DoxyCodeLine{00021\ end;\ \ \ \ }
+\DoxyCodeLine{00022\ fclose(ID);}
+
+\end{DoxyCode}

@@ -1,0 +1,59 @@
+\doxysection{Fast\+Gauss.\+h}
+\label{FastGauss_8h_source}\index{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/pf3dBottomup/include/iCub/FastGauss.h@{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/pf3dBottomup/include/iCub/FastGauss.h}}
+\mbox{\hyperlink{FastGauss_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{//\ -\/*-\/\ mode:C++;\ tab-\/width:4;\ c-\/basic-\/offset:4;\ indent-\/tabs-\/mode:nil\ -\/*-\/}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{comment}{//\ Copyright:\ (C)\ 2006-\/2007\ Alex\ Bernardino,\ ISR-\/IST}}
+\DoxyCodeLine{00004\ \textcolor{comment}{//\ Authors:\ Alex\ Bernardino}}
+\DoxyCodeLine{00005\ \textcolor{comment}{//\ CopyPolicy:\ Released\ under\ the\ terms\ of\ the\ GNU\ GPL\ v2.0.}}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#ifndef\ \_FASTGAUSS\_H\_}}
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#define\ \_FASTGAUSS\_H\_}}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00021\ \textcolor{preprocessor}{\#include\ <complex>}}
+\DoxyCodeLine{00022\ \textcolor{keyword}{using\ namespace\ }std;}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{keyword}{class\ }FastGauss}
+\DoxyCodeLine{00026\ \{}
+\DoxyCodeLine{00027\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00028\ \ \ \ \ }
+\DoxyCodeLine{00029\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_bAllocated;}
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{keywordtype}{float}\ *\ temp;}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{keywordtype}{long}\ m\_i\_lines;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//image\ height\ (pixels)}}
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keywordtype}{long}\ m\_i\_cols;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//image\ width\ (pixels)}}
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keywordtype}{long}\ m\_i\_stridepix;\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//number\ of\ pixels\ in\ a\ line\ (for\ data\ aligment)}}
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keywordtype}{int}\ stride;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//number\ of\ bytes\ in\ a\ line\ (for\ data\ alignment)\ :\ stride\ =\ m\_i\_stridepix*sizeof(float)}}
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keywordtype}{double}\ m\_scale;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//scale\ value\ (in\ pixels)}}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keywordtype}{float}\ *filt\_coeffs;\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//filter\ coefficients\ (max\ 6\ coeffs\ :\ 1\ gain\ +\ 5\ autoregressive\ coefs)}}
+\DoxyCodeLine{00039\ \ \ \ \ complex<double>\ *filt\_poles;\ \ \ \ \textcolor{comment}{//filter\ poles\ (max\ 5\ poles)}}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keywordtype}{float}\ *m\_resid\_step;\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//step\ forced\ response\ residuals\ for\ a\ 3\ tap\ gauss\ filter.}}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keywordtype}{float}\ *m\_resid\_ic;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//step\ natural\ response\ residuals\ for\ a\ 3\ tap\ gauss\ filter.}}
+\DoxyCodeLine{00042\ \ \ \ \ }
+\DoxyCodeLine{00043\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00044\ \ \ \ \ FastGauss(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keyword}{virtual}\ \string~FastGauss(\textcolor{keywordtype}{void});}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keywordtype}{long}\ GetLines();}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordtype}{long}\ GetCols();}
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{keywordtype}{long}\ GetStridePix();}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordtype}{double}\ GetScale();}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keywordtype}{bool}\ GaussFilt(\textcolor{keywordtype}{float}\ *\ in,\ \textcolor{keywordtype}{float}\ *\ out);}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keywordtype}{bool}\ AllocateResources(\textcolor{keywordtype}{long}\ lines,\ \textcolor{keywordtype}{long}\ cols,\ \textcolor{keywordtype}{double}\ scale);}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keywordtype}{bool}\ FreeResources();}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keywordtype}{bool}\ IsAllocated();}
+\DoxyCodeLine{00054\ \ \ \ \ }
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keywordtype}{void}\ compute\_step\_forward\_ic(\textcolor{keywordtype}{float}\ bord\_val,\ \textcolor{keywordtype}{float}\ *coeffs,\ \textcolor{keywordtype}{float}\ *i0);}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keywordtype}{void}\ compute\_natural\_backward\_ic(\ \textcolor{keywordtype}{float}\ *resid\_ic,\ \textcolor{keywordtype}{float}\ *i0\ );}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keywordtype}{void}\ add\_step\_backward\_ic(\ \textcolor{keywordtype}{float}\ *resid\_step,\ \textcolor{keywordtype}{float}\ val,\ \textcolor{keywordtype}{float}\ *i0\ );}
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keywordtype}{void}\ \_iir\_gaussfilt3\_horz(\textcolor{keywordtype}{float}\ *\ in,\ \textcolor{keywordtype}{float}\ *tempbuf,\ \textcolor{keywordtype}{float}\ *\ out,\ \textcolor{keywordtype}{int}\ width,\ \textcolor{keywordtype}{int}\ height,\ \textcolor{keywordtype}{int}\ stridepix,\ \textcolor{keywordtype}{float}\ *coeffs,\ \textcolor{keywordtype}{float}\ *resid\_ic,\ \textcolor{keywordtype}{float}\ *resid\_step);}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keywordtype}{void}\ \_iir\_gaussfilt3\_vert(\textcolor{keywordtype}{float}\ *\ inout,\ \textcolor{keywordtype}{float}\ *tempbuf,\ \textcolor{keywordtype}{int}\ width,\ \textcolor{keywordtype}{int}\ height,\ \textcolor{keywordtype}{int}\ stridepix,\ \textcolor{keywordtype}{float}\ *coeffs,\ \textcolor{keywordtype}{float}\ *resid\_ic,\ \textcolor{keywordtype}{float}\ *resid\_step);}
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{keywordtype}{void}\ \_iir\_gaussfilt3(\textcolor{keywordtype}{float}\ *\ in,\ \textcolor{keywordtype}{float}\ *\ out,\ \textcolor{keywordtype}{float}\ *tempbuf,\ \textcolor{keywordtype}{int}\ width,\ \textcolor{keywordtype}{int}\ height,\ \textcolor{keywordtype}{int}\ stridepix,\ \textcolor{keywordtype}{float}\ *coeffs,\ \textcolor{keywordtype}{float}\ *resid\_ic,\ \textcolor{keywordtype}{float}\ *resid\_step\ );}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keywordtype}{void}\ \_compute\_gauss3\_resids(\ complex<double>\ poles[],\ \textcolor{keywordtype}{float}\ *coeffs,\ \textcolor{keywordtype}{float}\ *resid\_ic,\ \textcolor{keywordtype}{float}\ *resid\_step\ );}
+\DoxyCodeLine{00062\ \};}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\_FASTGAUSS\_H\_*/}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

@@ -1,0 +1,347 @@
+\doxysection{Fast\+Gauss.\+cpp}
+\label{FastGauss_8cpp_source}\index{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/pf3dBottomup/src/FastGauss.cpp@{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/pf3dBottomup/src/FastGauss.cpp}}
+\mbox{\hyperlink{FastGauss_8cpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{//\ -\/*-\/\ mode:C++;\ tab-\/width:4;\ c-\/basic-\/offset:4;\ indent-\/tabs-\/mode:nil\ -\/*-\/}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{comment}{//\ Copyright:\ (C)\ 2006-\/2007\ Alex\ Bernardino,\ ISR-\/IST}}
+\DoxyCodeLine{00004\ \textcolor{comment}{//\ Authors:\ Alex\ Bernardino}}
+\DoxyCodeLine{00005\ \textcolor{comment}{//\ CopyPolicy:\ Released\ under\ the\ terms\ of\ the\ GNU\ GPL\ v2.0.}}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#include\ <string.h>}\ }
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#include\ <iCub/FastGauss.h>}}
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#include\ <iCub/IIRGausDeriv.h>}}
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#include\ <iCub/IIRFilt.h>}}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ FastGauss::FastGauss(\textcolor{keywordtype}{void})}
+\DoxyCodeLine{00023\ \{}
+\DoxyCodeLine{00024\ \ \ \ \ \textcolor{comment}{//Initialization\ of\ constants\ and\ variables}}
+\DoxyCodeLine{00025\ \ \ \ \ m\_i\_lines\ =\ 0;}
+\DoxyCodeLine{00026\ \ \ \ \ m\_i\_cols\ =\ 0;}
+\DoxyCodeLine{00027\ \ \ \ \ stride\ =\ 0;}
+\DoxyCodeLine{00028\ \ \ \ \ m\_i\_stridepix\ =\ 0;}
+\DoxyCodeLine{00029\ \ \ \ \ temp\ =\ NULL;}
+\DoxyCodeLine{00030\ \ \ \ \ m\_scale\ =\ 0;}
+\DoxyCodeLine{00031\ \ \ \ \ filt\_poles\ =\ NULL;}
+\DoxyCodeLine{00032\ \ \ \ \ filt\_coeffs\ =\ NULL;}
+\DoxyCodeLine{00033\ \ \ \ \ m\_bAllocated\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00034\ \ \ \ \ m\_resid\_step\ =\ NULL;}
+\DoxyCodeLine{00035\ \ \ \ \ m\_resid\_ic\ =\ NULL;}
+\DoxyCodeLine{00036\ \}}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ FastGauss::\string~FastGauss(\textcolor{keywordtype}{void})}
+\DoxyCodeLine{00039\ \{}
+\DoxyCodeLine{00040\ \ \ \ \ FreeResources();}
+\DoxyCodeLine{00041\ \}}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \textcolor{keywordtype}{bool}\ FastGauss::IsAllocated()}
+\DoxyCodeLine{00044\ \{}
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keywordflow}{return}\ m\_bAllocated;}
+\DoxyCodeLine{00046\ \}}
+\DoxyCodeLine{00047\ \textcolor{keywordtype}{long}\ FastGauss::GetLines()}
+\DoxyCodeLine{00048\ \{}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordflow}{return}\ m\_i\_lines;}
+\DoxyCodeLine{00050\ \}}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \textcolor{keywordtype}{long}\ FastGauss::GetCols()}
+\DoxyCodeLine{00053\ \{}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keywordflow}{return}\ m\_i\_cols;}
+\DoxyCodeLine{00055\ \}}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \textcolor{keywordtype}{long}\ FastGauss::GetStridePix()}
+\DoxyCodeLine{00059\ \{}
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{keywordflow}{return}\ m\_i\_stridepix;}
+\DoxyCodeLine{00061\ \}}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \textcolor{keywordtype}{double}\ FastGauss::GetScale()}
+\DoxyCodeLine{00064\ \{}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keywordflow}{return}\ m\_scale;}
+\DoxyCodeLine{00066\ \}}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \textcolor{keywordtype}{bool}\ FastGauss::AllocateResources(\textcolor{keywordtype}{long}\ lines,\ \textcolor{keywordtype}{long}\ cols,\ \textcolor{keywordtype}{double}\ scale)}
+\DoxyCodeLine{00069\ \{}
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keywordflow}{if}(IsAllocated())}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ FreeResources();}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \ \ \ \ m\_i\_lines\ =\ lines;}
+\DoxyCodeLine{00074\ \ \ \ \ m\_i\_cols\ =\ cols;}
+\DoxyCodeLine{00075\ \ \ \ \ }
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{keywordflow}{if}(scale\ <\ 0.5)}
+\DoxyCodeLine{00077\ \ \ \ \ \{}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{stringliteral}{"{}Scale\ values\ lower\ than\ 0.5\ are\ not\ alowed"{}};}
+\DoxyCodeLine{00079\ \ \ \ \ \}}
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{keywordflow}{if}(scale\ >\ 100)}
+\DoxyCodeLine{00081\ \ \ \ \ \{}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{stringliteral}{"{}Danger:\ Bad\ Approximation\ for\ scale\ values\ higher\ than\ 100"{}};}
+\DoxyCodeLine{00083\ \ \ \ \ \}}
+\DoxyCodeLine{00084\ \ \ \ \ m\_scale\ =\ scale;}
+\DoxyCodeLine{00085\ \ \ \ \ }
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{comment}{//allocation\ of\ level\ structures\ -\/\ \ filter\ poles,\ coefficients,\ residues}}
+\DoxyCodeLine{00087\ \ \ \ \ filt\_poles\ =\ \textcolor{keyword}{new}\ complex<double>[5];\ \textcolor{comment}{//max\ 5\ complex\ poles\ }}
+\DoxyCodeLine{00088\ \ \ \ \ \textcolor{comment}{//filt\_coeffs\ =\ (float*)malloc(6*sizeof(float));\ //max\ 6\ coeffs\ :\ 1\ gain\ +\ 5\ autoregressive\ terms}}
+\DoxyCodeLine{00089\ \ \ \ \ filt\_coeffs\ =\ \textcolor{keyword}{new}\ \textcolor{keywordtype}{float}[6];\ \textcolor{comment}{//max\ 6\ coeffs\ :\ 1\ gain\ +\ 5\ autoregressive\ terms}}
+\DoxyCodeLine{00090\ \ \ \ \ \textcolor{comment}{//m\_resid\_step\ =\ (float*)malloc(3*sizeof(float));}}
+\DoxyCodeLine{00091\ \ \ \ \ m\_resid\_step\ =\ \textcolor{keyword}{new}\ \textcolor{keywordtype}{float}[3];}
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{comment}{//m\_resid\_ic\ =\ (float*)malloc(9*sizeof(float));}}
+\DoxyCodeLine{00093\ \ \ \ \ m\_resid\_ic\ =\ \textcolor{keyword}{new}\ \textcolor{keywordtype}{float}[9];}
+\DoxyCodeLine{00094\ \ \ \ \ }
+\DoxyCodeLine{00095\ \ \ \ \ \textcolor{comment}{//allocation\ of\ image\ buffers\ for\ computations}}
+\DoxyCodeLine{00096\ \ \ \ \ }
+\DoxyCodeLine{00097\ \ \ \ \ m\_i\_stridepix\ =\ m\_i\_cols;}
+\DoxyCodeLine{00098\ \ \ \ \ stride\ =\ m\_i\_cols*4;}
+\DoxyCodeLine{00099\ \ \ \ \ \textcolor{comment}{//temp\ =\ (float*)malloc(m\_i\_lines*m\_i\_cols*sizeof(float));}}
+\DoxyCodeLine{00100\ \ \ \ \ temp\ =\ \textcolor{keyword}{new}\ \textcolor{keywordtype}{float}[m\_i\_lines*m\_i\_cols];}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \textcolor{comment}{//compute\ filter\ poles,\ coefficients\ and\ boundary\ gaussian\ residues\ for\ each\ scale}}
+\DoxyCodeLine{00103\ \ \ \ \ calc\_poles(3,m\_scale,d0\_N3\_Linf,\ filt\_poles);}
+\DoxyCodeLine{00104\ \ \ \ \ calc\_coeffs(3,\ filt\_poles,\ filt\_coeffs);}
+\DoxyCodeLine{00105\ \ \ \ \ \_compute\_gauss3\_resids(filt\_poles,\ filt\_coeffs,\ m\_resid\_ic,\ m\_resid\_step);}
+\DoxyCodeLine{00106\ \ \ \ \ }
+\DoxyCodeLine{00107\ \ \ \ \ m\_bAllocated\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00108\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00109\ \}}
+\DoxyCodeLine{00110\ }
+\DoxyCodeLine{00111\ \textcolor{keywordtype}{bool}\ FastGauss::FreeResources()}
+\DoxyCodeLine{00112\ \{}
+\DoxyCodeLine{00113\ \ \ \ \ m\_bAllocated\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{keywordflow}{if}(m\_resid\_step\ !=\ NULL)}
+\DoxyCodeLine{00115\ \ \ \ \ \{}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \textcolor{comment}{//free(m\_resid\_step);}}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{delete}[]\ m\_resid\_step;}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ m\_resid\_step\ =\ NULL;}
+\DoxyCodeLine{00119\ \ \ \ \ \}}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ \ \ \ \ \textcolor{keywordflow}{if}(m\_resid\_ic!=\ NULL)}
+\DoxyCodeLine{00122\ \ \ \ \ \{}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \textcolor{comment}{//free(m\_resid\_ic);}}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \textcolor{keyword}{delete}[]\ m\_resid\_ic;}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ m\_resid\_ic\ =\ NULL;}
+\DoxyCodeLine{00126\ \ \ \ \ \}}
+\DoxyCodeLine{00127\ }
+\DoxyCodeLine{00128\ \ \ \ \ \textcolor{keywordflow}{if}(filt\_coeffs\ !=\ NULL)}
+\DoxyCodeLine{00129\ \ \ \ \ \{}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \textcolor{comment}{//free(filt\_coeffs);}}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \textcolor{keyword}{delete}[]\ filt\_coeffs;}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ filt\_coeffs\ =\ NULL;}
+\DoxyCodeLine{00133\ \ \ \ \ \}}
+\DoxyCodeLine{00134\ \ \ \ \ \textcolor{keywordflow}{if}(filt\_poles\ !=\ NULL)}
+\DoxyCodeLine{00135\ \ \ \ \ \{}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \textcolor{keyword}{delete}[]\ filt\_poles;}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ filt\_poles\ =\ NULL;}
+\DoxyCodeLine{00138\ \ \ \ \ \}}
+\DoxyCodeLine{00139\ }
+\DoxyCodeLine{00140\ \ \ \ \ \textcolor{keywordflow}{if}(temp\ !=\ NULL)\ }
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \textcolor{comment}{//free(temp);\ \ \ }}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \textcolor{keyword}{delete}[]\ temp;\ \ }
+\DoxyCodeLine{00143\ }
+\DoxyCodeLine{00144\ \ \ \ \ temp\ =\ NULL;}
+\DoxyCodeLine{00145\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00146\ \}}
+\DoxyCodeLine{00147\ }
+\DoxyCodeLine{00148\ \textcolor{keywordtype}{void}\ FastGauss::\_iir\_gaussfilt3\_horz(\textcolor{keywordtype}{float}\ *\ in,\ \textcolor{keywordtype}{float}\ *\ tempbuf,\ \textcolor{keywordtype}{float}\ *\ out,\ \textcolor{keywordtype}{int}\ width,\ \textcolor{keywordtype}{int}\ height,\ \textcolor{keywordtype}{int}\ stridepix,\ \textcolor{keywordtype}{float}\ *coeffs,\ \textcolor{keywordtype}{float}\ *resid\_ic,\ \textcolor{keywordtype}{float}\ *resid\_step)}
+\DoxyCodeLine{00149\ \{}
+\DoxyCodeLine{00150\ \ \ \ \ }
+\DoxyCodeLine{00151\ \ \ \ \ \textcolor{keywordtype}{float}\ i0[3];\ \textcolor{comment}{//initial\ condition\ vector\ -\/\ to\ compute}}
+\DoxyCodeLine{00152\ \ \ \ \ \textcolor{keywordtype}{int}\ i,s,bi,bf;}
+\DoxyCodeLine{00153\ \ \ \ \ \textcolor{keywordtype}{float}\ bi\_val,\ bf\_val;}
+\DoxyCodeLine{00154\ \ \ \ \ s\ =\ stridepix;}
+\DoxyCodeLine{00155\ \ \ \ \ \textcolor{comment}{//filtering\ rows}}
+\DoxyCodeLine{00156\ \ \ \ \ \textcolor{keywordflow}{for}(i\ =\ 0;\ i\ <\ height;\ i++)}
+\DoxyCodeLine{00157\ \ \ \ \ \{}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ bi\ =\ i*s;}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ bf\ =\ i*s+width-\/1;}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ bi\_val\ =\ in[bi];}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ bf\_val\ =\ in[bf];}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \textcolor{comment}{//causal\ phase}}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \textcolor{comment}{//compute\ forward\ initial\ conditions\ (response\ to\ a\ step\ of\ bi\_val\ amplitude)}}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ compute\_step\_forward\_ic(bi\_val,\ coeffs,\ i0);}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*mag\ =\ b0/(1+a1+a2+a3);}}
+\DoxyCodeLine{00167\ \textcolor{comment}{\ \ \ \ \ \ \ \ i0[0]\ =\ i0[1]\ =\ i0[2]\ =\ (float)(mag*bi\_val);*/}}
+\DoxyCodeLine{00168\ }
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ iir\_filt\_forward(in+bi,tempbuf,width,coeffs,i0);}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \textcolor{comment}{//anticausal\ phase}}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ i0[0]\ =\ tempbuf[width-\/1];}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ i0[1]\ =\ tempbuf[width-\/2];}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ i0[2]\ =\ tempbuf[width-\/3];}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ compute\_natural\_backward\_ic(resid\_ic,i0);}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ add\_step\_backward\_ic(resid\_step,bf\_val,i0);}
+\DoxyCodeLine{00177\ }
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ iir\_filt\_backward(tempbuf,out+bi,width,coeffs,i0);}
+\DoxyCodeLine{00179\ \ \ \ \ \}}
+\DoxyCodeLine{00180\ \}}
+\DoxyCodeLine{00181\ }
+\DoxyCodeLine{00182\ \textcolor{keywordtype}{void}\ FastGauss::\_iir\_gaussfilt3\_vert(\textcolor{keywordtype}{float}\ *\ inout,\ \textcolor{keywordtype}{float}\ *tempbuf,\ \textcolor{keywordtype}{int}\ width,\ \textcolor{keywordtype}{int}\ height,\ \textcolor{keywordtype}{int}\ stridepix,\ \textcolor{keywordtype}{float}\ *coeffs,\ \textcolor{keywordtype}{float}\ *resid\_ic,\ \textcolor{keywordtype}{float}\ *resid\_step)}
+\DoxyCodeLine{00183\ \{}
+\DoxyCodeLine{00184\ }
+\DoxyCodeLine{00185\ \ \ \ \ \textcolor{comment}{//filter\ coefficients}}
+\DoxyCodeLine{00186\ \ \ \ \ \textcolor{keywordtype}{float}\ b0\ =\ coeffs[0];}
+\DoxyCodeLine{00187\ \ \ \ \ \textcolor{keywordtype}{float}\ a1\ =\ coeffs[1];}
+\DoxyCodeLine{00188\ \ \ \ \ \textcolor{keywordtype}{float}\ a2\ =\ coeffs[2];}
+\DoxyCodeLine{00189\ \ \ \ \ \textcolor{keywordtype}{float}\ a3\ =\ coeffs[3];}
+\DoxyCodeLine{00190\ }
+\DoxyCodeLine{00191\ \ \ \ \ \textcolor{keywordtype}{float}\ i0[3];\ \textcolor{comment}{//initial\ condition\ vector\ -\/\ to\ compute}}
+\DoxyCodeLine{00192\ \ \ \ \ \textcolor{keywordtype}{int}\ j,s,bi,bf;}
+\DoxyCodeLine{00193\ \ \ \ \ \textcolor{keywordtype}{float}\ bi\_val,\ bf\_val;}
+\DoxyCodeLine{00194\ \ \ \ \ s\ =\ stridepix;}
+\DoxyCodeLine{00195\ }
+\DoxyCodeLine{00196\ \ \ \ \ \textcolor{comment}{//filtering\ columns\ }}
+\DoxyCodeLine{00197\ \ \ \ \ \textcolor{keywordflow}{for}(j\ =\ 0;\ j\ <\ width;\ j++)}
+\DoxyCodeLine{00198\ \ \ \ \ \{}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ bi\ =\ j;}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ bf\ =\ (height-\/1)*s+j;}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ bi\_val\ =\ inout[bi];}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ bf\_val\ =\ inout[bf];}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \textcolor{comment}{//causal\ phase}}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \textcolor{comment}{//compute\ forward\ initial\ conditions\ (response\ to\ a\ step\ of\ bi\_val\ amplitude)}}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ compute\_step\_forward\_ic(bi\_val,\ coeffs,\ i0);}
+\DoxyCodeLine{00206\ }
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*mag\ =\ b0/(1+a1+a2+a3);}}
+\DoxyCodeLine{00208\ \textcolor{comment}{\ \ \ \ \ \ \ \ i0[0]\ =\ i0[1]\ =\ i0[2]\ =\ (float)(mag*bi\_val);*/}}
+\DoxyCodeLine{00209\ }
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ iir\_filt\_forward(inout+bi,s,tempbuf,height,coeffs,i0);}
+\DoxyCodeLine{00211\ }
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ i0[0]\ =\ tempbuf[height-\/1];}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ i0[1]\ =\ tempbuf[height-\/2];}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ i0[2]\ =\ tempbuf[height-\/3];}
+\DoxyCodeLine{00215\ }
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ compute\_natural\_backward\_ic(resid\_ic,i0);}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ add\_step\_backward\_ic(resid\_step,bf\_val,i0);}
+\DoxyCodeLine{00218\ }
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ iir\_filt\_backward(tempbuf,inout+bi,s,height,coeffs,i0);}
+\DoxyCodeLine{00220\ \ \ \ \ \}}
+\DoxyCodeLine{00221\ \}}
+\DoxyCodeLine{00222\ }
+\DoxyCodeLine{00223\ \textcolor{keywordtype}{void}\ FastGauss::\_iir\_gaussfilt3(\textcolor{keywordtype}{float}\ *\ in,\ \textcolor{keywordtype}{float}\ *\ out,\ \textcolor{keywordtype}{float}\ *tempbuf,\ \textcolor{keywordtype}{int}\ width,\ \textcolor{keywordtype}{int}\ height,\ \textcolor{keywordtype}{int}\ stridepix,\ \textcolor{keywordtype}{float}\ *coeffs,\ \textcolor{keywordtype}{float}\ *resid\_ic,\ \textcolor{keywordtype}{float}\ *resid\_step\ )}
+\DoxyCodeLine{00224\ \{}
+\DoxyCodeLine{00225\ \ \ \ \ \_iir\_gaussfilt3\_horz(in,\ tempbuf,\ out,\ width,\ height,\ stridepix,\ coeffs,\ resid\_ic,\ resid\_step);}
+\DoxyCodeLine{00226\ \ \ \ \ \_iir\_gaussfilt3\_vert(out,\ tempbuf,\ width,\ height,\ stridepix,\ coeffs,\ resid\_ic,\ resid\_step);}
+\DoxyCodeLine{00227\ \}}
+\DoxyCodeLine{00228\ }
+\DoxyCodeLine{00229\ \textcolor{keywordtype}{bool}\ FastGauss::GaussFilt(\textcolor{keywordtype}{float}\ *\ in,\ \textcolor{keywordtype}{float}\ *\ out)}
+\DoxyCodeLine{00230\ \{\ \ \ }
+\DoxyCodeLine{00231\ \ \ \ \ \textcolor{keywordflow}{if}(!IsAllocated())}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{stringliteral}{"{}Resources\ not\ allocated"{}};}
+\DoxyCodeLine{00233\ }
+\DoxyCodeLine{00234\ \ \ \ \ \textcolor{keywordtype}{int}\ i;}
+\DoxyCodeLine{00235\ }
+\DoxyCodeLine{00236\ \ \ \ \ \textcolor{comment}{//copy\ image\ to\ internal\ buffer}}
+\DoxyCodeLine{00237\ \ \ \ \ \textcolor{keywordflow}{for}(\ i\ =\ 0;\ i\ <\ m\_i\_lines;\ i++\ )}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ memcpy(in\ +\ i*m\_i\_stridepix,\ in\ +\ m\_i\_cols*i,\ m\_i\_cols*\textcolor{keyword}{sizeof}(\textcolor{keywordtype}{float})\ );}
+\DoxyCodeLine{00239\ }
+\DoxyCodeLine{00240\ \ \ \ \ \textcolor{comment}{//computing\ the\ gaussian\ filtered\ image}}
+\DoxyCodeLine{00241\ \ \ \ \ \_iir\_gaussfilt3(in,\ out,\ temp,\ m\_i\_cols,\ m\_i\_lines,\ m\_i\_stridepix,\ filt\_coeffs,\ m\_resid\_ic,\ m\_resid\_step\ );}
+\DoxyCodeLine{00242\ }
+\DoxyCodeLine{00243\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00244\ \}}
+\DoxyCodeLine{00245\ }
+\DoxyCodeLine{00246\ \textcolor{keywordtype}{void}\ FastGauss::compute\_step\_forward\_ic(\textcolor{keywordtype}{float}\ bord\_val,\ \textcolor{keywordtype}{float}\ *coeffs,\ \textcolor{keywordtype}{float}\ *i0)}
+\DoxyCodeLine{00247\ \{}
+\DoxyCodeLine{00248\ \ \ \ \ \textcolor{comment}{//filter\ coefficients}}
+\DoxyCodeLine{00249\ \ \ \ \ \textcolor{keywordtype}{float}\ b0\ =\ coeffs[0];}
+\DoxyCodeLine{00250\ \ \ \ \ \textcolor{keywordtype}{float}\ a1\ =\ coeffs[1];}
+\DoxyCodeLine{00251\ \ \ \ \ \textcolor{keywordtype}{float}\ a2\ =\ coeffs[2];}
+\DoxyCodeLine{00252\ \ \ \ \ \textcolor{keywordtype}{float}\ a3\ =\ coeffs[3];}
+\DoxyCodeLine{00253\ }
+\DoxyCodeLine{00254\ \ \ \ \ i0[0]\ =\ i0[1]\ =\ i0[2]\ =\ bord\_val*b0/(1+a1+a2+a3);}
+\DoxyCodeLine{00255\ \}}
+\DoxyCodeLine{00256\ }
+\DoxyCodeLine{00257\ \textcolor{keywordtype}{void}\ FastGauss::compute\_natural\_backward\_ic(\ \textcolor{keywordtype}{float}\ *resid\_ic,\ \textcolor{keywordtype}{float}\ *init\_cond\ )}
+\DoxyCodeLine{00258\ \{}
+\DoxyCodeLine{00259\ \ \ \ \ \textcolor{keywordtype}{float}\ i0\ =\ init\_cond[0];}
+\DoxyCodeLine{00260\ \ \ \ \ \textcolor{keywordtype}{float}\ i1\ =\ init\_cond[1];}
+\DoxyCodeLine{00261\ \ \ \ \ \textcolor{keywordtype}{float}\ i2\ =\ init\_cond[2];}
+\DoxyCodeLine{00262\ }
+\DoxyCodeLine{00263\ \ \ \ \ init\_cond[0]=i0*resid\_ic[0]+i1*resid\_ic[1]+i2*resid\_ic[2];}
+\DoxyCodeLine{00264\ \ \ \ \ init\_cond[1]=i0*resid\_ic[3]+i1*resid\_ic[4]+i2*resid\_ic[5];}
+\DoxyCodeLine{00265\ \ \ \ \ init\_cond[2]=i0*resid\_ic[6]+i1*resid\_ic[7]+i2*resid\_ic[8];}
+\DoxyCodeLine{00266\ \}}
+\DoxyCodeLine{00267\ }
+\DoxyCodeLine{00268\ \textcolor{keywordtype}{void}\ FastGauss::add\_step\_backward\_ic(\ \textcolor{keywordtype}{float}\ *resid\_step,\ \textcolor{keywordtype}{float}\ val,\ \textcolor{keywordtype}{float}\ *init\_cond\ )}
+\DoxyCodeLine{00269\ \{}
+\DoxyCodeLine{00270\ \ \ \ \ init\_cond[0]\ +=\ val*resid\_step[0];}
+\DoxyCodeLine{00271\ \ \ \ \ init\_cond[1]\ +=\ val*resid\_step[1];}
+\DoxyCodeLine{00272\ \ \ \ \ init\_cond[2]\ +=\ val*resid\_step[2];}
+\DoxyCodeLine{00273\ \}}
+\DoxyCodeLine{00274\ }
+\DoxyCodeLine{00275\ \textcolor{keywordtype}{void}\ FastGauss::\_compute\_gauss3\_resids(\ complex<double>\ filt\_poles[],\ \textcolor{keywordtype}{float}\ *filt\_coeffs,\ \textcolor{keywordtype}{float}\ *resid\_ic,\ \textcolor{keywordtype}{float}\ *resid\_step\ )}
+\DoxyCodeLine{00276\ \{}
+\DoxyCodeLine{00277\ }
+\DoxyCodeLine{00278\ \ \ \ \ complex\ <double>\ p1,\ p2,\ p3,\ \_p1,\ \_p2,\ \_p3;}
+\DoxyCodeLine{00279\ \ \ \ \ complex\ <double>\ p1\_1,\ p1\_2,\ p1\_3,\ p2\_1,\ p2\_2,\ p2\_3,\ p3\_1,\ p3\_2,\ p3\_3;}
+\DoxyCodeLine{00280\ \ \ \ \ \textcolor{keywordtype}{double}\ b0,\ a1,\ a2,\ a3;}
+\DoxyCodeLine{00281\ }
+\DoxyCodeLine{00282\ \ \ \ \ \_p1\ =\ filt\_poles[0];}
+\DoxyCodeLine{00283\ \ \ \ \ \_p2\ =\ filt\_poles[1];}
+\DoxyCodeLine{00284\ \ \ \ \ \_p3\ =\ filt\_poles[2];}
+\DoxyCodeLine{00285\ \ \ \ \ b0\ =\ filt\_coeffs[0];}
+\DoxyCodeLine{00286\ \ \ \ \ a1\ =\ filt\_coeffs[1];}
+\DoxyCodeLine{00287\ \ \ \ \ a2\ =\ filt\_coeffs[2];}
+\DoxyCodeLine{00288\ \ \ \ \ a3\ =\ filt\_coeffs[3];}
+\DoxyCodeLine{00289\ }
+\DoxyCodeLine{00290\ }
+\DoxyCodeLine{00291\ \ \ \ \ p1\ =\ 1.0/\_p1;}
+\DoxyCodeLine{00292\ \ \ \ \ p2\ =\ 1.0/\_p2;}
+\DoxyCodeLine{00293\ \ \ \ \ p3\ =\ 1.0/\_p3;}
+\DoxyCodeLine{00294\ \ \ \ \ p1\_1\ \ =\ \_p1;}
+\DoxyCodeLine{00295\ \ \ \ \ p1\_2\ =\ p1\_1*\_p1;}
+\DoxyCodeLine{00296\ \ \ \ \ p1\_3\ =\ p1\_2*\_p1;}
+\DoxyCodeLine{00297\ \ \ \ \ p2\_1\ =\ \_p2;}
+\DoxyCodeLine{00298\ \ \ \ \ p2\_2\ =\ p2\_1*\_p2;}
+\DoxyCodeLine{00299\ \ \ \ \ p2\_3\ =\ p2\_2*\_p2;}
+\DoxyCodeLine{00300\ \ \ \ \ p3\_1\ =\ \_p3;}
+\DoxyCodeLine{00301\ \ \ \ \ p3\_2\ =\ p3\_1*\_p3;}
+\DoxyCodeLine{00302\ \ \ \ \ p3\_3\ =\ p3\_2*\_p3;}
+\DoxyCodeLine{00303\ }
+\DoxyCodeLine{00304\ \ \ \ \ complex\ <double>\ res1a,\ res2a,\ res3a,\ res1b,\ res2b,\ res3b,\ res1c,\ res2c,\ res3c;}
+\DoxyCodeLine{00305\ \ \ \ \ \textcolor{comment}{//a3\ =\ -\/p1*p2*p3}}
+\DoxyCodeLine{00306\ \ \ \ \ res1a\ =\ b0/a3*p1\_3/(1.0-\/p1\_2)/(1.0-\/p1\_1*(p2+p2\_1)+p1\_2)/(1.0-\/p1\_1*(p3+p3\_1)+p1\_2);}
+\DoxyCodeLine{00307\ \ \ \ \ res2a\ =\ b0/a3*p2\_3/(1.0-\/p2\_2)/(1.0-\/p2\_1*(p1+p1\_1)+p2\_2)/(1.0-\/p2\_1*(p3+p3\_1)+p2\_2);}
+\DoxyCodeLine{00308\ \ \ \ \ res3a\ =\ b0/a3*p3\_3/(1.0-\/p3\_2)/(1.0-\/p3\_1*(p2+p2\_1)+p3\_2)/(1.0-\/p3\_1*(p1+p1\_1)+p3\_2);}
+\DoxyCodeLine{00309\ \ \ \ \ res1b\ =\ p1\_1*res1a;}
+\DoxyCodeLine{00310\ \ \ \ \ res2b\ =\ p2\_1*res2a;}
+\DoxyCodeLine{00311\ \ \ \ \ res3b\ =\ p3\_1*res3a;}
+\DoxyCodeLine{00312\ \ \ \ \ res1c\ =\ p1\_2*res1a;}
+\DoxyCodeLine{00313\ \ \ \ \ res2c\ =\ p2\_2*res2a;}
+\DoxyCodeLine{00314\ \ \ \ \ res3c\ =\ p3\_2*res3a;}
+\DoxyCodeLine{00315\ }
+\DoxyCodeLine{00316\ \ \ \ \ \textcolor{comment}{//initial\ condition\ residues}}
+\DoxyCodeLine{00317\ \ \ \ \ complex<double>\ r0,\ r1,\ r2,\ r3,\ r4,\ r5,\ r6,\ r7,\ r8;}
+\DoxyCodeLine{00318\ }
+\DoxyCodeLine{00319\ \ \ \ \ r0\ =\ (-\/a1*res1a-\/a2*res1b-\/a3*res1c);}
+\DoxyCodeLine{00320\ \ \ \ \ r1\ =\ (-\/a2*res1a-\/a3*res1b);}
+\DoxyCodeLine{00321\ \ \ \ \ r2\ =\ (-\/a3*res1a);}
+\DoxyCodeLine{00322\ \ \ \ \ r3\ =\ (-\/a1*res2a-\/a2*res2b-\/a3*res2c);}
+\DoxyCodeLine{00323\ \ \ \ \ r4\ =\ (-\/a2*res2a-\/a3*res2b);}
+\DoxyCodeLine{00324\ \ \ \ \ r5\ =\ (-\/a3*res2a);}
+\DoxyCodeLine{00325\ \ \ \ \ r6\ =\ (-\/a1*res3a-\/a2*res3b-\/a3*res3c);}
+\DoxyCodeLine{00326\ \ \ \ \ r7\ =\ (-\/a2*res3a-\/a3*res3b);}
+\DoxyCodeLine{00327\ \ \ \ \ r8\ =\ (-\/a3*res3a);}
+\DoxyCodeLine{00328\ }
+\DoxyCodeLine{00329\ \ \ \ \ resid\_ic[0]\ =\ (float)real(r0+r3+r6);}
+\DoxyCodeLine{00330\ \ \ \ \ resid\_ic[1]\ =\ (float)real(r1+r4+r7);}
+\DoxyCodeLine{00331\ \ \ \ \ resid\_ic[2]\ =\ (float)real(r2+r5+r8);}
+\DoxyCodeLine{00332\ \ \ \ \ resid\_ic[3]\ =\ (float)real(r0*p1+r3*p2+r6*p3);}
+\DoxyCodeLine{00333\ \ \ \ \ resid\_ic[4]\ =\ (float)real(r1*p1+r4*p2+r7*p3);}
+\DoxyCodeLine{00334\ \ \ \ \ resid\_ic[5]\ =\ (float)real(r2*p1+r5*p2+r8*p3);}
+\DoxyCodeLine{00335\ \ \ \ \ resid\_ic[6]\ =\ (float)real(r0*p1*p1+r3*p2*p2+r6*p3*p3);}
+\DoxyCodeLine{00336\ \ \ \ \ resid\_ic[7]\ =\ (float)real(r1*p1*p1+r4*p2*p2+r7*p3*p3);}
+\DoxyCodeLine{00337\ \ \ \ \ resid\_ic[8]\ =\ (float)real(r2*p1*p1+r5*p2*p2+r8*p3*p3);}
+\DoxyCodeLine{00338\ }
+\DoxyCodeLine{00339\ \ \ \ \ \textcolor{comment}{//step\ residues}}
+\DoxyCodeLine{00340\ \ \ \ \ complex\ <double>\ res1,\ res2,\ res3,\ res4;}
+\DoxyCodeLine{00341\ }
+\DoxyCodeLine{00342\ \ \ \ \ res1\ =\ b0*res1a/(1.0-\/\_p1);}
+\DoxyCodeLine{00343\ \ \ \ \ res2\ =\ b0*res2a/(1.0-\/\_p2);}
+\DoxyCodeLine{00344\ \ \ \ \ res3\ =\ b0*res3a/(1.0-\/\_p3);}
+\DoxyCodeLine{00345\ \ \ \ \ res4\ =\ b0*b0/(1+a1+a2+a3)/(1+a1+a2+a3);}
+\DoxyCodeLine{00346\ \ \ \ \ resid\_step[0]\ =\ (float)real(res1+res2+res3+res4);}
+\DoxyCodeLine{00347\ \ \ \ \ resid\_step[1]\ =\ (float)real(res1*p1+res2*p2+res3*p3+res4);}
+\DoxyCodeLine{00348\ \ \ \ \ resid\_step[2]\ =\ (float)real(res1*p1*p1+res2*p2*p2+res3*p3*p3+res4);}
+\DoxyCodeLine{00349\ \}}
+\DoxyCodeLine{00350\ }
+\DoxyCodeLine{00351\ }
+
+\end{DoxyCode}

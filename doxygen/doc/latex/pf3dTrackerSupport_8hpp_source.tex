@@ -1,0 +1,47 @@
+\doxysection{pf3d\+Tracker\+Support.\+hpp}
+\label{pf3dTrackerSupport_8hpp_source}\index{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/pf3dTracker/include/iCub/pf3dTrackerSupport.hpp@{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/pf3dTracker/include/iCub/pf3dTrackerSupport.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#ifndef\ \_PF3DTRACKERSUPPORT\_}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#define\ \_PF3DTRACKERSUPPORT\_}}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#include\ <ctime>}}
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ <fstream>}}
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#include\ <iomanip>}}
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#include\ <sstream>}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#include\ <yarp/os/LogStream.h>}}
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#ifdef\ \_CH\_}}
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#pragma\ package\ <opencv>}}
+\DoxyCodeLine{00021\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00022\ \textcolor{preprocessor}{\#ifndef\ \_EiC}}
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#include\ <opencv2/opencv.hpp>}}
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#include\ <opencv2/highgui/highgui.hpp>}}
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ <opencv2/core/types\_c.h>}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{struct\ }Lut}
+\DoxyCodeLine{00029\ \{}
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{keywordtype}{int}\ y;}
+\DoxyCodeLine{00031\ \ \ \ \ \textcolor{keywordtype}{int}\ u;}
+\DoxyCodeLine{00032\ \ \ \ \ \textcolor{keywordtype}{int}\ v;}
+\DoxyCodeLine{00033\ \};}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{keywordtype}{void}\ rgbToYuvBin(\textcolor{keywordtype}{int}\ \&R,\ \textcolor{keywordtype}{int}\ \&G,\ \textcolor{keywordtype}{int}\ \&B,\ \textcolor{keywordtype}{int}\ \&YBin,\ \textcolor{keywordtype}{int}\ \&UBin,\ \textcolor{keywordtype}{int}\ \&VBin);}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{keywordtype}{void}\ rgbToYuvBinImage(IplImage\ *image,IplImage\ *yuvBinsImage);}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \textcolor{keywordtype}{void}\ rgbToYuvBinMatLut(\textcolor{keyword}{const}\ cv::Mat\&\ image,\ cv::Mat\&\ yuvBinsImage,\ Lut\ *lut);}
+\DoxyCodeLine{00040\ \textcolor{keywordtype}{void}\ rgbToYuvBinImageLut(IplImage\ *image,IplImage\ *yuvBinsImage,\ Lut\ *lut);}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \textcolor{keywordtype}{void}\ setPixel(\textcolor{keywordtype}{int}\ u,\ \textcolor{keywordtype}{int}\ v,\ \textcolor{keywordtype}{int}\ r,\ \textcolor{keywordtype}{int}\ g,\ \textcolor{keywordtype}{int}\ b,\ IplImage\ *image);}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \textcolor{keywordtype}{void}\ fillLut(Lut\ *lut);}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ \_PF3DTRACKERSUPPORT\_\ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

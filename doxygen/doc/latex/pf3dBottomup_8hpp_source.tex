@@ -1,0 +1,144 @@
+\doxysection{pf3d\+Bottomup.\+hpp}
+\label{pf3dBottomup_8hpp_source}\index{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/pf3dBottomup/include/iCub/pf3dBottomup.hpp@{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/pf3dBottomup/include/iCub/pf3dBottomup.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *\ A\ bottom-\/up\ approach\ for\ generating\ particles\ for\ the\ "{}pf3dTracker"{}\ module}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *\ Copyright\ (C)\ 2010\ RobotCub\ Consortium}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *\ Author:\ Martim\ Brandao}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ Note:\ Should\ you\ use\ or\ reference\ my\ work\ on\ your\ own\ research,\ please\ let\ me\ know\ (mbrandao\ \_AT\_\ isr.ist.utl.pt)}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ Image\ sequence\ as\ input,\ N\ particles\ (3D\ position\ of\ balls)\ as\ output.}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *\ CopyPolicy:\ Released\ under\ the\ terms\ of\ the\ GNU\ GPL\ v2.0.}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#include\ <sstream>}}
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#include\ <yarp/os/all.h>}}
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#include\ <yarp/sig/all.h>}}
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#include\ <iCub/ScaleSpace.h>}}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ \textcolor{preprocessor}{\#ifdef\ \_CH\_}}
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#pragma\ package\ <opencv>}}
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#ifndef\ \_EiC}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ <opencv2/opencv.hpp>}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ <opencv2/core/types\_c.h>}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ <opencv2/imgproc/imgproc\_c.h>}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{comment}{//\ my\ definitions}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#define\ PI\ 3.1415926535897932384626433832795}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#define\ SCATTER(s)\ (\ (s*(double)rand()/(double)RAND\_MAX)-\/0.5*s\ )}}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{keyword}{using\ namespace\ }std;}
+\DoxyCodeLine{00036\ \textcolor{keyword}{using\ namespace\ }yarp::os;}
+\DoxyCodeLine{00037\ \textcolor{keyword}{using\ namespace\ }yarp::sig;}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \textcolor{comment}{//\ module}}
+\DoxyCodeLine{00040\ \textcolor{keyword}{class\ }pf3dBottomup\ :\ \textcolor{keyword}{public}\ RFModule}
+\DoxyCodeLine{00041\ \{}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \textcolor{comment}{//\ my\ definitions}}
+\DoxyCodeLine{00047\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct\ }MbMoments}
+\DoxyCodeLine{00048\ \{}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordtype}{double}\ \ m00,\ m10,\ m01;}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keywordtype}{double}\ \ m[12];}
+\DoxyCodeLine{00051\ \}MbMoments;}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct\ }CameraModel}
+\DoxyCodeLine{00054\ \{}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keywordtype}{double}\ fx;}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keywordtype}{double}\ fy;}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keywordtype}{double}\ cx;}
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keywordtype}{double}\ cy;}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keywordtype}{double}\ fov;}
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{keywordtype}{double}\ aspect;}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keywordtype}{double}\ znear;}
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keywordtype}{double}\ zfar;}
+\DoxyCodeLine{00063\ \}CameraModel;}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct\ }ObjectModel}
+\DoxyCodeLine{00066\ \{}
+\DoxyCodeLine{00067\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00068\ \textcolor{comment}{\ \ \ \ static\ const\ int\ QUANT\_A=12;\ \ \ \ \ \ \ \ //this\ should\ be\ made\ variable...\ (dynamic\ init.)}}
+\DoxyCodeLine{00069\ \textcolor{comment}{\ \ \ \ static\ const\ int\ NUM\_MOM=12;\ \ \ \ \ \ \ \ //this\ should\ be\ made\ variable...\ (dynamic\ init.)}}
+\DoxyCodeLine{00070\ \textcolor{comment}{\ \ \ \ static\ const\ int\ NUM\_POSES=1008;\ \ \ \ //this\ should\ be\ made\ variable...\ (dynamic\ init.)}}
+\DoxyCodeLine{00071\ \textcolor{comment}{\ \ \ \ double\ data[NUM\_POSES][7+NUM\_MOM];}}
+\DoxyCodeLine{00072\ \textcolor{comment}{\ \ \ \ double\ moment\_variance[NUM\_MOM];}}
+\DoxyCodeLine{00073\ \textcolor{comment}{\ \ \ \ double\ prob[NUM\_POSES];}}
+\DoxyCodeLine{00074\ \textcolor{comment}{\ \ \ \ double\ prob\_acum[NUM\_POSES];}}
+\DoxyCodeLine{00075\ \textcolor{comment}{\ \ \ \ float\ prob\_particles[NUM\_POSES];}}
+\DoxyCodeLine{00076\ \textcolor{comment}{*/}}
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{keywordtype}{double}\ raio\_esfera;}
+\DoxyCodeLine{00078\ \ \ \ \ CvHistogram\ *hist;}
+\DoxyCodeLine{00079\ \ \ \ \ CvMat\ *particles;}
+\DoxyCodeLine{00080\ \}ObjectModel;}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00083\ \textcolor{comment}{//\ parameters\ set\ during\ initialization.}}
+\DoxyCodeLine{00084\ \textcolor{keywordtype}{string}\ \_inputVideoPortName;}
+\DoxyCodeLine{00085\ BufferedPort<ImageOf<PixelRgb>\ >\ \_inputVideoPort;}
+\DoxyCodeLine{00086\ \textcolor{keywordtype}{string}\ \_outputParticlePortName;}
+\DoxyCodeLine{00087\ BufferedPort<Bottle>\ \_outputParticlePort;}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \textcolor{keywordtype}{double}\ \_perspectiveFx;}
+\DoxyCodeLine{00090\ \textcolor{keywordtype}{double}\ \_perspectiveFy;}
+\DoxyCodeLine{00091\ \textcolor{keywordtype}{double}\ \_perspectiveCx;}
+\DoxyCodeLine{00092\ \textcolor{keywordtype}{double}\ \_perspectiveCy;}
+\DoxyCodeLine{00093\ \textcolor{keywordtype}{int}\ \_calibrationImageWidth;}
+\DoxyCodeLine{00094\ \textcolor{keywordtype}{int}\ \_calibrationImageHeight;}
+\DoxyCodeLine{00095\ \textcolor{keywordtype}{bool}\ \_doneInitializing;}
+\DoxyCodeLine{00096\ }
+\DoxyCodeLine{00097\ \textcolor{keywordtype}{int}\ \_nParticles;}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ ImageOf<PixelRgb>\ *\_yarpImage;}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \textcolor{comment}{//\ my\ parameters}}
+\DoxyCodeLine{00103\ \textcolor{keywordtype}{int}\ \_maskVmin,\ \_maskVmax,\ \_maskSmin,\ \_blur;}
+\DoxyCodeLine{00104\ \textcolor{keywordtype}{int}\ \_scaleSpaceLevels;}
+\DoxyCodeLine{00105\ \textcolor{keywordtype}{double}\ \_scaleSpaceScales[3];}
+\DoxyCodeLine{00106\ }
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00108\ \textcolor{comment}{//\ global\ instances}}
+\DoxyCodeLine{00109\ CameraModel\ \_camera;}
+\DoxyCodeLine{00110\ ObjectModel\ \_object\_model;}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00112\ ScaleSpace\ ss;}
+\DoxyCodeLine{00113\ IplImage\ *image,\ *infloat,\ *hsv,\ *hue,\ *sat,\ *val,\ *mask,\ *backproject,\ *backprojectmask2;}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ }
+\DoxyCodeLine{00116\ \textcolor{keywordtype}{void}\ calc\_hist\_from\_model\_2D(\textcolor{keywordtype}{string}\ file,\ CvHistogram\ **objhist,\ \textcolor{keywordtype}{int}\ \_vmin,\ \textcolor{keywordtype}{int}\ \_vmax);}
+\DoxyCodeLine{00117\ \textcolor{keywordtype}{void}\ normalize\_to\_global\_max(IplImage\ *img);}
+\DoxyCodeLine{00118\ \textcolor{keywordtype}{void}\ scale\_space\_segmentation(IplImage\ *img,\ ScaleSpace\ *ss,\ IplImage\ *result);}
+\DoxyCodeLine{00119\ \textcolor{keywordtype}{int}\ object\_localization\_simple(IplImage\ *segm,\ ObjectModel\ *model,\ CameraModel\ *camera);}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ }
+\DoxyCodeLine{00122\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00124\ pf3dBottomup();\ \textcolor{comment}{//constructor}}
+\DoxyCodeLine{00125\ \string~pf3dBottomup();\ \textcolor{comment}{//destructor}}
+\DoxyCodeLine{00126\ }
+\DoxyCodeLine{00127\ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{bool}\ configure(ResourceFinder\ \&rf);\ \textcolor{comment}{//member\ to\ set\ the\ object\ up.}}
+\DoxyCodeLine{00128\ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{bool}\ close();\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//member\ to\ close\ the\ object.}}
+\DoxyCodeLine{00129\ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{bool}\ interruptModule();\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//member\ to\ close\ the\ object.}}
+\DoxyCodeLine{00130\ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{bool}\ updateModule();\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//member\ that\ is\ repeatedly\ called\ by\ YARP}}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00132\ \};}
+\DoxyCodeLine{00133\ }
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00135\ \textcolor{comment}{//\ changed\ functions}}
+\DoxyCodeLine{00136\ \textcolor{keywordtype}{void}\ cvFloodFill2(\ CvArr*\ arr,\ CvPoint\ seed\_point,\ CvScalar\ newVal,\ CvScalar\ lo\_diff,\ CvScalar\ up\_diff,\ CvConnectedComp*\ comp,\ \textcolor{keywordtype}{int}\ flags,\ CvArr*\ maskarr\ );}
+\DoxyCodeLine{00137\ }
+\DoxyCodeLine{00138\ }
+
+\end{DoxyCode}

@@ -1,0 +1,220 @@
+\doxysection{pf3d\+Tracker.\+hpp}
+\label{pf3dTracker_8hpp_source}\index{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/pf3dTracker/include/iCub/pf3dTracker.hpp@{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/pf3dTracker/include/iCub/pf3dTracker.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00007\ \textcolor{comment}{//good\ combinations:}}
+\DoxyCodeLine{00008\ \textcolor{comment}{//\ \_nParticles\ |\ stDev\ |\ inside\_outside\ |\ nPixels}}
+\DoxyCodeLine{00009\ \textcolor{comment}{//\ \ 800\ \ \ \ \ \ \ 100\ \ \ \ \ \ \ \ \ \ 1.5\ \ \ \ \ \ 50}}
+\DoxyCodeLine{00010\ \textcolor{comment}{//with\ 800\ particles\ and\ 30fps\ the\ 100\%\ of\ the\ processor\ of\ CORTEX1\ is\ used.}}
+\DoxyCodeLine{00011\ \textcolor{comment}{//could\ try\ to\ halve\ the\ number\ of\ pixels\ used\ for\ the\ circles.}}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#ifndef\ \_PF3DTRACKER\_}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#define\ \_PF3DTRACKER\_}}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#include\ <sstream>}}
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#include\ <yarp/os/BufferedPort.h>}}
+\DoxyCodeLine{00021\ \textcolor{preprocessor}{\#include\ <yarp/os/LogStream.h>}}
+\DoxyCodeLine{00022\ \textcolor{preprocessor}{\#include\ <yarp/os/Network.h>}}
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#include\ <yarp/os/RFModule.h>}}
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#include\ <yarp/os/Stamp.h>}}
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ <yarp/os/Time.h>}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ <yarp/sig/Image.h>}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ <yarp/sig/ImageDraw.h>}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ <yarp/sig/ImageFile.h>}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ <yarp/sig/Vector.h>}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#ifdef\ \_CH\_}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#pragma\ package\ <opencv>}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#ifndef\ \_EiC}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#include\ <opencv2/opencv.hpp>}}
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\#include\ <opencv2/highgui/highgui.hpp>}}
+\DoxyCodeLine{00038\ \textcolor{preprocessor}{\#include\ <opencv2/core/types\_c.h>}}
+\DoxyCodeLine{00039\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \textcolor{preprocessor}{\#include\ <iCub/pf3dTrackerSupport.hpp>}}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \textcolor{comment}{//for\ tracking\ in\ the\ iCub:\ 1000\ particles\ and\ an\ stDev\ of\ 80\ work\ well\ with\ slow\ movements\ of\ the\ ball.\ the\ localization\ is\ quite\ stable.\ the\ shape\ model\ has\ a\ 20\%\ difference\ wrt\ the\ real\ radius.}}
+\DoxyCodeLine{00044\ \textcolor{comment}{//\#define\ \_nParticles\ 5000}}
+\DoxyCodeLine{00045\ \textcolor{comment}{//\#define\ stDev\ 100\ 80}}
+\DoxyCodeLine{00046\ \textcolor{comment}{//150\ for\ the\ demo.}}
+\DoxyCodeLine{00047\ \textcolor{comment}{//\#define\ stDev\ 150\ }}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \textcolor{comment}{//\#define\ NEWPOLICY\ 0}}
+\DoxyCodeLine{00050\ \textcolor{comment}{//1:\ only\ transform\ the\ color\ of\ the\ pixels\ that\ you\ need}}
+\DoxyCodeLine{00051\ \textcolor{comment}{//0:\ transform\ the\ whole\ image.}}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \textcolor{preprocessor}{\#define\ nPixels\ 50}}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \textcolor{preprocessor}{\#define\ YBins\ 4}}
+\DoxyCodeLine{00056\ \textcolor{preprocessor}{\#define\ UBins\ 8\ }}
+\DoxyCodeLine{00057\ \textcolor{preprocessor}{\#define\ VBins\ 8}}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \textcolor{comment}{//should\ be\ 1.5\ or\ 1.0\ !!!\ ???}}
+\DoxyCodeLine{00060\ \textcolor{comment}{//\#define\ inside\_outside\_difference\_weight\ 1.5}}
+\DoxyCodeLine{00061\ \textcolor{comment}{//if\ I\ set\ it\ to\ 1.5,\ when\ the\ ball\ goes\ towards\ the\ camera,\ the\ tracker\ lags\ behind.}}
+\DoxyCodeLine{00062\ \textcolor{comment}{//this\ happens\ because\ the\ particles\ with\ "{}ball\ color"{}\ on\ both\ sides\ of\ the\ contour}}
+\DoxyCodeLine{00063\ \textcolor{comment}{//are\ still\ quite\ likely.\ the\ opposite\ is\ not\ true:\ when\ the\ ball\ goes\ away\ from\ the}}
+\DoxyCodeLine{00064\ \textcolor{comment}{//\ camera,\ the\ tracker\ follows\ it\ quite\ readily.}}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \textcolor{keyword}{class\ }PF3DTracker\ :\ \textcolor{keyword}{public}\ yarp::os::RFModule}
+\DoxyCodeLine{00067\ \{}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \textcolor{keywordtype}{int}\ \_numParticlesReceived;}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \textcolor{comment}{//parameters\ set\ during\ initialization.}}
+\DoxyCodeLine{00074\ std::string\ \_inputVideoPortName;}
+\DoxyCodeLine{00075\ yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb>\ >\ \_inputVideoPort;}
+\DoxyCodeLine{00076\ std::string\ \_outputVideoPortName;}
+\DoxyCodeLine{00077\ yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb>\ >\ \_outputVideoPort;}
+\DoxyCodeLine{00078\ std::string\ \_outputDataPortName;}
+\DoxyCodeLine{00079\ yarp::os::BufferedPort<yarp::os::Bottle>\ \_outputDataPort;}
+\DoxyCodeLine{00080\ std::string\ \_inputParticlePortName;}
+\DoxyCodeLine{00081\ yarp::os::BufferedPort<yarp::os::Bottle>\ \_inputParticlePort;}
+\DoxyCodeLine{00082\ std::string\ \_outputParticlePortName;}
+\DoxyCodeLine{00083\ yarp::os::BufferedPort<yarp::os::Bottle>\ \_outputParticlePort;}
+\DoxyCodeLine{00084\ std::string\ \_outputAttentionPortName;}
+\DoxyCodeLine{00085\ yarp::os::BufferedPort<yarp::sig::Vector>\ \_outputAttentionPort;}
+\DoxyCodeLine{00086\ std::string\ \_outputUVDataPortName;}
+\DoxyCodeLine{00087\ yarp::os::BufferedPort<yarp::os::Bottle>\ \_outputUVDataPort;}
+\DoxyCodeLine{00088\ \textcolor{keywordtype}{bool}\ supplyUVdata;}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00090\ std::string\ \_projectionModel;}
+\DoxyCodeLine{00091\ \textcolor{keywordtype}{float}\ \_perspectiveFx;}
+\DoxyCodeLine{00092\ \textcolor{keywordtype}{float}\ \_perspectiveFy;}
+\DoxyCodeLine{00093\ \textcolor{keywordtype}{float}\ \_perspectiveCx;}
+\DoxyCodeLine{00094\ \textcolor{keywordtype}{float}\ \_perspectiveCy;}
+\DoxyCodeLine{00095\ \textcolor{keywordtype}{int}\ \_calibrationImageWidth;}
+\DoxyCodeLine{00096\ \textcolor{keywordtype}{int}\ \_calibrationImageHeight;}
+\DoxyCodeLine{00097\ \textcolor{keywordtype}{float}\ \_likelihoodThreshold;}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \textcolor{keywordtype}{int}\ \_seeingObject;\ \textcolor{comment}{//0\ means\ false,\ 1\ means\ true.}}
+\DoxyCodeLine{00100\ \textcolor{keywordtype}{int}\ \_circleVisualizationMode;}
+\DoxyCodeLine{00101\ std::string\ \_initializationMethod;}
+\DoxyCodeLine{00102\ std::string\ \_trackedObjectType;}
+\DoxyCodeLine{00103\ \textcolor{keywordtype}{bool}\ \_saveImagesWithOpencv;}
+\DoxyCodeLine{00104\ std::string\ \_saveImagesWithOpencvDir;}
+\DoxyCodeLine{00105\ \textcolor{keywordtype}{double}\ \_initialX;}
+\DoxyCodeLine{00106\ \textcolor{keywordtype}{double}\ \_initialY;}
+\DoxyCodeLine{00107\ \textcolor{keywordtype}{double}\ \_initialZ;}
+\DoxyCodeLine{00108\ \textcolor{keywordtype}{double}\ \_attentionOutput;}
+\DoxyCodeLine{00109\ \textcolor{keywordtype}{double}\ \_attentionOutputMax;}
+\DoxyCodeLine{00110\ \textcolor{keywordtype}{double}\ \_attentionOutputDecrease;}
+\DoxyCodeLine{00111\ CvRNG\ rngState;\ \textcolor{comment}{//something\ needed\ by\ the\ random\ number\ generator}}
+\DoxyCodeLine{00112\ \textcolor{keywordtype}{bool}\ \_doneInitializing;}
+\DoxyCodeLine{00113\ }
+\DoxyCodeLine{00114\ Lut*\ \ \ \_lut;}
+\DoxyCodeLine{00115\ CvMat*\ \_A;}
+\DoxyCodeLine{00116\ \textcolor{keywordtype}{int}\ \_nParticles;}
+\DoxyCodeLine{00117\ \textcolor{keywordtype}{float}\ \_accelStDev;}
+\DoxyCodeLine{00118\ \textcolor{keywordtype}{float}\ \_inside\_outside\_difference\_weight;}
+\DoxyCodeLine{00119\ \textcolor{keywordtype}{int}\ \_colorTransfPolicy;}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ \textcolor{comment}{//float\ \_modelHistogram[YBins][UBins][VBins];\ //data}}
+\DoxyCodeLine{00122\ CvMatND*\ \_modelHistogramMat;\ \textcolor{comment}{//OpenCV\ Matrix}}
+\DoxyCodeLine{00123\ CvMatND*\ \_innerHistogramMat;\textcolor{comment}{//[YBins][UBins][VBins];}}
+\DoxyCodeLine{00124\ CvMatND*\ \_outerHistogramMat;\textcolor{comment}{//[YBins][UBins][VBins];}}
+\DoxyCodeLine{00125\ }
+\DoxyCodeLine{00126\ CvMat*\ \_model3dPointsMat;\ \textcolor{comment}{//shape\ model}}
+\DoxyCodeLine{00127\ CvMat*\ \_visualization3dPointsMat;\ \textcolor{comment}{//visualization\ model\ for\ the\ sphere\ (when\ \_circleVisualizationMode==1).\ should\ have\ less\ points,\ but\ it\ was\ easier\ to\ make\ it\ like\ this.}}
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00129\ \textcolor{comment}{//not\ sure\ which\ of\ these\ are\ really\ used.}}
+\DoxyCodeLine{00130\ CvMat*\ \_rzMat;\ \ \ \ \ \ \textcolor{comment}{//this\ is\ used\ during\ some\ operations...\ it\ is\ defined\ here\ to\ avoid\ repeated\ instantiations}}
+\DoxyCodeLine{00131\ CvMat*\ \_ryMat;\ \ \ \ \ \ \textcolor{comment}{//this\ is\ used\ during\ some\ operations...\ it\ is\ defined\ here\ to\ avoid\ repeated\ instantiations}}
+\DoxyCodeLine{00132\ CvMat*\ \_points2Mat;\ \textcolor{comment}{//this\ is\ used\ during\ some\ operations...\ it\ is\ defined\ here\ to\ avoid\ repeated\ instantiations}}
+\DoxyCodeLine{00133\ CvMat*\ \_p2Mat1;\ \ \ \ \ \textcolor{comment}{//pointer\ to\ the\ first\ row\ of\ \_points2Mat}}
+\DoxyCodeLine{00134\ CvMat*\ \_p2Mat3;\ \ \ \ \ \textcolor{comment}{//pointer\ to\ the\ third\ row\ of\ \_points2Mat}}
+\DoxyCodeLine{00135\ CvMat*\ \_tempMat;\ \ \ \ \textcolor{comment}{//this\ is\ used\ during\ some\ operations...\ it\ is\ defined\ here\ to\ avoid\ repeated\ instantiations}}
+\DoxyCodeLine{00136\ CvMat*\ \_tempMat1;\ \ \ \textcolor{comment}{//pointer\ to\ the\ first\ row\ of\ \_tempMat}}
+\DoxyCodeLine{00137\ CvMat*\ \_tempMat2;\ \ \ \textcolor{comment}{//pointer\ to\ the\ first\ row\ of\ \_tempMat}}
+\DoxyCodeLine{00138\ CvMat*\ \_tempMat3;\ \ \ \textcolor{comment}{//pointer\ to\ the\ first\ row\ of\ \_tempMat}}
+\DoxyCodeLine{00139\ CvMat*\ \_drawingMat;\ \textcolor{comment}{//this\ is\ used\ during\ some\ operations...\ it\ is\ defined\ here\ to\ avoid\ repeated\ instantiations}}
+\DoxyCodeLine{00140\ CvMat*\ \_projectionMat;\ \textcolor{comment}{//this\ is\ used\ during\ some\ operations...\ it\ is\ defined\ here\ to\ avoid\ repeated\ instantiations}}
+\DoxyCodeLine{00141\ CvMat*\ \_xyzMat1;\ \textcolor{comment}{//this\ is\ used\ during\ some\ operations...\ it\ is\ defined\ here\ to\ avoid\ repeated\ instantiations}}
+\DoxyCodeLine{00142\ CvMat*\ \_xyzMat2;\ \textcolor{comment}{//this\ is\ used\ during\ some\ operations...\ it\ is\ defined\ here\ to\ avoid\ repeated\ instantiations}}
+\DoxyCodeLine{00143\ CvMat*\ \_xyzMat3;\ \textcolor{comment}{//this\ is\ used\ during\ some\ operations...\ it\ is\ defined\ here\ to\ avoid\ repeated\ instantiations}}
+\DoxyCodeLine{00144\ CvMat*\ \_particles1;\ \textcolor{comment}{//this\ is\ used\ during\ some\ operations...\ it\ is\ defined\ here\ to\ avoid\ repeated\ instantiations}}
+\DoxyCodeLine{00145\ CvMat*\ \_particles2;\ \textcolor{comment}{//this\ is\ used\ during\ some\ operations...\ it\ is\ defined\ here\ to\ avoid\ repeated\ instantiations}}
+\DoxyCodeLine{00146\ CvMat*\ \_particles3;\ \textcolor{comment}{//this\ is\ used\ during\ some\ operations...\ it\ is\ defined\ here\ to\ avoid\ repeated\ instantiations}}
+\DoxyCodeLine{00147\ CvMat*\ \_particles4;\ \textcolor{comment}{//this\ is\ used\ during\ some\ operations...\ it\ is\ defined\ here\ to\ avoid\ repeated\ instantiations}}
+\DoxyCodeLine{00148\ CvMat*\ \_particles5;\ \textcolor{comment}{//this\ is\ used\ during\ some\ operations...\ it\ is\ defined\ here\ to\ avoid\ repeated\ instantiations}}
+\DoxyCodeLine{00149\ CvMat*\ \_particles6;\ \textcolor{comment}{//this\ is\ used\ during\ some\ operations...\ it\ is\ defined\ here\ to\ avoid\ repeated\ instantiations}}
+\DoxyCodeLine{00150\ CvMat*\ \_particles7;\ \textcolor{comment}{//this\ is\ used\ during\ some\ operations...\ it\ is\ defined\ here\ to\ avoid\ repeated\ instantiations}}
+\DoxyCodeLine{00151\ CvMat*\ \_particles1to6;}
+\DoxyCodeLine{00152\ CvMat*\ \_newParticles1to6;}
+\DoxyCodeLine{00153\ CvMat*\ \_uv;}
+\DoxyCodeLine{00154\ }
+\DoxyCodeLine{00155\ \textcolor{comment}{//resampling-\/related\ stuff}}
+\DoxyCodeLine{00156\ CvMat*\ \_nChildren;}
+\DoxyCodeLine{00157\ CvMat*\ \_label;}
+\DoxyCodeLine{00158\ CvMat*\ \_u;}
+\DoxyCodeLine{00159\ CvMat*\ \_ramp;}
+\DoxyCodeLine{00160\ }
+\DoxyCodeLine{00161\ \textcolor{comment}{//new\ resampling-\/related\ stuff}}
+\DoxyCodeLine{00162\ CvMat*\ \_cumWeight;}
+\DoxyCodeLine{00163\ }
+\DoxyCodeLine{00164\ \textcolor{comment}{//variables}}
+\DoxyCodeLine{00165\ CvMat*\ \_particles;}
+\DoxyCodeLine{00166\ CvMat*\ \_newParticles;}
+\DoxyCodeLine{00167\ CvMat*\ \_noise;}
+\DoxyCodeLine{00168\ CvMat*\ \_noise1;\ \textcolor{comment}{//lines\ from\ 0\ to\ 2}}
+\DoxyCodeLine{00169\ CvMat*\ \_noise2;\ \textcolor{comment}{//lines\ from\ 3\ to\ 5}}
+\DoxyCodeLine{00170\ }
+\DoxyCodeLine{00171\ yarp::os::Stamp\ \_yarpTimestamp;}
+\DoxyCodeLine{00172\ yarp::sig::ImageOf<yarp::sig::PixelRgb>\ *\_yarpImage;}
+\DoxyCodeLine{00173\ IplImage\ *\_rawImage;}
+\DoxyCodeLine{00174\ IplImage*\ \_transformedImage;\textcolor{comment}{//\_yuvBinsImage[image\_width][image\_height][3];}}
+\DoxyCodeLine{00175\ \textcolor{keywordtype}{double}\ \_initialTime;}
+\DoxyCodeLine{00176\ \textcolor{keywordtype}{double}\ \_finalTime;}
+\DoxyCodeLine{00177\ }
+\DoxyCodeLine{00178\ \textcolor{keywordtype}{int}\ \_frameCounter;}
+\DoxyCodeLine{00179\ \textcolor{keywordtype}{int}\ \_framesNotTracking;\ \textcolor{comment}{//number\ of\ frames\ for\ which\ the\ likelihood\ has\ been\ under\ the\ threshold.\ after\ 20\ such\ frames\ the\ tracker\ is\ restarted.}}
+\DoxyCodeLine{00180\ \textcolor{keywordtype}{int}\ downsampler;}
+\DoxyCodeLine{00181\ \textcolor{keywordtype}{float}\ \_lastU;}
+\DoxyCodeLine{00182\ \textcolor{keywordtype}{float}\ \_lastV;}
+\DoxyCodeLine{00183\ \textcolor{keywordtype}{bool}\ \_firstFrame;\ \textcolor{comment}{//when\ processing\ the\ first\ frame\ do\ not\ write\ the\ fps\ values,\ as\ it's\ wrong.}}
+\DoxyCodeLine{00184\ }
+\DoxyCodeLine{00186\ \textcolor{comment}{//MEMBERS\ THAT\ "{}WORK"{}:/}}
+\DoxyCodeLine{00188\ \textcolor{keywordtype}{bool}\ testOpenCv();}
+\DoxyCodeLine{00189\ \textcolor{keywordtype}{bool}\ readModelHistogram(CvMatND*\ histogram,\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ fileName[]);}
+\DoxyCodeLine{00190\ \textcolor{keywordtype}{bool}\ readInitialmodel3dPoints(CvMat*\ points,std::string\ fileName);}
+\DoxyCodeLine{00191\ \textcolor{keywordtype}{bool}\ readMotionModelMatrix(CvMat*\ points,\ std::string\ fileName);}
+\DoxyCodeLine{00192\ \textcolor{keywordtype}{bool}\ computeTemplateHistogram(std::string\ imageFileName,std::string\ dataFileName);\ \textcolor{comment}{//I\ checked\ the\ output,\ it\ seems\ to\ work,\ but\ it\ seems\ as\ if\ in\ the\ old\ version\ the\ normalization\ didn't\ take\ effect.}}
+\DoxyCodeLine{00193\ \textcolor{keywordtype}{bool}\ computeHistogram(CvMat*\ uv,\ IplImage*\ transformedImage,\ \ CvMatND*\ innerHistogramMat,\ \textcolor{keywordtype}{float}\ \&usedInnerPoints,\ CvMatND*\ outerHistogramMat,\ \textcolor{keywordtype}{float}\ \&usedOuterPoints);}
+\DoxyCodeLine{00194\ \textcolor{keywordtype}{bool}\ computeHistogramFromRgbImage(CvMat*\ uv,\ IplImage\ *image,\ \ CvMatND*\ innerHistogramMat,\ \textcolor{keywordtype}{float}\ \&usedInnerPoints,\ CvMatND*\ outerHistogramMat,\ \textcolor{keywordtype}{float}\ \&usedOuterPoints);}
+\DoxyCodeLine{00195\ \textcolor{keywordtype}{bool}\ calculateLikelihood(CvMatND*\ templateHistogramMat,\ CvMatND*\ innerHistogramMat,\ CvMatND*\ outerHistogramMat,\ \textcolor{keywordtype}{float}\ inside\_outside,\ \textcolor{keywordtype}{float}\ \&likelihood);}
+\DoxyCodeLine{00196\ \textcolor{keywordtype}{bool}\ place3dPointsPerspective(CvMat*\ points,\ \textcolor{keywordtype}{float}\ x,\ \textcolor{keywordtype}{float}\ y,\ \textcolor{keywordtype}{float}\ z);}
+\DoxyCodeLine{00197\ \textcolor{keywordtype}{int}\ perspective\_projection(CvMat*\ xyz,\ \textcolor{keywordtype}{float}\ fx,\ \textcolor{keywordtype}{float}\ fy,\ \textcolor{keywordtype}{float}\ cx,\ \textcolor{keywordtype}{float}\ cy,\ CvMat*\ uv);}
+\DoxyCodeLine{00198\ \textcolor{keywordtype}{void}\ drawContourPerspectiveYARP(CvMat*\ model3dPointsMat,\textcolor{keywordtype}{float}\ x,\ \textcolor{keywordtype}{float}\ y,\ \textcolor{keywordtype}{float}\ z,\ yarp::sig::ImageOf<yarp::sig::PixelRgb>\ *image,\textcolor{keywordtype}{float}\ \_perspectiveFx,\textcolor{keywordtype}{float}\ \ \_perspectiveFy\ ,\textcolor{keywordtype}{float}\ \_perspectiveCx,\textcolor{keywordtype}{float}\ \ \_perspectiveCy\ ,\textcolor{keywordtype}{int}\ R,\ \textcolor{keywordtype}{int}\ G,\ \textcolor{keywordtype}{int}\ B,\ \textcolor{keywordtype}{float}\ \&meanU,\ \textcolor{keywordtype}{float}\ \&meanV);}
+\DoxyCodeLine{00199\ \textcolor{keywordtype}{void}\ drawSampledLinesPerspectiveYARP(CvMat*\ model3dPointsMat,\textcolor{keywordtype}{float}\ x,\ \textcolor{keywordtype}{float}\ y,\ \textcolor{keywordtype}{float}\ z,\ yarp::sig::ImageOf<yarp::sig::PixelRgb>\ *image,\textcolor{keywordtype}{float}\ \_perspectiveFx,\textcolor{keywordtype}{float}\ \ \_perspectiveFy\ ,\textcolor{keywordtype}{float}\ \_perspectiveCx,\textcolor{keywordtype}{float}\ \ \_perspectiveCy\ ,\textcolor{keywordtype}{int}\ R,\ \textcolor{keywordtype}{int}\ G,\ \textcolor{keywordtype}{int}\ B,\ \textcolor{keywordtype}{float}\ \&meanU,\ \textcolor{keywordtype}{float}\ \&meanV);}
+\DoxyCodeLine{00200\ \textcolor{keywordtype}{bool}\ evaluateHypothesisPerspective(CvMat*\ model3dPointsMat,\ \textcolor{keywordtype}{float}\ x,\ \textcolor{keywordtype}{float}\ y,\ \textcolor{keywordtype}{float}\ z,\ CvMatND*\ modelHistogramMat,\ IplImage*\ transformedImage,\ \textcolor{keywordtype}{float}\ fx,\ \textcolor{keywordtype}{float}\ fy,\ \textcolor{keywordtype}{float}\ u0,\ \textcolor{keywordtype}{float}\ v0,\ \textcolor{keywordtype}{float},\ \textcolor{keywordtype}{float}\ \&likelihood);}
+\DoxyCodeLine{00201\ }
+\DoxyCodeLine{00203\ \textcolor{comment}{//MEMBERS\ THAT\ SHOULD\ BE\ CHANGED\ AND\ CHECKED:/}}
+\DoxyCodeLine{00205\ \textcolor{keywordtype}{bool}\ evaluateHypothesisPerspectiveFromRgbImage(CvMat*\ model3dPoints,\textcolor{keywordtype}{float}\ x,\ \textcolor{keywordtype}{float}\ y,\ \textcolor{keywordtype}{float}\ z,\ CvMatND*\ modelHistogramMat,\ IplImage\ *image,\ \ \textcolor{keywordtype}{float}\ fx,\ \textcolor{keywordtype}{float}\ fy,\ \textcolor{keywordtype}{float}\ u0,\ \textcolor{keywordtype}{float}\ v0,\ \textcolor{keywordtype}{float}\ inside\_outside,\ \textcolor{keywordtype}{float}\ \&likelihood);}
+\DoxyCodeLine{00206\ }
+\DoxyCodeLine{00207\ \textcolor{keywordtype}{bool}\ systematicR(CvMat*\ inState,\ CvMat*\ weights,\ CvMat*\ outState);}
+\DoxyCodeLine{00208\ \textcolor{keywordtype}{bool}\ systematic\_resampling(CvMat*\ oldParticlesState,\ CvMat*\ oldParticlesWeights,\ CvMat*\ newParticlesState,\ CvMat*\ cumWeight);}
+\DoxyCodeLine{00209\ }
+\DoxyCodeLine{00210\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00211\ }
+\DoxyCodeLine{00212\ PF3DTracker();\ \textcolor{comment}{//constructor}}
+\DoxyCodeLine{00213\ \string~PF3DTracker();\ \textcolor{comment}{//destructor}}
+\DoxyCodeLine{00214\ }
+\DoxyCodeLine{00215\ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{bool}\ configure(yarp::os::ResourceFinder\ \&rf);\ \textcolor{comment}{//member\ to\ set\ the\ object\ up.}}
+\DoxyCodeLine{00216\ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{bool}\ close();\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//member\ to\ close\ the\ object.}}
+\DoxyCodeLine{00217\ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{bool}\ interruptModule();\ \ \ \ \ \ \ \ \textcolor{comment}{//member\ to\ close\ the\ object.}}
+\DoxyCodeLine{00218\ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{bool}\ updateModule();\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//member\ that\ is\ repeatedly\ called\ by\ YARP,\ to\ give\ this\ object\ a\ chance\ to\ do\ something.}}
+\DoxyCodeLine{00219\ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{double}\ getPeriod();}
+\DoxyCodeLine{00220\ }
+\DoxyCodeLine{00221\ \};}
+\DoxyCodeLine{00222\ }
+\DoxyCodeLine{00223\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ \_PF3DTRACKER\_\ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

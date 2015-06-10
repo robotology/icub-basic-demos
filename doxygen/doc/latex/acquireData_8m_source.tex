@@ -1,0 +1,123 @@
+\doxysection{acquire\+Data.\+m}
+\label{acquireData_8m_source}\index{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/demoRedBall/app/scripts/acquireData.m@{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/demoRedBall/app/scripts/acquireData.m}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{function}\ [in,out]=acquireData(dataLogFileLeft,dataLogFileRight,dataLogFileHead)}
+\DoxyCodeLine{00002\ \%\ This\ \textcolor{keyword}{function}\ returns\ the\ formatted\ data\ to\ learn\ the\ network\ upon.}
+\DoxyCodeLine{00003\ \%\ The\ three\ input\ files\ are\ the\ ones\ logged\ through\ yarpdatadumper.}
+\DoxyCodeLine{00004\ }
+\DoxyCodeLine{00005\ \%\ \textcolor{keyword}{import}\ raw\ data\ from\ log\ files}
+\DoxyCodeLine{00006\ dataL=dlmread(dataLogFileLeft);}
+\DoxyCodeLine{00007\ dataR=dlmread(dataLogFileRight);}
+\DoxyCodeLine{00008\ dataH=dlmread(dataLogFileHead);}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \%\ \textcolor{keyword}{remove}\ the\ first\ column}
+\DoxyCodeLine{00011\ dataL(:,1)=[];}
+\DoxyCodeLine{00012\ dataR(:,1)=[];}
+\DoxyCodeLine{00013\ dataH(:,1)=[];}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00015\ \%\ harmonize\ the\ starting\ acquisition\ time}
+\DoxyCodeLine{00016\ t0=min([dataL(1,1)\ dataR(1,1)\ dataH(1,1)]);}
+\DoxyCodeLine{00017\ dataL(:,1)=dataL(:,1)-\/t0;}
+\DoxyCodeLine{00018\ dataR(:,1)=dataR(:,1)-\/t0;}
+\DoxyCodeLine{00019\ dataH(:,1)=dataH(:,1)-\/t0;}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00021\ \%\ \textcolor{keyword}{remove}\ the\ likelihood\ column\ (not\ used)}
+\DoxyCodeLine{00022\ dataL(:,5)=[];}
+\DoxyCodeLine{00023\ dataR(:,5)=[];}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \%\ select\ only\ the\ rows\ corresponding}
+\DoxyCodeLine{00026\ \%\ to\ \textcolor{keywordtype}{object}\ in\ visibility}
+\DoxyCodeLine{00027\ dataL=dataL(dataL(:,7)\string~=0,1:6);}
+\DoxyCodeLine{00028\ dataR=dataR(dataR(:,7)\string~=0,1:6);}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \%\ the\ data\ format\ is\ now\ as:}
+\DoxyCodeLine{00031\ \%\ 1\ \ 2\ \ 3\ \ 4\ \ 5\ \ 6}
+\DoxyCodeLine{00032\ \%\ t\ \ x\ \ y\ \ z\ \ u\ \ v}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \%\ go\ on\ with\ the\ left/right\ data\ synchronization}
+\DoxyCodeLine{00035\ \%\ use\ the\ left\ data\ as\ pivot}
+\DoxyCodeLine{00036\ tL=dataL(:,1);}
+\DoxyCodeLine{00037\ tR=dataR(:,1);}
+\DoxyCodeLine{00038\ tH=dataH(:,1);}
+\DoxyCodeLine{00039\ L=length(tL);}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \%\ form\ input\ data\ as:}
+\DoxyCodeLine{00042\ \%\ 1\ \ \ \ 2\ \ \ \ 3\ \ \ \ 4\ \ \ \ 5\ \ \ \ 6\ \ \ \ 7}
+\DoxyCodeLine{00043\ \%\ tilt\ pan\ \ ver\ \ ul\ \ \ vl\ \ \ ur\ \ \ vr}
+\DoxyCodeLine{00044\ in=zeros(L,7);}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \%\ form\ the\ output\ data\ as:}
+\DoxyCodeLine{00047\ \%\ 1\ \ 2\ \ 3}
+\DoxyCodeLine{00048\ \%\ x\ \ y\ \ z}
+\DoxyCodeLine{00049\ out=dataL(:,2:4);}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \%\ fill\ the\ input\ data}
+\DoxyCodeLine{00052\ \textcolor{keywordflow}{for}\ i=1:L\ \ \ \ }
+\DoxyCodeLine{00053\ \ \ \ \ [\string~,jR]=min(abs(tR-\/tL(i)));}
+\DoxyCodeLine{00054\ \ \ \ \ [\string~,jH]=min(abs(tH-\/tL(i)));}
+\DoxyCodeLine{00055\ \ \ \ \ in(i,1:3)=dataH(jH,5:7);}
+\DoxyCodeLine{00056\ \ \ \ \ in(i,4)=dataL(i,5);}
+\DoxyCodeLine{00057\ \ \ \ \ in(i,5)=dataL(i,6);}
+\DoxyCodeLine{00058\ \ \ \ \ in(i,6)=dataR(jR,5);}
+\DoxyCodeLine{00059\ \ \ \ \ in(i,7)=dataR(jR,6);}
+\DoxyCodeLine{00060\ end}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ figure(\textcolor{stringliteral}{'Color'},\textcolor{charliteral}{'w'});}
+\DoxyCodeLine{00063\ global\ ha;}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ subplot(521),hold(\textcolor{stringliteral}{'on'}),grid,stairs(in(:,1));}
+\DoxyCodeLine{00066\ ha\{1\}=gca;title(\textcolor{stringliteral}{'tilt'});}
+\DoxyCodeLine{00067\ \textcolor{keyword}{set}(zoom,\textcolor{stringliteral}{'ActionPostCallback'},@mypostcallback);}
+\DoxyCodeLine{00068\ \textcolor{keyword}{set}(pan,\textcolor{stringliteral}{'ActionPostCallback'},@mypostcallback);}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ subplot(523),hold(\textcolor{stringliteral}{'on'}),grid,stairs(in(:,2));}
+\DoxyCodeLine{00071\ ha\{2\}=gca;title(\textcolor{stringliteral}{'pan'});}
+\DoxyCodeLine{00072\ \textcolor{keyword}{set}(zoom,\textcolor{stringliteral}{'ActionPostCallback'},@mypostcallback);}
+\DoxyCodeLine{00073\ \textcolor{keyword}{set}(pan,\textcolor{stringliteral}{'ActionPostCallback'},@mypostcallback);}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ subplot(525),hold(\textcolor{stringliteral}{'on'}),grid,stairs(in(:,3));}
+\DoxyCodeLine{00076\ ha\{3\}=gca;title(\textcolor{stringliteral}{'ver'});}
+\DoxyCodeLine{00077\ \textcolor{keyword}{set}(zoom,\textcolor{stringliteral}{'ActionPostCallback'},@mypostcallback);}
+\DoxyCodeLine{00078\ \textcolor{keyword}{set}(pan,\textcolor{stringliteral}{'ActionPostCallback'},@mypostcallback);}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ subplot(527),hold(\textcolor{stringliteral}{'on'}),grid,stairs(in(:,[4\ 6]));}
+\DoxyCodeLine{00081\ ha\{4\}=gca;title(\textcolor{stringliteral}{'[ul\ ur]'});}
+\DoxyCodeLine{00082\ \textcolor{keyword}{set}(zoom,\textcolor{stringliteral}{'ActionPostCallback'},@mypostcallback);}
+\DoxyCodeLine{00083\ \textcolor{keyword}{set}(pan,\textcolor{stringliteral}{'ActionPostCallback'},@mypostcallback);}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ subplot(529),hold(\textcolor{stringliteral}{'on'}),grid,stairs(in(:,[5\ 7]));}
+\DoxyCodeLine{00086\ ha\{5\}=gca;title(\textcolor{stringliteral}{'[vl\ vr]'});}
+\DoxyCodeLine{00087\ \textcolor{keyword}{set}(zoom,\textcolor{stringliteral}{'ActionPostCallback'},@mypostcallback);}
+\DoxyCodeLine{00088\ \textcolor{keyword}{set}(pan,\textcolor{stringliteral}{'ActionPostCallback'},@mypostcallback);}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00090\ subplot(524),hold(\textcolor{stringliteral}{'on'}),grid,stairs(out(:,1));}
+\DoxyCodeLine{00091\ ha\{6\}=gca;title(\textcolor{stringliteral}{'eye-\/x'});}
+\DoxyCodeLine{00092\ \textcolor{keyword}{set}(zoom,\textcolor{stringliteral}{'ActionPostCallback'},@mypostcallback);}
+\DoxyCodeLine{00093\ \textcolor{keyword}{set}(pan,\textcolor{stringliteral}{'ActionPostCallback'},@mypostcallback);}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ subplot(526),hold(\textcolor{stringliteral}{'on'}),grid,stairs(out(:,2));}
+\DoxyCodeLine{00096\ ha\{7\}=gca;title(\textcolor{stringliteral}{'eye-\/y'});}
+\DoxyCodeLine{00097\ \textcolor{keyword}{set}(zoom,\textcolor{stringliteral}{'ActionPostCallback'},@mypostcallback);}
+\DoxyCodeLine{00098\ \textcolor{keyword}{set}(pan,\textcolor{stringliteral}{'ActionPostCallback'},@mypostcallback);}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00100\ subplot(528),hold(\textcolor{stringliteral}{'on'}),grid,stairs(out(:,3));}
+\DoxyCodeLine{00101\ ha\{8\}=gca;title(\textcolor{stringliteral}{'eye-\/z'});}
+\DoxyCodeLine{00102\ \textcolor{keyword}{set}(zoom,\textcolor{stringliteral}{'ActionPostCallback'},@mypostcallback);}
+\DoxyCodeLine{00103\ \textcolor{keyword}{set}(pan,\textcolor{stringliteral}{'ActionPostCallback'},@mypostcallback);}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \%-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}
+\DoxyCodeLine{00107\ function\ mypostcallback(obj,evd)\ \%\#ok<INUSL>}
+\DoxyCodeLine{00108\ }
+\DoxyCodeLine{00109\ global\ ha;}
+\DoxyCodeLine{00110\ }
+\DoxyCodeLine{00111\ newLim=\textcolor{keyword}{get}(evd.Axes,\textcolor{stringliteral}{'XLim'});}
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00113\ \textcolor{keywordflow}{for}\ i=1:length(ha)}
+\DoxyCodeLine{00114\ \ \ \ \ xlim(ha\{i\},newLim);}
+\DoxyCodeLine{00115\ end}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ }
+
+\end{DoxyCode}
