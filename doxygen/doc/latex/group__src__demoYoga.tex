@@ -1,0 +1,42 @@
+\doxysection{demo\+Yoga}
+\label{group__src__demoYoga}\index{demoYoga@{demoYoga}}
+
+
+Demo for moving the robot joints in a coordinated fashion.  
+
+
+Demo for moving the robot joints in a coordinated fashion. 
+
+\hypertarget{group__src__demoYoga_intro_sec}{}\doxysubsection{Description}\label{group__src__demoYoga_intro_sec}
+This modules move the robot into a series of positions. Repeat forever or until quit (whichever comes first).\hypertarget{group__src__demoYoga_lib_sec}{}\doxysubsection{Libraries}\label{group__src__demoYoga_lib_sec}
+YARP libraries.\hypertarget{group__src__demoYoga_parameters_sec}{}\doxysubsection{Parameters}\label{group__src__demoYoga_parameters_sec}
+--robot robotname --positions filename.\+txt
+
+Optionally\+: --verbose\+: print sequence of positions and speeds\hypertarget{group__src__demoYoga_portsa_sec}{}\doxysubsection{Ports Accessed}\label{group__src__demoYoga_portsa_sec}
+Access robot\+Interface ports.\hypertarget{group__src__demoYoga_portsc_sec}{}\doxysubsection{Ports Created}\label{group__src__demoYoga_portsc_sec}
+Creates remote\+\_\+controlboard for each of the robot parts.\hypertarget{group__src__demoYoga_conf_file_sec}{}\doxysubsection{Configuration Files}\label{group__src__demoYoga_conf_file_sec}
+The module requires a sequence of positions\+: --positions.
+
+The file consists in a few sections\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{time 2}
+
+\end{DoxyCode}
+ specifies the time between two movements.
+
+Follows a file for each robot parts. The file contains the list of positions to cycle. 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{RIGHTARM right\_arm.ini}
+\DoxyCodeLine{LEFTARM left\_arm.ini}
+\DoxyCodeLine{RIGHTLEG right\_leg.ini}
+\DoxyCodeLine{LEFTLEG left\_leg.ini}
+\DoxyCodeLine{HEAD head.ini}
+\DoxyCodeLine{TORSO torso.ini}
+
+\end{DoxyCode}
+\hypertarget{group__src__demoYoga_tested_os_sec}{}\doxysubsection{Tested OS}\label{group__src__demoYoga_tested_os_sec}
+Linux and Windows.
+
+\begin{DoxyAuthor}{Author}
+Lorenzo Natale 
+\end{DoxyAuthor}

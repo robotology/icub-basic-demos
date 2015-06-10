@@ -1,0 +1,119 @@
+\doxysection{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/pf3d\+Bottomup/include/i\+Cub/\+IIRFilt.h File Reference}
+\label{IIRFilt_8h}\index{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/pf3dBottomup/include/iCub/IIRFilt.h@{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/pf3dBottomup/include/iCub/IIRFilt.h}}
+
+
+Functions for generic, 3 tap, iir filtering.  
+
+
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{IIRFilt_8h_a43b5832facfac4984b38e11e2fa80b48}{iir\+\_\+filt\+\_\+forward}} (float $\ast$in, int stepin, float $\ast$out, int stepout, int length, float $\ast$coeffs, float $\ast$i0)
+\begin{DoxyCompactList}\small\item\em Functions iir\+\_\+filt\+\_\+forward and iir\+\_\+filt\+\_\+backward do a 3 tap recursive filtering operation on floating point buffers. \end{DoxyCompactList}\item 
+\mbox{\label{IIRFilt_8h_a43e9e9f0360bfee13e2651311a95390f}} 
+void {\bfseries iir\+\_\+filt\+\_\+backward} (float $\ast$in, int stepin, float $\ast$out, int stepout, int length, float $\ast$coeffs, float $\ast$i0)
+\item 
+\mbox{\label{IIRFilt_8h_a10ff4d91b53ed479cc9eabd72b0399ca}} 
+void {\bfseries iir\+\_\+filt\+\_\+forward} (float $\ast$in, float $\ast$out, int length, float $\ast$coeffs, float $\ast$i0)
+\item 
+\mbox{\label{IIRFilt_8h_aad0f69ef34717b6f4c4dc5bd4ec53fce}} 
+void {\bfseries iir\+\_\+filt\+\_\+backward} (float $\ast$in, float $\ast$out, int length, float $\ast$coeffs, float $\ast$i0)
+\item 
+\mbox{\label{IIRFilt_8h_a09014ca85db071904c4a15fbe2410633}} 
+void {\bfseries iir\+\_\+filt\+\_\+forward} (float $\ast$in, float $\ast$out, int stepout, int length, float $\ast$coeffs, float $\ast$i0)
+\item 
+\mbox{\label{IIRFilt_8h_ada56d2d76b95a4274d14ae620b60a381}} 
+void {\bfseries iir\+\_\+filt\+\_\+backward} (float $\ast$in, float $\ast$out, int stepout, int length, float $\ast$coeffs, float $\ast$i0)
+\item 
+\mbox{\label{IIRFilt_8h_a8363f3ebd3b1b38111c8b4fc2bf3c3d7}} 
+void {\bfseries iir\+\_\+filt\+\_\+forward} (float $\ast$in, int stepin, float $\ast$out, int length, float $\ast$coeffs, float $\ast$i0)
+\item 
+\mbox{\label{IIRFilt_8h_abf2616f9930b7d91f28f0c6323e5f972}} 
+void {\bfseries iir\+\_\+filt\+\_\+backward} (float $\ast$in, int stepin, float $\ast$out, int length, float $\ast$coeffs, float $\ast$i0)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Functions for generic, 3 tap, iir filtering. 
+
+\begin{DoxyAuthor}{Author}
+Alex Bernardino, ISR-\/\+IST 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+2006-\/2007 
+\end{DoxyDate}
+\begin{DoxyNote}{Note}
+Release under GNU GPL v2.\+0
+\end{DoxyNote}
+\begin{DoxyAuthor}{Author}
+Alex Bernardino, ISR-\/\+IST 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+2006-\/2007 
+\end{DoxyDate}
+\begin{DoxyNote}{Note}
+Released under GNU GPL v2.\+0 
+\end{DoxyNote}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{IIRFilt_8h}{IIRFilt.\+h}} 
+\end{DoxySeeAlso}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\label{IIRFilt_8h_a43b5832facfac4984b38e11e2fa80b48}} 
+\index{IIRFilt.h@{IIRFilt.h}!iir\_filt\_forward@{iir\_filt\_forward}}
+\index{iir\_filt\_forward@{iir\_filt\_forward}!IIRFilt.h@{IIRFilt.h}}
+\doxysubsubsection{\texorpdfstring{iir\_filt\_forward()}{iir\_filt\_forward()}}
+{\footnotesize\ttfamily void iir\+\_\+filt\+\_\+forward (\begin{DoxyParamCaption}\item[{float $\ast$}]{in,  }\item[{int}]{stepin,  }\item[{float $\ast$}]{out,  }\item[{int}]{stepout,  }\item[{int}]{length,  }\item[{float $\ast$}]{coeffs,  }\item[{float $\ast$}]{i0 }\end{DoxyParamCaption})}
+
+
+
+Functions iir\+\_\+filt\+\_\+forward and iir\+\_\+filt\+\_\+backward do a 3 tap recursive filtering operation on floating point buffers. 
+
+Forward filtering\+: \[ y(t) = b_0 x(t) - a_1 y(t-1) - a_2 y(t-2) - a_3 y(t-3) \]
+
+
+\begin{DoxyParams}{Parameters}
+{\em in} & Floating point buffer with the input signal. \\
+\hline
+{\em stepin} & Spacing between consecutive input signal samples. \\
+\hline
+{\em out} & Floating point buffer to store the computation results. \\
+\hline
+{\em stepout} & Spacing between consecutive output buffer samples. \\
+\hline
+{\em length} & Number of samples to process (N) \\
+\hline
+{\em coeffs} & Filter coefficients. A length 4 floating point array containing $(b_0, a_1, a_2, a_3)$ \\
+\hline
+{\em i0} & Filter boundary conditions. A length 3 floating point array containing\+:
+\begin{DoxyItemize}
+\item in the forward filtering case $(y_{-1}, y_{-2}, y_{-3})$
+\item in the backward filtering case $(y_{N}, y_{N+1}, y_{N+2})$
+\end{DoxyItemize}\\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+Several overloads exist for the cases when stepin or stepout parameters are unitary. 
+\end{DoxyNote}
+
+
+Definition at line 19 of file IIRFilt.\+cpp.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{20 \{}
+\DoxyCodeLine{21     \textcolor{keywordtype}{int} j;}
+\DoxyCodeLine{22     \textcolor{keywordtype}{float} b0 = coeffs[0];}
+\DoxyCodeLine{23     \textcolor{keywordtype}{float} a1 = coeffs[1]; }
+\DoxyCodeLine{24     \textcolor{keywordtype}{float} a2 = coeffs[2];}
+\DoxyCodeLine{25     \textcolor{keywordtype}{float} a3 = coeffs[3];}
+\DoxyCodeLine{26 }
+\DoxyCodeLine{27     out[0] = b0*in[0] -\/ a1*i0[0] -\/ a2*i0[1] -\/ a3*i0[2];}
+\DoxyCodeLine{28     out[1*stepout] = b0*in[stepin] -\/ a1*out[0] -\/ a2*i0[0] -\/ a3*i0[1];}
+\DoxyCodeLine{29     out[2*stepout] = b0*in[2*stepin] -\/ a1*out[stepout] -\/ a2*out[0] -\/ a3*i0[0];}
+\DoxyCodeLine{30     \textcolor{keywordflow}{for}(j = 3; j < length; j++)}
+\DoxyCodeLine{31         out[j*stepout] = b0*in[j*stepin] -\/ a1*out[(j-\/1)*stepout] -\/ a2*out[(j-\/2)*stepout] -\/ a3*out[(j-\/3)*stepout];}
+\DoxyCodeLine{32 \}}
+
+\end{DoxyCode}

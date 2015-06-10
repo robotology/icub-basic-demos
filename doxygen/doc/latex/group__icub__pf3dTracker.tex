@@ -1,0 +1,142 @@
+\doxysection{pf3d\+Tracker}
+\label{group__icub__pf3dTracker}\index{pf3dTracker@{pf3dTracker}}
+
+
+$<$$>$  
+
+
+$<$$>$ 
+
+A robust and real-\/time 3D ball tracker.
+
+Copyright (C) 2009 Robot\+Cub Consortium
+
+Author\+: Matteo Taiana, \href{http://users.isr.ist.utl.pt/~mtaiana/}{\texttt{ homepage}}.
+
+Copy\+Policy\+: Released under the terms of the GNU GPL v2.\+0.\hypertarget{group__src__demoYoga_intro_sec}{}\doxysubsection{Description}\label{group__src__demoYoga_intro_sec}
+This module implements a model-\/based object tracker\+: it estimates the 3D position of a ball given a sequence of images. One estimate is computed for each input image. The tracker outputs a flag that is set to 1 when the module is confident that it is tracking a ball, when the flag is set to 0 the tracker still computes a 3D estimate, but that is meaningless. After 5 frames with confidence under the threshold, the tracker estimate is reset. The module is meant to work together with \mbox{\hyperlink{group__icub__pf3dBottomup}{pf3d\+Bottomup}}, which is a 3D ball detector, but can also work on its own.
+
+{\bfseries{For an explanation on how to configure the tracker and bottom up modules, how to connect them, how to run them through the application manager, etc., please have a look at \href{http://mediawiki.isr.ist.utl.pt/wiki/3D_ball_tracker}{\texttt{ this page}}.}}
+
+{\bfseries{The algorithm is described in the paper\+: \char`\"{}\+Tracking objects with generic calibrated sensors\+: an algorithm based on color and 3\+D shape features\char`\"{}, please cite it if you use the tracker in your research.}}
+
+You can watch a video of the tracker in action \href{http://www.youtube.com/watch?v=Xp8qUhfMzhU}{\texttt{ here}}.\hypertarget{group__src__demoYoga_lib_sec}{}\doxysubsection{Libraries}\label{group__src__demoYoga_lib_sec}
+
+\begin{DoxyItemize}
+\item YARP libraries.
+\item Open\+Cv
+\end{DoxyItemize}\hypertarget{group__src__demoYoga_parameters_sec}{}\doxysubsection{Parameters}\label{group__src__demoYoga_parameters_sec}
+Configuration is done through an initialization file (See for instance icub-\/main/app/pf3d\+Tracker/conf/pf3d\+Tracker.\+ini) Here is an example, with comments\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{preprocessor}{\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#configuration file for pf3dTracker\#}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#}}
+\DoxyCodeLine{}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{preprocessor}{\#\#\#\#\#\#\#\#\#\#\#\#\#}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#module name\#}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#\#\#\#\#\#\#\#\#\#\#\#\#}}
+\DoxyCodeLine{name                        /pf3dTracker}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{preprocessor}{\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#parameters of the algorithm\#}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#}}
+\DoxyCodeLine{nParticles                  900}
+\DoxyCodeLine{\textcolor{preprocessor}{\#nParticles                 number of particles used}}
+\DoxyCodeLine{accelStDev                  30}
+\DoxyCodeLine{\textcolor{preprocessor}{\#accelStDev                 standard deviation of the acceleration noise}}
+\DoxyCodeLine{insideOutsideDiffWeight     1.5}
+\DoxyCodeLine{\textcolor{preprocessor}{\#insideOutsideDiffWeight    inside-\/outside difference weight for the likelihood function}}
+\DoxyCodeLine{colorTransfPolicy           1}
+\DoxyCodeLine{\textcolor{preprocessor}{\#colorTransfPolicy          [0=transform the whole image | 1=only transform the pixels you need]}}
+\DoxyCodeLine{}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{preprocessor}{\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#port names and function\#}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#}}
+\DoxyCodeLine{inputVideoPort              /pf3dTracker/video:i}
+\DoxyCodeLine{\textcolor{preprocessor}{\#inputVideoPort             receives images from the grabber or the rectifying program.}}
+\DoxyCodeLine{outputVideoPort             /pf3dTracker/video:o}
+\DoxyCodeLine{\textcolor{preprocessor}{\#outputVideoPort            produces images in which the contour of the estimated ball is highlighted.}}
+\DoxyCodeLine{outputDataPort              /pf3dTracker/data:o}
+\DoxyCodeLine{\textcolor{preprocessor}{\#outputDataPort             produces a stream of data in the format: X, Y, Z [meters], likelihood, U, V [pixels], seeing\_object.}}
+\DoxyCodeLine{inputParticlePort           /pf3dTracker/particles:i}
+\DoxyCodeLine{\textcolor{preprocessor}{\#inputParticlePort          receives hypotheses on the position of the ball from the bottom up module}}
+\DoxyCodeLine{outputParticlePort          /pf3dTracker/particles:o}
+\DoxyCodeLine{\textcolor{preprocessor}{\#outputParticlePort         produces data for the plotter. it is usually not active for performance reasons.}}
+\DoxyCodeLine{outputAttentionPort         /pf3dTracker/attention:o}
+\DoxyCodeLine{\textcolor{preprocessor}{\#outputAttentionPort        produces data for the attention system, in terms of a peak of saliency.}}
+\DoxyCodeLine{}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{preprocessor}{\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#projection model and parameters\#}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#projectionModel, only the perspective one was implemented so far.}}
+\DoxyCodeLine{projectionModel             perspective}
+\DoxyCodeLine{}
+\DoxyCodeLine{cameraContext  cameraCalibration}
+\DoxyCodeLine{cameraFile     icubEyes.ini}
+\DoxyCodeLine{cameraGroup    CAMERA\_CALIBRATION\_LEFT}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{preprocessor}{\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#tracked object models\#}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#trackedObjectType, only sphere was implemented so far.}}
+\DoxyCodeLine{trackedObjectType           sphere}
+\DoxyCodeLine{trackedObjectColorTemplate  models/red\_smiley\_2009\_07\_02.bmp}
+\DoxyCodeLine{trackedObjectShapeTemplate  models/initial\_ball\_points\_smiley\_31mm\_20percent.csv}
+\DoxyCodeLine{}
+\DoxyCodeLine{motionModelMatrix           models/motion\_model\_matrix.csv}
+\DoxyCodeLine{trackedObjectTemp           current\_histogram.csv}
+\DoxyCodeLine{}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{preprocessor}{\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#initialization method\#}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#initialization method, only 3dEstimate was implemented so far.}}
+\DoxyCodeLine{initializationMethod        3dEstimate}
+\DoxyCodeLine{\textcolor{preprocessor}{\#initial position [meters]}}
+\DoxyCodeLine{initialX                       0}
+\DoxyCodeLine{initialY                       0}
+\DoxyCodeLine{initialZ                       0.5  }
+\DoxyCodeLine{}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{preprocessor}{\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#visualization mode\#}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#circleVisualizationMode [0=inner and outer circle | 1=one circle with the correct radius]}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#default 0. only applies to the sphere.}}
+\DoxyCodeLine{circleVisualizationMode 1}
+\DoxyCodeLine{}
+\DoxyCodeLine{}
+\DoxyCodeLine{\textcolor{preprocessor}{\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#likelihood and reset condition \#}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#the tracker produces a value of likelihood at each time step.}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#this value can be used to infer if the object it is tracking is the correct one.}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#if likelihood<=this value for 5 consecutive frames, the tracker}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#assumes it's not seeing the right object and is reinitialized.}}
+\DoxyCodeLine{\textcolor{preprocessor}{\#}}
+\DoxyCodeLine{\textcolor{preprocessor}{likelihoodThreshold         0.005}}
+
+\end{DoxyCode}
+\hypertarget{group__src__demoYoga_portsa_sec}{}\doxysubsection{Ports Accessed}\label{group__src__demoYoga_portsa_sec}
+The tracker need to be connected to a port that streams images, at the very least, in order to work.\hypertarget{group__src__demoYoga_portsc_sec}{}\doxysubsection{Ports Created}\label{group__src__demoYoga_portsc_sec}
+
+\begin{DoxyItemize}
+\item /pf3d\+Tracker/video\+:i receives the image stream given which the ball has to be tracked.
+\item /pf3d\+Tracker/video\+:o produces images in which the contour of the estimated ball is highlighted. When the tracker is confident that it\textquotesingle{}s tracking a ball, it draws the contour in green, when it is not confident (it\textquotesingle{}s looking for a ball, but does not yet have a good estimate), it draws the contour in yellow.
+\item /pf3d\+Tracker/data\+:o produces a stream of data in the format\+: X, Y, Z \mbox{[}meters\mbox{]}, likelihood, U, V \mbox{[}pixels\mbox{]}, seeing\+\_\+object. ~\newline
+ X, Y and Z are the estimated coordinates of the tracked ball in the eye reference frame (they can be transformed to the root reference frame by module eye2\+Root\+Frame\+Transformer. The likelihood value indicates how confident the tracker is that the object it\textquotesingle{}s tracking is the right ball (the lower the likelihood, the lower the confidence, but beware that even a perfect match will result in a value pretty far from 1). U and V are the estimated coordinates of the centre of the ball in the image plane, U is horizontal and V vertical, the origin is on the top left corner of the image. Seeing\+\_\+object is a flag, it is set 1 when the likelihood is higher than a threshold specified in the initialization file, it is set to 0 otherwise. When the tracker experiences 5 consecutive images with seeing\+\_\+object==0, the estimate is reset. This prevents the tracker from getting stuck on an unlikely target.
+\item /pf3d\+Tracker/particles\+:i receives hypotheses on 3D poses of a ball, normally produced by the \mbox{\hyperlink{group__icub__pf3dBottomup}{pf3d\+Bottomup}} detection module. If the tracker does not receive anything on this port, it behaves normally, i.\+e., it needs more time to find a ball and start tracking it, after initialization.
+\item /pf3d\+Tracker/particles\+:o produces data for the plotter. it is usually not active for performance reasons.
+\item /pf3d\+Tracker/attention\+:o produces data for the attention system, in terms of a peak of saliency.
+\end{DoxyItemize}\hypertarget{group__icub__pf3dTracker_in_files_sec}{}\doxysubsection{Input Data Files}\label{group__icub__pf3dTracker_in_files_sec}
+The tracker requires three input files\+: an image file used to build the colour model of the tracked ball, a file defining the motion model applied to the estimate of the ball between frames, and a shape model for the ball, defining its size and the distance between inner and outer contours (see the paper cited in the description section). For more detail on these files, please have a look at the parameters section.\hypertarget{group__icub__pf3dTracker_out_data_sec}{}\doxysubsection{Output Data Files}\label{group__icub__pf3dTracker_out_data_sec}
+The module produces one output file that is only useful for debugging (current\+\_\+histogram.\+csv) and can be configured to save the images it produces to files, but this is not recommended\+: use yarpdatadumper instead.\hypertarget{group__src__demoYoga_tested_os_sec}{}\doxysubsection{Tested OS}\label{group__src__demoYoga_tested_os_sec}
+Ubuntu Linux, Windows
+
+\begin{DoxyAuthor}{Author}
+Matteo Taiana, \href{http://users.isr.ist.utl.pt/~mtaiana/}{\texttt{ homepage}}. 
+\end{DoxyAuthor}
