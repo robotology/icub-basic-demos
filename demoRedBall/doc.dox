@@ -1,11 +1,12 @@
 /**
 \defgroup app_demoRedBall Red-Ball Demo
+\ingroud demo_applications
 
 The Red-Ball Demo application developed by IIT and ISR.
 
 \section intro_sec Description
 This application launches all the required modules in order to detect and track
-the 3-d position of a target within the image plane applying the particle filter 
+the 3-d position of a target within the image plane applying the particle filter
 algorithm along with the controllers to move the head accordingly and both arms to
 reach for the object and eventually grasp it.
 
@@ -13,7 +14,7 @@ A second mode is also available that allows to track a moving target relying on 
 vision which needs to be calibrated in advance using a feed-forward neural network.
 
 \section dep_sec Dependencies
-Assumes that robotInterface (with ICartesianControl 
+Assumes that robotInterface (with ICartesianControl
 interface implemented) and iKinGazeCtrl are running.
 
 \section int_sec Instantiated Modules
@@ -24,7 +25,7 @@ interface implemented) and iKinGazeCtrl are running.
 - demoRedBall
 
 \section config_sec Configuration Files
-The file ./conf/config.ini contains the initialization parameters for the 
+The file ./conf/config.ini contains the initialization parameters for the
 demoGraspManager module.
 The file ./conf/network.ini contains the network weights.
 
@@ -39,5 +40,3 @@ before launching them.
 \note To enable/disable arms refer to the options available within the config.ini file.
 
 */
-
-
