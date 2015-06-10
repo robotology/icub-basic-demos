@@ -35,7 +35,9 @@ target_link_libraries(${PROJECTNAME} ctrlLib
 
 install(TARGETS ${PROJECTNAME} DESTINATION bin)
 
-icubcontrib_add_uninstall_target()
+if(NOT BUILD_BUNDLE)
+    icubcontrib_add_uninstall_target()
+endif()
 
 # app
 file(GLOB scripts ${CMAKE_CURRENT_SOURCE_DIR}/app/scripts/*.template)

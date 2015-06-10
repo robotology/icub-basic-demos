@@ -23,7 +23,9 @@ add_executable(${PROJECTNAME} ${sources})
 target_link_libraries(${PROJECTNAME} ${YARP_LIBRARIES})
 install(TARGETS ${PROJECTNAME} DESTINATION bin)
 
-icubcontrib_add_uninstall_target()
+if(NOT BUILD_BUNDLE)
+    icubcontrib_add_uninstall_target()
+endif()
 
 # app
 file(GLOB conf      ${CMAKE_CURRENT_SOURCE_DIR}/app/conf/*.ini)
