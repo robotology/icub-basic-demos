@@ -1,0 +1,33 @@
+\doxysection{Red-\/\+Ball Demo}
+\label{group__app__demoRedBall}\index{Red-\/Ball Demo@{Red-\/Ball Demo}}
+
+
+The Red-\/\+Ball Demo application developed by IIT and ISR.  
+
+
+The Red-\/\+Ball Demo application developed by IIT and ISR. 
+
+\hypertarget{group__src__demoYoga_intro_sec}{}\doxysubsection{Description}\label{group__src__demoYoga_intro_sec}
+This application launches all the required modules in order to detect and track the 3-\/d position of a target within the image plane applying the particle filter algorithm along with the controllers to move the head accordingly and both arms to reach for the object and eventually grasp it.
+
+A second mode is also available that allows to track a moving target relying on stereo vision which needs to be calibrated in advance using a feed-\/forward neural network.\hypertarget{group__app__demoRedBall_dep_sec}{}\doxysubsection{Dependencies}\label{group__app__demoRedBall_dep_sec}
+Assumes that robot\+Interface (with ICartesian\+Control interface implemented) and i\+Kin\+Gaze\+Ctrl are running.\hypertarget{group__app__demoRedBall_int_sec}{}\doxysubsection{Instantiated Modules}\label{group__app__demoRedBall_int_sec}
+
+\begin{DoxyItemize}
+\item pf3d\+Tracker
+\item motion\+CUT
+\item demo\+Red\+Ball
+\end{DoxyItemize}\hypertarget{group__app__demoRedBall_config_sec}{}\doxysubsection{Configuration Files}\label{group__app__demoRedBall_config_sec}
+The file ./conf/config.ini contains the initialization parameters for the demo\+Grasp\+Manager module. The file ./conf/network.ini contains the network weights.\hypertarget{group__app__demoRedBall_howto_sec}{}\doxysubsection{How to run the Application}\label{group__app__demoRedBall_howto_sec}
+Customize the file ./app/scripts/$\ast$.template for your specific platform before launching them.
+
+
+\begin{DoxyItemize}
+\item ./scripts/demo\+Red\+Ball.xml.\+template\+: detection done via particle filter.
+\item ./scripts/demo\+Red\+Ball\+\_\+\+Stereo.xml.\+template\+: detection done with stero.
+\item ./scripts/demo\+Red\+Ball\+\_\+\+Impedance.xml.\+template\+: as demo\+Grasp.\+xml.\+template but with impedance control enabled.
+\end{DoxyItemize}
+
+\begin{DoxyNote}{Note}
+To enable/disable arms refer to the options available within the config.\+ini file. 
+\end{DoxyNote}
