@@ -1,6 +1,6 @@
 /**
+@ingroup demo_applications
 \defgroup app_demoRedBall Red-Ball Demo
-\ingroud demo_applications
 
 The Red-Ball Demo application developed by IIT and ISR.
 

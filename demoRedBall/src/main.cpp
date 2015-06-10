@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2010 RobotCub Consortium, European Commission FP6 Project IST-004370
  * Author: Ugo Pattacini
  * email:  ugo.pattacini@iit.it
@@ -16,134 +16,135 @@
  * Public License for more details
 */
 
-/** 
+/**
+@ingroup demo_modules
 \defgroup src_demoRedBall demoRedBall
- 
-The manager module for the Red-Ball Demo developed by IIT and ISR. 
+
+The manager module for the Red-Ball Demo developed by IIT and ISR.
 
 Copyright (C) 2010 RobotCub Consortium
- 
-Author: Ugo Pattacini 
+
+Author: Ugo Pattacini
 
 CopyPolicy: Released under the terms of the GNU GPL v2.0.
 
 \section intro_sec Description
-This module collects the 3-d object positions estimated by the 
-particle filter and sends data to the head and arm controllers 
-in order to gaze at the target, reach for it and eventually 
-grasp it. 
-It relies on the YARP ICartesianControl interface to control 
-both arms and on the YARP IGazeControl interface to control the 
-gaze. 
- 
-Furthermore, there exists a second modality that enables to 
-estimate the 3-d object position using stereo vision that needs 
-to be calibrated in advance relying on a feed-forward neural 
-network. 
- 
-\section lib_sec Libraries 
-- ctrlLib. 
-- iKin.  
-- YARP libraries. 
+This module collects the 3-d object positions estimated by the
+particle filter and sends data to the head and arm controllers
+in order to gaze at the target, reach for it and eventually
+grasp it.
+It relies on the YARP ICartesianControl interface to control
+both arms and on the YARP IGazeControl interface to control the
+gaze.
+
+Furthermore, there exists a second modality that enables to
+estimate the 3-d object position using stereo vision that needs
+to be calibrated in advance relying on a feed-forward neural
+network.
+
+\section lib_sec Libraries
+- ctrlLib.
+- iKin.
+- YARP libraries.
 
 \section parameters_sec Parameters
-None. 
- 
-\section portsa_sec Ports Accessed 
-The robot interface is assumed to be operative; in particular, 
-the ICartesianControl interface must be available. The 
+None.
+
+\section portsa_sec Ports Accessed
+The robot interface is assumed to be operative; in particular,
+the ICartesianControl interface must be available. The
 \ref iKinGazeCtrl must be running.
- 
-\section portsc_sec Ports Created 
- 
-- \e /demoRedBall/trackTarget:i receives the 3-d 
+
+\section portsc_sec Ports Created
+
+- \e /demoRedBall/trackTarget:i receives the 3-d
   position to track.
- 
-- \e /demoRedBall/imdTargetLeft:i receives the 
+
+- \e /demoRedBall/imdTargetLeft:i receives the
   blobs list as produced by the motionCUT module for the
   left eye.
- 
-- \e /demoRedBall/imdTargetRight:i receives the 
+
+- \e /demoRedBall/imdTargetRight:i receives the
   blobs list as produced by the motionCUT module for the
   right eye.
- 
-- \e /demoRedBall/cmdFace:o sends out commands to 
+
+- \e /demoRedBall/cmdFace:o sends out commands to
   the face expression high level interface in order to give an
   emotional representation of the current robot state.
- 
+
 - \e /demoRedBall/gui:o sends out info to update target
   within the icub_gui.
 
-- \e /demoRedBall/rpc remote procedure 
+- \e /demoRedBall/rpc remote procedure
     call. Recognized remote commands:
     -'quit' quit the module
- 
+
 \section in_files_sec Input Data Files
 None.
 
-\section out_data_sec Output Data Files 
-None. 
- 
+\section out_data_sec Output Data Files
+None.
+
 \section conf_file_sec Configuration Files
 The configuration file passed through the option \e --from
 should look like as follows:
- 
-\code 
-[general]
-// the robot name to connect to 
-robot           icub
-// the thread period [ms] 
-thread_period   30
-// left arm switch 
-left_arm        on 
-// right arm switch 
-right_arm       on 
-// arm trajectory execution time [s]
-traj_time       2.0 
-// reaching tolerance [m]
-reach_tol       0.01 
-// eye used 
-eye             left 
-// homes limbs if target detection timeout expires [s]
-idle_tmo        5.0 
-// enable the use of stereo vision calibrated by NN 
-use_network off 
-// NN configuration file 
-network         network.ini 
 
-[torso] 
-// joint switch (min **) (max **) [deg]; 'min', 'max' optional 
-pitch on  (max 30.0) 
-roll off 
+\code
+[general]
+// the robot name to connect to
+robot           icub
+// the thread period [ms]
+thread_period   30
+// left arm switch
+left_arm        on
+// right arm switch
+right_arm       on
+// arm trajectory execution time [s]
+traj_time       2.0
+// reaching tolerance [m]
+reach_tol       0.01
+// eye used
+eye             left
+// homes limbs if target detection timeout expires [s]
+idle_tmo        5.0
+// enable the use of stereo vision calibrated by NN
+use_network off
+// NN configuration file
+network         network.ini
+
+[torso]
+// joint switch (min **) (max **) [deg]; 'min', 'max' optional
+pitch on  (max 30.0)
+roll off
 yaw on
 
 [left_arm]
-// the offset [m] to be added to the desired position  
+// the offset [m] to be added to the desired position
 reach_offset        0.0 -0.15 -0.05
-// the offset [m] for grasping 
+// the offset [m] for grasping
 grasp_offset        0.0 0.0 -0.05
-// perturbation given as standard deviation [m] 
-grasp_sigma 0.01 0.01 0.01 
-// hand orientation to be kept [axis-angle rep.] 
-hand_orientation 0.064485 0.707066 0.704201 3.140572 
-// enable impedance velocity mode 
-impedance_velocity_mode off 
-impedance_stiffness 0.5 0.5 0.5 0.2 0.1 
-impedance_damping 60.0 60.0 60.0 20.0 0.0 
+// perturbation given as standard deviation [m]
+grasp_sigma 0.01 0.01 0.01
+// hand orientation to be kept [axis-angle rep.]
+hand_orientation 0.064485 0.707066 0.704201 3.140572
+// enable impedance velocity mode
+impedance_velocity_mode off
+impedance_stiffness 0.5 0.5 0.5 0.2 0.1
+impedance_damping 60.0 60.0 60.0 20.0 0.0
 
 [right_arm]
 reach_offset        0.0 0.15 -0.05
 grasp_offset        0.0 0.0 -0.05
 grasp_sigma         0.01 0.01 0.01
 hand_orientation    -0.012968 -0.721210 0.692595 2.917075
-impedance_velocity_mode off 
-impedance_stiffness 0.5 0.5 0.5 0.2 0.1 
-impedance_damping 60.0 60.0 60.0 20.0 0.0 
- 
+impedance_velocity_mode off
+impedance_stiffness 0.5 0.5 0.5 0.2 0.1
+impedance_damping 60.0 60.0 60.0 20.0 0.0
+
 [home_arm]
-// home position [deg] 
+// home position [deg]
 poss    -30.0 30.0 0.0  45.0 0.0  0.0  0.0
-// velocities to reach home positions [deg/s] 
+// velocities to reach home positions [deg/s]
 vels    10.0  10.0 10.0 10.0 10.0 10.0 10.0
 
 [arm_selection]
@@ -151,25 +152,25 @@ vels    10.0  10.0 10.0 10.0 10.0 10.0 10.0
 hysteresis_thres 0.1
 
 [grasp]
-// ball radius [m] for still target detection 
-sphere_radius   0.05 
-// timeout [s] for still target detection 
-sphere_tmo      3.0 
-// timeout [s] to open hand after closure 
-release_tmo     3.0 
-// open hand positions [deg] 
-open_hand       0.0 0.0 0.0   0.0   0.0 0.0 0.0   0.0   0.0 
-// close hand positions [deg] 
-close_hand      0.0 80.0 12.0 18.0 27.0 50.0 20.0  50.0 135.0 
-// velocities to reach hand positions [deg/s] 
-vels_hand       10.0 10.0  10.0 10.0 10.0 10.0 10.0 10.0  10.0 
-\endcode 
+// ball radius [m] for still target detection
+sphere_radius   0.05
+// timeout [s] for still target detection
+sphere_tmo      3.0
+// timeout [s] to open hand after closure
+release_tmo     3.0
+// open hand positions [deg]
+open_hand       0.0 0.0 0.0   0.0   0.0 0.0 0.0   0.0   0.0
+// close hand positions [deg]
+close_hand      0.0 80.0 12.0 18.0 27.0 50.0 20.0  50.0 135.0
+// velocities to reach hand positions [deg/s]
+vels_hand       10.0 10.0  10.0 10.0 10.0 10.0 10.0 10.0  10.0
+\endcode
 
 \section tested_os_sec Tested OS
 Windows, Linux
 
 \author Ugo Pattacini, Alessandro Roncone
-*/ 
+*/
 
 #include <string>
 
@@ -274,7 +275,7 @@ protected:
     IControlMode2     *modeArm;
     IPositionControl  *posArm;
     ICartesianControl *cartArm;
-    IGazeControl      *gazeCtrl;    
+    IGazeControl      *gazeCtrl;
 
     BufferedPort<Bottle> inportTrackTarget;
     BufferedPort<Bottle> inportIMDTargetLeft;
@@ -650,7 +651,7 @@ protected:
         }
 
         if (newTarget)
-        {    
+        {
             idleTimer=Time::now();
 
             if (state==STATE_IDLE)
@@ -658,14 +659,14 @@ protected:
                 resetTargetBall();
                 breathersHandler(false);
                 fprintf(stdout,"--- Got target => REACHING\n");
-                
+
                 wentHome=false;
                 state=STATE_REACH;
             }
         }
-        else if (((state==STATE_IDLE) || (state==STATE_REACH)) && 
+        else if (((state==STATE_IDLE) || (state==STATE_REACH)) &&
                  ((Time::now()-idleTimer)>idleTmo) && !wentHome)
-        {    
+        {
             fprintf(stdout,"--- Target timeout => IDLE\n");
 
             steerHeadToHome();
@@ -734,36 +735,36 @@ protected:
         if (state!=STATE_IDLE)
         {
             gazeCtrl->lookAtFixationPoint(targetPos);
-            
+
             if (outportGui.getOutputCount()>0)
             {
                 Bottle obj;
                 obj.addString("object");
                 obj.addString("ball");
-             
-                // size 
+
+                // size
                 obj.addDouble(50.0);
                 obj.addDouble(50.0);
                 obj.addDouble(50.0);
-            
+
                 // positions
                 obj.addDouble(1000.0*targetPos[0]);
                 obj.addDouble(1000.0*targetPos[1]);
                 obj.addDouble(1000.0*targetPos[2]);
-            
+
                 // orientation
                 obj.addDouble(0.0);
                 obj.addDouble(0.0);
                 obj.addDouble(0.0);
-            
+
                 // color
                 obj.addInt(255);
                 obj.addInt(0);
                 obj.addInt(0);
-            
+
                 // transparency
                 obj.addDouble(1.0);
-            
+
                 outportGui.write(obj);
             }
         }
@@ -948,7 +949,7 @@ protected:
 
         for (size_t j=0; j<homeVels.length(); j++)
         {
-            double fb;            
+            double fb;
             ienc->getEncoder(j,&fb);
             ipos->positionMove(j,fb);
         }
@@ -978,13 +979,13 @@ protected:
         }
 
         if (sel==LEFTARM)
-        {    
+        {
             drvLeftArm->view(imode);
             drvLeftArm->view(ipos);
             type="left_hand";
         }
         else if (sel==RIGHTARM)
-        {    
+        {
             drvRightArm->view(imode);
             drvRightArm->view(ipos);
             type="right_hand";
@@ -1011,7 +1012,7 @@ protected:
     }
 
     void closeHand(const int sel=USEDARM)
-    {        
+    {
         moveHand(CLOSEHAND,sel);
     }
 
@@ -1020,7 +1021,7 @@ protected:
         if (useLeftArm && useRightArm)
         {
             if (state==STATE_REACH)
-            {    
+            {
                 // handle the hysteresis thresholds
                 if ((armSel==LEFTARM) && (targetPos[1]>hystThres) ||
                     (armSel==RIGHTARM) && (targetPos[1]<-hystThres))
@@ -1093,7 +1094,7 @@ protected:
                 Vector x=R.transposed()*(targetPos+*armReachOffs);
                 limitRange(x);
                 x=R*x;
-    
+
                 cartArm->goToPoseSync(x,*armHandOrien);
             }
         }
@@ -1106,7 +1107,7 @@ protected:
             if (state==STATE_REACH)
             {
                 if (checkTargetForGrasp() && checkArmForGrasp())
-                {    
+                {
                     Vector graspOffs(3);
                     for (size_t i=0; i<graspOffs.length(); i++)
                         graspOffs[i]=Random::normal((*armGraspOffs)[i],(*armGraspSigma)[i]);
@@ -1189,7 +1190,7 @@ protected:
         Vector x,o;
         cartArm->getPose(x,o);
 
-        // true if arm has reached the position 
+        // true if arm has reached the position
         if (norm(targetPos+*armReachOffs-x)<sphereRadius)
             return true;
         else
@@ -1225,7 +1226,7 @@ protected:
             fprintf(stdout,"stopping control\n");
             cartArm->stopControl();
             Time::delay(0.1);
-        }        
+        }
     }
 
     void setFace(const string &type)
@@ -1253,8 +1254,8 @@ protected:
     }
 
     void limitRange(Vector &x)
-    {               
-        x[0]=x[0]>-0.1 ? -0.1 : x[0];       
+    {
+        x[0]=x[0]>-0.1 ? -0.1 : x[0];
     }
 
     Matrix &rotx(const double theta)
@@ -1295,7 +1296,7 @@ protected:
 
         return Rz;
     }
-    
+
     void deleteGuiTarget()
     {
         if (outportGui.getOutputCount()>0)
@@ -1328,7 +1329,7 @@ protected:
 
         setFace(FACE_HAPPY);
         outportCmdFace.interrupt();
-        outportCmdFace.close();      
+        outportCmdFace.close();
 
         deleteGuiTarget();
         outportGui.interrupt();
@@ -1341,12 +1342,12 @@ protected:
     }
 
 public:
-    managerThread(const string &_name, ResourceFinder &_rf) : 
+    managerThread(const string &_name, ResourceFinder &_rf) :
                   RateThread(DEFAULT_THR_PER), name(_name), rf(_rf)
-    {        
+    {
         drvTorso=drvHead=drvLeftArm=drvRightArm=NULL;
         drvCartLeftArm=drvCartRightArm=NULL;
-        drvGazeCtrl=NULL;        
+        drvGazeCtrl=NULL;
     }
 
     bool threadInit()
@@ -1432,7 +1433,7 @@ public:
                                                               "Getting network data").asString().c_str()));
 
             if (!pred.configure(options))
-                return false;            
+                return false;
         }
 
         // open ports
@@ -1507,7 +1508,7 @@ public:
 
         optCartLeftArm.put("remote",(fwslash+robot+"/cartesianController/left_arm").c_str());
         optCartLeftArm.put("local",(name+"/left_arm/cartesian").c_str());
-    
+
         optCartRightArm.put("remote",(fwslash+robot+"/cartesianController/right_arm").c_str());
         optCartRightArm.put("local",(name+"/right_arm/cartesian").c_str());
 
@@ -1535,7 +1536,7 @@ public:
                         leftArmJointsStiffness.length():leftArmJointsDamping.length();
 
                 for (int j=0; j<len; j++)
-                {                    
+                {
                     iimp->setImpedance(j,leftArmJointsStiffness[j],leftArmJointsDamping[j]);
                     imode->setInteractionMode(j,VOCAB_IM_COMPLIANT);
                 }
@@ -1732,7 +1733,7 @@ public:
 class managerModule: public RFModule
 {
 protected:
-    managerThread *thr;    
+    managerThread *thr;
     Port           rpcPort;
 
 public:
@@ -1740,7 +1741,7 @@ public:
 
     bool configure(ResourceFinder &rf)
     {
-        Time::turboBoost();            
+        Time::turboBoost();
 
         thr=new managerThread(getName().c_str(),rf);
         if (!thr->start())
@@ -1877,5 +1878,3 @@ int main(int argc, char *argv[])
 
     return mod.runModule(rf);
 }
-
-
