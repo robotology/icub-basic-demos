@@ -1,0 +1,543 @@
+\doxysection{cvfloodfill2.\+cpp}
+\label{cvfloodfill2_8cpp_source}\index{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/pf3dBottomup/src/cvfloodfill2.cpp@{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/pf3dBottomup/src/cvfloodfill2.cpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*M///////////////////////////////////////////////////////////////////////////////////////}}
+\DoxyCodeLine{00002\ \textcolor{comment}{//}}
+\DoxyCodeLine{00003\ \textcolor{comment}{//\ \ IMPORTANT:\ READ\ BEFORE\ DOWNLOADING,\ COPYING,\ INSTALLING\ OR\ USING.}}
+\DoxyCodeLine{00004\ \textcolor{comment}{//}}
+\DoxyCodeLine{00005\ \textcolor{comment}{//\ \ By\ downloading,\ copying,\ installing\ or\ using\ the\ software\ you\ agree\ to\ this\ license.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{//\ \ If\ you\ do\ not\ agree\ to\ this\ license,\ do\ not\ download,\ install,}}
+\DoxyCodeLine{00007\ \textcolor{comment}{//\ \ copy\ or\ use\ the\ software.}}
+\DoxyCodeLine{00008\ \textcolor{comment}{//}}
+\DoxyCodeLine{00009\ \textcolor{comment}{//}}
+\DoxyCodeLine{00010\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Intel\ License\ Agreement}}
+\DoxyCodeLine{00011\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ For\ Open\ Source\ Computer\ Vision\ Library}}
+\DoxyCodeLine{00012\ \textcolor{comment}{//}}
+\DoxyCodeLine{00013\ \textcolor{comment}{//\ Copyright\ (C)\ 2000,\ Intel\ Corporation,\ all\ rights\ reserved.}}
+\DoxyCodeLine{00014\ \textcolor{comment}{//\ Third\ party\ copyrights\ are\ property\ of\ their\ respective\ owners.}}
+\DoxyCodeLine{00015\ \textcolor{comment}{//}}
+\DoxyCodeLine{00016\ \textcolor{comment}{//\ Redistribution\ and\ use\ in\ source\ and\ binary\ forms,\ with\ or\ without\ modification,}}
+\DoxyCodeLine{00017\ \textcolor{comment}{//\ are\ permitted\ provided\ that\ the\ following\ conditions\ are\ met:}}
+\DoxyCodeLine{00018\ \textcolor{comment}{//}}
+\DoxyCodeLine{00019\ \textcolor{comment}{//\ \ \ *\ Redistribution's\ of\ source\ code\ must\ retain\ the\ above\ copyright\ notice,}}
+\DoxyCodeLine{00020\ \textcolor{comment}{//\ \ \ \ \ this\ list\ of\ conditions\ and\ the\ following\ disclaimer.}}
+\DoxyCodeLine{00021\ \textcolor{comment}{//}}
+\DoxyCodeLine{00022\ \textcolor{comment}{//\ \ \ *\ Redistribution's\ in\ binary\ form\ must\ reproduce\ the\ above\ copyright\ notice,}}
+\DoxyCodeLine{00023\ \textcolor{comment}{//\ \ \ \ \ this\ list\ of\ conditions\ and\ the\ following\ disclaimer\ in\ the\ documentation}}
+\DoxyCodeLine{00024\ \textcolor{comment}{//\ \ \ \ \ and/or\ other\ materials\ provided\ with\ the\ distribution.}}
+\DoxyCodeLine{00025\ \textcolor{comment}{//}}
+\DoxyCodeLine{00026\ \textcolor{comment}{//\ \ \ *\ The\ name\ of\ Intel\ Corporation\ may\ not\ be\ used\ to\ endorse\ or\ promote\ products}}
+\DoxyCodeLine{00027\ \textcolor{comment}{//\ \ \ \ \ derived\ from\ this\ software\ without\ specific\ prior\ written\ permission.}}
+\DoxyCodeLine{00028\ \textcolor{comment}{//}}
+\DoxyCodeLine{00029\ \textcolor{comment}{//\ This\ software\ is\ provided\ by\ the\ copyright\ holders\ and\ contributors\ "{}as\ is"{}\ and}}
+\DoxyCodeLine{00030\ \textcolor{comment}{//\ any\ express\ or\ implied\ warranties,\ including,\ but\ not\ limited\ to,\ the\ implied}}
+\DoxyCodeLine{00031\ \textcolor{comment}{//\ warranties\ of\ merchantability\ and\ fitness\ for\ a\ particular\ purpose\ are\ disclaimed.}}
+\DoxyCodeLine{00032\ \textcolor{comment}{//\ In\ no\ event\ shall\ the\ Intel\ Corporation\ or\ contributors\ be\ liable\ for\ any\ direct,}}
+\DoxyCodeLine{00033\ \textcolor{comment}{//\ indirect,\ incidental,\ special,\ exemplary,\ or\ consequential\ damages}}
+\DoxyCodeLine{00034\ \textcolor{comment}{//\ (including,\ but\ not\ limited\ to,\ procurement\ of\ substitute\ goods\ or\ services;}}
+\DoxyCodeLine{00035\ \textcolor{comment}{//\ loss\ of\ use,\ data,\ or\ profits;\ or\ business\ interruption)\ however\ caused}}
+\DoxyCodeLine{00036\ \textcolor{comment}{//\ and\ on\ any\ theory\ of\ liability,\ whether\ in\ contract,\ strict\ liability,}}
+\DoxyCodeLine{00037\ \textcolor{comment}{//\ or\ tort\ (including\ negligence\ or\ otherwise)\ arising\ in\ any\ way\ out\ of}}
+\DoxyCodeLine{00038\ \textcolor{comment}{//\ the\ use\ of\ this\ software,\ even\ if\ advised\ of\ the\ possibility\ of\ such\ damage.}}
+\DoxyCodeLine{00039\ \textcolor{comment}{//}}
+\DoxyCodeLine{00040\ \textcolor{comment}{//M*/}}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00043\ \textcolor{comment}{\ *\ Notes:\ }}
+\DoxyCodeLine{00044\ \textcolor{comment}{\ *\ This\ code\ is\ part\ of\ the\ OpenCV\ library,\ with\ a\ couple\ of\ changes\ marked\ with\ the\ comments\ "{}//martim"{}.}}
+\DoxyCodeLine{00045\ \textcolor{comment}{\ *\ A\ slight\ change\ was\ made\ in\ the\ threshold\ criteria\ of\ the\ floodfill\ algorithm.}}
+\DoxyCodeLine{00046\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00047\ \textcolor{comment}{\ *\ Author\ of\ changes:\ Martim\ Brandao}}
+\DoxyCodeLine{00048\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00049\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \textcolor{preprocessor}{\#include\ <opencv2/opencv.hpp>}}
+\DoxyCodeLine{00052\ \textcolor{preprocessor}{\#include\ <opencv2/core/types\_c.h>}}
+\DoxyCodeLine{00053\ \textcolor{preprocessor}{\#include\ <opencv2/imgproc/imgproc\_c.h>}}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \textcolor{preprocessor}{\#ifndef\ \_\_BEGIN\_\_}}
+\DoxyCodeLine{00056\ \textcolor{preprocessor}{\#define\ \_\_BEGIN\_\_\ \_\_CV\_BEGIN\_\_}}
+\DoxyCodeLine{00057\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \textcolor{preprocessor}{\#ifndef\ \_\_END\_\_}}
+\DoxyCodeLine{00060\ \textcolor{preprocessor}{\#define\ \_\_END\_\_\ \_\_CV\_END\_\_}}
+\DoxyCodeLine{00061\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \textcolor{preprocessor}{\#ifndef\ EXIT}}
+\DoxyCodeLine{00064\ \textcolor{preprocessor}{\#define\ EXIT\ \_\_CV\_EXIT\_\_}}
+\DoxyCodeLine{00065\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \textcolor{keyword}{typedef}\ \textcolor{keyword}{struct\ }CvFFillSegment}
+\DoxyCodeLine{00068\ \{}
+\DoxyCodeLine{00069\ \ \ \ \ ushort\ y;}
+\DoxyCodeLine{00070\ \ \ \ \ ushort\ l;}
+\DoxyCodeLine{00071\ \ \ \ \ ushort\ r;}
+\DoxyCodeLine{00072\ \ \ \ \ ushort\ prevl;}
+\DoxyCodeLine{00073\ \ \ \ \ ushort\ prevr;}
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{keywordtype}{short}\ dir;}
+\DoxyCodeLine{00075\ \}}
+\DoxyCodeLine{00076\ CvFFillSegment;}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \textcolor{preprocessor}{\#define\ UP\ 1}}
+\DoxyCodeLine{00079\ \textcolor{preprocessor}{\#define\ DOWN\ -\/1\ \ \ \ \ \ \ \ \ \ \ \ \ }}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \textcolor{preprocessor}{\#define\ ICV\_PUSH(\ Y,\ L,\ R,\ PREV\_L,\ PREV\_R,\ DIR\ )\(\backslash\)}}
+\DoxyCodeLine{00082\ \textcolor{preprocessor}{\{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00083\ \textcolor{preprocessor}{\ \ \ \ tail-\/>y\ =\ (ushort)(Y);\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00084\ \textcolor{preprocessor}{\ \ \ \ tail-\/>l\ =\ (ushort)(L);\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00085\ \textcolor{preprocessor}{\ \ \ \ tail-\/>r\ =\ (ushort)(R);\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00086\ \textcolor{preprocessor}{\ \ \ \ tail-\/>prevl\ =\ (ushort)(PREV\_L);\ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00087\ \textcolor{preprocessor}{\ \ \ \ tail-\/>prevr\ =\ (ushort)(PREV\_R);\ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00088\ \textcolor{preprocessor}{\ \ \ \ tail-\/>dir\ =\ (short)(DIR);\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00089\ \textcolor{preprocessor}{\ \ \ \ if(\ ++tail\ >=\ buffer\_end\ )\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00090\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ tail\ =\ buffer;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00091\ \textcolor{preprocessor}{\}}}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \textcolor{preprocessor}{\#define\ ICV\_POP(\ Y,\ L,\ R,\ PREV\_L,\ PREV\_R,\ DIR\ )\ \(\backslash\)}}
+\DoxyCodeLine{00095\ \textcolor{preprocessor}{\{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00096\ \textcolor{preprocessor}{\ \ \ \ Y\ =\ head-\/>y;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00097\ \textcolor{preprocessor}{\ \ \ \ L\ =\ head-\/>l;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00098\ \textcolor{preprocessor}{\ \ \ \ R\ =\ head-\/>r;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00099\ \textcolor{preprocessor}{\ \ \ \ PREV\_L\ =\ head-\/>prevl;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00100\ \textcolor{preprocessor}{\ \ \ \ PREV\_R\ =\ head-\/>prevr;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00101\ \textcolor{preprocessor}{\ \ \ \ DIR\ =\ head-\/>dir;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00102\ \textcolor{preprocessor}{\ \ \ \ if(\ ++head\ >=\ buffer\_end\ )\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00103\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ head\ =\ buffer;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \(\backslash\)}}
+\DoxyCodeLine{00104\ \textcolor{preprocessor}{\}}}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \textcolor{preprocessor}{\#define\ DIFF\_FLT\_C1(p1,p2)\ (fabs((p1)[0]\ -\/\ (p2)[0]\ +\ d\_lw[0])\ <=\ interval[0])}}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00108\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{00109\ icvFloodFill\_Grad\_32f\_CnIR2(\ \textcolor{keywordtype}{float}*\ pImage,\ \textcolor{keywordtype}{int}\ step,\ uchar*\ pMask,\ \textcolor{keywordtype}{int}\ maskStep,}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CvSize\ \textcolor{comment}{/*roi*/},\ CvPoint\ seed,\ \textcolor{keywordtype}{float}*\ \_newVal,\ \textcolor{keywordtype}{float}*\ \_d\_lw,}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}*\ \_d\_up,\ CvConnectedComp*\ region,\ \textcolor{keywordtype}{int}\ flags,}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CvFFillSegment*\ buffer,\ \textcolor{keywordtype}{int}\ buffer\_size,\ \textcolor{keywordtype}{int}\ cn\ )}
+\DoxyCodeLine{00113\ \{}
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{keywordtype}{float}*\ img\ =\ pImage\ +\ (step\ /=\ \textcolor{keyword}{sizeof}(float))*seed.y;}
+\DoxyCodeLine{00115\ \ \ \ \ uchar*\ mask\ =\ (pMask\ +=\ maskStep\ +\ 1)\ +\ maskStep*seed.y;}
+\DoxyCodeLine{00116\ \ \ \ \ \textcolor{keywordtype}{int}\ i,\ L,\ R;}
+\DoxyCodeLine{00117\ \ \ \ \ \textcolor{keywordtype}{int}\ area\ =\ 0;}
+\DoxyCodeLine{00118\ \ \ \ \ \textcolor{keywordtype}{double}\ sum[]\ =\ \{0,0,0\},\ val0[]\ =\ \{0,0,0\};}
+\DoxyCodeLine{00119\ \ \ \ \ \textcolor{keywordtype}{float}\ newVal[]\ =\ \{0,0,0\};}
+\DoxyCodeLine{00120\ \ \ \ \ \textcolor{keywordtype}{float}\ d\_lw[]\ =\ \{0,0,0\};}
+\DoxyCodeLine{00121\ \ \ \ \ \textcolor{keywordtype}{float}\ interval[]\ =\ \{0,0,0\};}
+\DoxyCodeLine{00122\ \ \ \ \ \textcolor{keywordtype}{int}\ XMin,\ XMax,\ YMin\ =\ seed.y,\ YMax\ =\ seed.y;}
+\DoxyCodeLine{00123\ \ \ \ \ \textcolor{keywordtype}{int}\ \_8\_connectivity\ =\ (flags\ \&\ 255)\ ==\ 8;}
+\DoxyCodeLine{00124\ \ \ \ \ \textcolor{keywordtype}{int}\ fixedRange\ =\ flags\ \&\ CV\_FLOODFILL\_FIXED\_RANGE;}
+\DoxyCodeLine{00125\ \ \ \ \ \textcolor{keywordtype}{int}\ fillImage\ =\ (flags\ \&\ CV\_FLOODFILL\_MASK\_ONLY)\ ==\ 0;}
+\DoxyCodeLine{00126\ \ \ \ \ uchar\ newMaskVal\ =\ (uchar)(flags\ \&\ 0xff00\ ?\ flags\ >>\ 8\ :\ 1);}
+\DoxyCodeLine{00127\ \ \ \ \ CvFFillSegment*\ buffer\_end\ =\ buffer\ +\ buffer\_size,\ *head\ =\ buffer,\ *tail\ =\ buffer;}
+\DoxyCodeLine{00128\ \ \ \ \ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/martim}}
+\DoxyCodeLine{00129\ \ \ \ \ \textcolor{comment}{//\ variance-\/adaptive\ threshold}}
+\DoxyCodeLine{00130\ \ \ \ \ \textcolor{keywordtype}{double}\ varAdaptA=0,\ varAdaptB=0;\ \textcolor{comment}{//cumulative\ p(i)\ and\ p(i)²\ where\ p=pixel\ value}}
+\DoxyCodeLine{00131\ \ \ \ \ \textcolor{keywordtype}{double}\ varAdaptN=0;\ \textcolor{comment}{//N(i)\ where\ N=number\ of\ pixels}}
+\DoxyCodeLine{00132\ \ \ \ \ \textcolor{keywordtype}{double}\ varAdaptAlpha=0.9;\ \textcolor{comment}{//weight\ on\ current\ threshold\ (0<alpha<1)}}
+\DoxyCodeLine{00133\ \ \ \ \ \textcolor{keywordtype}{double}\ varAdaptK=0.5;\ \textcolor{comment}{//sauvola's\ weight\ on\ the\ standard\ deviance\ component\ (0.2<=k<=0.5)}}
+\DoxyCodeLine{00134\ \ \ \ \ \textcolor{keywordtype}{double}\ varAdaptKa=1.5;\ \textcolor{comment}{//alex's\ weight\ on\ the\ standard\ deviance\ component\ (ka\string~1)}}
+\DoxyCodeLine{00135\ \ \ \ \ \textcolor{keywordtype}{double}\ varAdapt\_aux=0;}
+\DoxyCodeLine{00136\ \ \ \ \ \textcolor{keywordflow}{if}(\ cn!=1\ )\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00137\ \ \ \ \ \textcolor{comment}{//-\/-\/end}}
+\DoxyCodeLine{00138\ }
+\DoxyCodeLine{00139\ \ \ \ \ L\ =\ R\ =\ seed.x;}
+\DoxyCodeLine{00140\ \ \ \ \ \textcolor{keywordflow}{if}(\ mask[L]\ )}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00143\ \ \ \ \ mask[L]\ =\ newMaskVal;}
+\DoxyCodeLine{00144\ }
+\DoxyCodeLine{00145\ \ \ \ \ \textcolor{keywordflow}{for}(\ i\ =\ 0;\ i\ <\ cn;\ i++\ )}
+\DoxyCodeLine{00146\ \ \ \ \ \{}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ newVal[i]\ =\ \_newVal[i];}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ d\_lw[i]\ =\ 0.5f*(\_d\_lw[i]\ -\/\ \_d\_up[i]);}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ interval[i]\ =\ 0.5f*(\_d\_lw[i]\ +\ \_d\_up[i]);}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ fixedRange\ )}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \ \ val0[i]\ =\ img[L*cn+i];}
+\DoxyCodeLine{00152\ \ \ \ \ \}}
+\DoxyCodeLine{00153\ }
+\DoxyCodeLine{00154\ \ \ \ \ \textcolor{keywordflow}{if}(\ cn\ ==\ 1\ )}
+\DoxyCodeLine{00155\ \ \ \ \ \{}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ fixedRange\ )}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}(\ !mask[R\ +\ 1]\ \&\&\ DIFF\_FLT\_C1(\ img\ +\ (R+1),\ val0\ ))\{}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/martim}}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ variance-\/adaptive\ threshold}}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ varAdapt\_aux\ =\ (img+\ R+1)[0];}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ varAdaptA\ +=\ varAdapt\_aux;}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ varAdaptB\ +=\ varAdapt\_aux*varAdapt\_aux;}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ varAdaptN++;}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//Sauvola:}}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ varAdapt\_aux\ =\ sqrt(\ varAdaptB/varAdaptN\ -\/\ (varAdaptA*varAdaptA/(varAdaptN*varAdaptN))\ );}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ varAdapt\_aux\ =\ val0[0]\ -\/\ (varAdaptA/varAdaptN)*(\ 1+varAdaptK*((varAdapt\_aux/128)-\/1)\ );}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ interval[0]\ =\ (float)(varAdaptAlpha*interval[0]\ +\ (1-\/varAdaptAlpha)*varAdapt\_aux);}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//Alex:}}
+\DoxyCodeLine{00170\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ varAdapt\_aux\ =\ val0[0]\ -\/\ (varAdaptA/varAdaptN)\ +\ varAdaptKa*varAdapt\_aux;}}
+\DoxyCodeLine{00171\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ interval[0]\ =\ varAdaptAlpha*interval[0]\ +\ (1-\/varAdaptAlpha)*varAdapt\_aux;}}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mask[++R]\ =\ newMaskVal;}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//-\/-\/end}}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00175\ }
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}(\ !mask[L\ -\/\ 1]\ \&\&\ DIFF\_FLT\_C1(\ img\ +\ (L-\/1),\ val0\ ))\{}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/martim}}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ variance-\/adaptive\ threshold}}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ varAdapt\_aux\ =\ (img+\ L-\/1)[0];}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ varAdaptA\ +=\ varAdapt\_aux;}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ varAdaptB\ +=\ varAdapt\_aux*varAdapt\_aux;}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ varAdaptN++;}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//Sauvola:}}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ varAdapt\_aux\ =\ sqrt(\ varAdaptB/varAdaptN\ -\/\ (varAdaptA*varAdaptA/(varAdaptN*varAdaptN))\ );}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ varAdapt\_aux\ =\ val0[0]\ -\/\ (varAdaptA/varAdaptN)*(\ 1+varAdaptK*((varAdapt\_aux/128)-\/1)\ );}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ interval[0]\ =\ (float)(varAdaptAlpha*interval[0]\ +\ (1-\/varAdaptAlpha)*varAdapt\_aux);}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//Alex:}}
+\DoxyCodeLine{00188\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ varAdapt\_aux\ =\ val0[0]\ -\/\ (varAdaptA/varAdaptN)\ +\ varAdaptKa*varAdapt\_aux;}}
+\DoxyCodeLine{00189\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ interval[0]\ =\ varAdaptAlpha*interval[0]\ +\ (1-\/varAdaptAlpha)*varAdapt\_aux;}}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mask[-\/-\/L]\ =\ newMaskVal;}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//-\/-\/end}}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}(\ !mask[R\ +\ 1]\ \&\&\ DIFF\_FLT\_C1(\ img\ +\ (R+1),\ img\ +\ R\ ))}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mask[++R]\ =\ newMaskVal;}
+\DoxyCodeLine{00198\ }
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}(\ !mask[L\ -\/\ 1]\ \&\&\ DIFF\_FLT\_C1(\ img\ +\ (L-\/1),\ img\ +\ L\ ))}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mask[-\/-\/L]\ =\ newMaskVal;}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00202\ \ \ \ \ \}}
+\DoxyCodeLine{00203\ }
+\DoxyCodeLine{00204\ \ \ \ \ XMax\ =\ R;}
+\DoxyCodeLine{00205\ \ \ \ \ XMin\ =\ L;}
+\DoxyCodeLine{00206\ \ \ \ \ ICV\_PUSH(\ seed.y,\ L,\ R,\ R\ +\ 1,\ R,\ UP\ );}
+\DoxyCodeLine{00207\ }
+\DoxyCodeLine{00208\ \ \ \ \ \textcolor{keywordflow}{while}(\ head\ !=\ tail\ )}
+\DoxyCodeLine{00209\ \ \ \ \ \{}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k,\ YC,\ PL,\ PR,\ dir,\ curstep;}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ ICV\_POP(\ YC,\ L,\ R,\ PL,\ PR,\ dir\ );}
+\DoxyCodeLine{00212\ }
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ data[][3]\ =}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \ \ \ \ \{-\/dir,\ L\ -\/\ \_8\_connectivity,\ R\ +\ \_8\_connectivity\},}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ \{dir,\ L\ -\/\ \_8\_connectivity,\ PL\ -\/\ 1\},}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ \{dir,\ PR\ +\ 1,\ R\ +\ \_8\_connectivity\}}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00219\ }
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{unsigned}\ length\ =\ (unsigned)(R-\/L);}
+\DoxyCodeLine{00221\ }
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ region\ )}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \ \ \ \ area\ +=\ (int)length\ +\ 1;}
+\DoxyCodeLine{00225\ }
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ XMax\ <\ R\ )\ XMax\ =\ R;}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ XMin\ >\ L\ )\ XMin\ =\ L;}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ YMax\ <\ YC\ )\ YMax\ =\ YC;}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ YMin\ >\ YC\ )\ YMin\ =\ YC;}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00231\ }
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ cn\ ==\ 1\ )}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(\ k\ =\ 0;\ k\ <\ 3;\ k++\ )}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dir\ =\ data[k][0];}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ curstep\ =\ dir\ *\ step;}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ img\ =\ pImage\ +\ (YC\ +\ dir)\ *\ step;}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mask\ =\ pMask\ +\ (YC\ +\ dir)\ *\ maskStep;}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ left\ =\ data[k][1];}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ right\ =\ data[k][2];}
+\DoxyCodeLine{00242\ }
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ fixedRange\ )}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/martim}}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ variance-\/adaptive\ threshold}}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(\ i\ =\ left;\ i\ <=\ right;\ i++\ )}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ !mask[i]\ \&\&\ DIFF\_FLT\_C1(\ img\ +\ i,\ val0\ ))}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ j\ =\ i;}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mask[i]\ =\ newMaskVal;}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}(\ !mask[-\/-\/j]\ \&\&\ DIFF\_FLT\_C1(\ img\ +\ j,\ val0\ ))\{}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mask[j]\ =\ newMaskVal;}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ varAdapt\_aux\ =\ (img+j)[0];}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ varAdaptA\ +=\ varAdapt\_aux;}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ varAdaptB\ +=\ varAdapt\_aux*varAdapt\_aux;}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ varAdaptN++;}
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//Sauvola:}}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ varAdapt\_aux\ =\ sqrt(\ varAdaptB/varAdaptN\ -\/\ (varAdaptA*varAdaptA/(varAdaptN*varAdaptN))\ );}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ varAdapt\_aux\ =\ val0[0]\ -\/\ (varAdaptA/varAdaptN)*(\ 1+varAdaptK*((varAdapt\_aux/128)-\/1)\ );}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ interval[0]\ =\ (float)(varAdaptAlpha*interval[0]\ +\ (1-\/varAdaptAlpha)*varAdapt\_aux);}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//Alex:}}
+\DoxyCodeLine{00263\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ varAdapt\_aux\ =\ val0[0]\ -\/\ (varAdaptA/varAdaptN)\ +\ varAdaptKa*varAdapt\_aux;}}
+\DoxyCodeLine{00264\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ interval[0]\ =\ varAdaptAlpha*interval[0]\ +\ (1-\/varAdaptAlpha)*varAdapt\_aux;}}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00266\ }
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}(\ !mask[++i]\ \&\&\ DIFF\_FLT\_C1(\ img\ +\ i,\ val0\ ))\{}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mask[i]\ =\ newMaskVal;}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ varAdapt\_aux\ =\ (img+i)[0];}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ varAdaptA\ +=\ varAdapt\_aux;}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ varAdaptB\ +=\ varAdapt\_aux*varAdapt\_aux;}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ varAdaptN++;}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//Sauvola:}}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ varAdapt\_aux\ =\ sqrt(\ varAdaptB/varAdaptN\ -\/\ (varAdaptA*varAdaptA/(varAdaptN*varAdaptN))\ );}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ varAdapt\_aux\ =\ val0[0]\ -\/\ (varAdaptA/varAdaptN)*(\ 1+varAdaptK*((varAdapt\_aux/128)-\/1)\ );}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ interval[0]\ =\ (float)(varAdaptAlpha*interval[0]\ +\ (1-\/varAdaptAlpha)*varAdapt\_aux);}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//Alex:}}
+\DoxyCodeLine{00278\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ varAdapt\_aux\ =\ val0[0]\ -\/\ (varAdaptA/varAdaptN)\ +\ varAdaptKa*varAdapt\_aux;}}
+\DoxyCodeLine{00279\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ interval[0]\ =\ varAdaptAlpha*interval[0]\ +\ (1-\/varAdaptAlpha)*varAdapt\_aux;}}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00281\ }
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ICV\_PUSH(\ YC\ +\ dir,\ j+1,\ i-\/1,\ L,\ R,\ -\/dir\ );}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//-\/-\/end}}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}(\ !\_8\_connectivity\ )}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(\ i\ =\ left;\ i\ <=\ right;\ i++\ )}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ !mask[i]\ \&\&\ DIFF\_FLT\_C1(\ img\ +\ i,\ img\ -\/\ curstep\ +\ i\ ))}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ j\ =\ i;}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mask[i]\ =\ newMaskVal;}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}(\ !mask[-\/-\/j]\ \&\&\ DIFF\_FLT\_C1(\ img\ +\ j,\ img\ +\ (j+1)\ ))}
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mask[j]\ =\ newMaskVal;}
+\DoxyCodeLine{00295\ }
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}(\ !mask[++i]\ \&\&}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (DIFF\_FLT\_C1(\ img\ +\ i,\ img\ +\ (i-\/1)\ )\ ||}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (DIFF\_FLT\_C1(\ img\ +\ i,\ img\ +\ i\ -\/\ curstep)\ \&\&\ i\ <=\ R)))}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mask[i]\ =\ newMaskVal;}
+\DoxyCodeLine{00300\ }
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ICV\_PUSH(\ YC\ +\ dir,\ j+1,\ i-\/1,\ L,\ R,\ -\/dir\ );}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(\ i\ =\ left;\ i\ <=\ right;\ i++\ )}
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ idx;}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ val[1];}
+\DoxyCodeLine{00309\ }
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ !mask[i]\ \&\&}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (((val[0]\ =\ img[i],}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\textcolor{keywordtype}{unsigned})(idx\ =\ i-\/L-\/1)\ <=\ length)\ \&\&}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ DIFF\_FLT\_C1(\ val,\ img\ -\/\ curstep\ +\ (i-\/1)\ ))\ ||}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ((\textcolor{keywordtype}{unsigned})(++idx)\ <=\ length\ \&\&}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ DIFF\_FLT\_C1(\ val,\ img\ -\/\ curstep\ +\ i\ ))\ ||}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ((\textcolor{keywordtype}{unsigned})(++idx)\ <=\ length\ \&\&}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ DIFF\_FLT\_C1(\ val,\ img\ -\/\ curstep\ +\ (i+1)\ ))))}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ j\ =\ i;}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mask[i]\ =\ newMaskVal;}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}(\ !mask[-\/-\/j]\ \&\&\ DIFF\_FLT\_C1(\ img\ +\ j,\ img\ +\ (j+1)\ ))}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mask[j]\ =\ newMaskVal;}
+\DoxyCodeLine{00323\ }
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}(\ !mask[++i]\ \&\&}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ((val[0]\ =\ img[i],}
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ DIFF\_FLT\_C1(\ val,\ img\ +\ (i-\/1)\ ))\ ||}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (((\textcolor{keywordtype}{unsigned})(idx\ =\ i-\/L-\/1)\ <=\ length\ \&\&}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ DIFF\_FLT\_C1(\ val,\ img\ -\/\ curstep\ +\ (i-\/1)\ )))\ ||}
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ((\textcolor{keywordtype}{unsigned})(++idx)\ <=\ length\ \&\&}
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ DIFF\_FLT\_C1(\ val,\ img\ -\/\ curstep\ +\ i\ ))\ ||}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ((\textcolor{keywordtype}{unsigned})(++idx)\ <=\ length\ \&\&}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ DIFF\_FLT\_C1(\ val,\ img\ -\/\ curstep\ +\ (i+1)\ ))))}
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mask[i]\ =\ newMaskVal;}
+\DoxyCodeLine{00334\ }
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ICV\_PUSH(\ YC\ +\ dir,\ j+1,\ i-\/1,\ L,\ R,\ -\/dir\ );}
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00338\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00339\ }
+\DoxyCodeLine{00340\ \ \ \ \ \ \ \ \ \ \ \ \ img\ =\ pImage\ +\ YC\ *\ step;}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ fillImage\ )}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(\ i\ =\ L;\ i\ <=\ R;\ i++\ )}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ img[i]\ =\ newVal[0];}
+\DoxyCodeLine{00344\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}(\ region\ )}
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(\ i\ =\ L;\ i\ <=\ R;\ i++\ )}
+\DoxyCodeLine{00346\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sum[0]\ +=\ img[i];}
+\DoxyCodeLine{00347\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00348\ \ \ \ \ \}}
+\DoxyCodeLine{00349\ \ \ \ \ }
+\DoxyCodeLine{00350\ \ \ \ \ \textcolor{keywordflow}{if}(\ region\ )}
+\DoxyCodeLine{00351\ \ \ \ \ \{}
+\DoxyCodeLine{00352\ \ \ \ \ \ \ \ \ region-\/>area\ =\ area;}
+\DoxyCodeLine{00353\ \ \ \ \ \ \ \ \ region-\/>rect.x\ =\ XMin;}
+\DoxyCodeLine{00354\ \ \ \ \ \ \ \ \ region-\/>rect.y\ =\ YMin;}
+\DoxyCodeLine{00355\ \ \ \ \ \ \ \ \ region-\/>rect.width\ =\ XMax\ -\/\ XMin\ +\ 1;}
+\DoxyCodeLine{00356\ \ \ \ \ \ \ \ \ region-\/>rect.height\ =\ YMax\ -\/\ YMin\ +\ 1;}
+\DoxyCodeLine{00357\ \ \ \ \ }
+\DoxyCodeLine{00358\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ fillImage\ )}
+\DoxyCodeLine{00359\ \ \ \ \ \ \ \ \ \ \ \ \ region-\/>value\ =\ cvScalar(newVal[0],\ newVal[1],\ newVal[2]);}
+\DoxyCodeLine{00360\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00361\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00362\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ iarea\ =\ area\ ?\ 1./area\ :\ 0;}
+\DoxyCodeLine{00363\ \ \ \ \ \ \ \ \ \ \ \ \ region-\/>value\ =\ cvScalar(sum[0]*iarea,\ sum[1]*iarea,\ sum[2]*iarea);}
+\DoxyCodeLine{00364\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00365\ \ \ \ \ \}}
+\DoxyCodeLine{00366\ }
+\DoxyCodeLine{00367\ \textcolor{comment}{//\ \ \ \ printf("{}Tf=\%.4f,\ avg=\%.4f,\ sigma=\%.4f\(\backslash\)n"{},\ interval[0],\ varAdaptA/varAdaptN,\ sqrt(varAdaptB/varAdaptN-\/(varAdaptA*varAdaptA/(varAdaptN*varAdaptN)))\ );}}
+\DoxyCodeLine{00368\ \textcolor{comment}{//\ \ \ \ printf("{}-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/end\ floodfill\(\backslash\)n"{});}}
+\DoxyCodeLine{00369\ }
+\DoxyCodeLine{00370\ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00371\ \}}
+\DoxyCodeLine{00372\ }
+\DoxyCodeLine{00373\ \textcolor{keyword}{typedef}\ void\ (*CvFloodFillFunc2)(}
+\DoxyCodeLine{00374\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}*\ img,\ \textcolor{keywordtype}{int}\ step,\ CvSize\ size,\ CvPoint\ seed,\ \textcolor{keywordtype}{void}*\ newval,}
+\DoxyCodeLine{00375\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CvConnectedComp*\ comp,\ \textcolor{keywordtype}{int}\ flags,\ \textcolor{keywordtype}{void}*\ buffer,\ \textcolor{keywordtype}{int}\ buffer\_size,\ \textcolor{keywordtype}{int}\ cn\ );}
+\DoxyCodeLine{00376\ }
+\DoxyCodeLine{00377\ \textcolor{keyword}{typedef}\ void\ (*CvFloodFillGradFunc2)(}
+\DoxyCodeLine{00378\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}*\ img,\ \textcolor{keywordtype}{int}\ step,\ uchar*\ mask,\ \textcolor{keywordtype}{int}\ maskStep,\ CvSize\ size,}
+\DoxyCodeLine{00379\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CvPoint\ seed,\ \textcolor{keywordtype}{void}*\ newval,\ \textcolor{keywordtype}{void}*\ d\_lw,\ \textcolor{keywordtype}{void}*\ d\_up,\ \textcolor{keywordtype}{void}*\ ccomp,}
+\DoxyCodeLine{00380\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ flags,\ \textcolor{keywordtype}{void}*\ buffer,\ \textcolor{keywordtype}{int}\ buffer\_size,\ \textcolor{keywordtype}{int}\ cn\ );}
+\DoxyCodeLine{00381\ }
+\DoxyCodeLine{00382\ }
+\DoxyCodeLine{00383\ \textcolor{keyword}{static}\ \ \textcolor{keywordtype}{void}\ \ icvInitFloodFill(\ \textcolor{keywordtype}{void}**\ ffill\_tab,\ \textcolor{keywordtype}{void}**\ ffillgrad\_tab\ )}
+\DoxyCodeLine{00384\ \{}
+\DoxyCodeLine{00385\ \ \ \ \ ffill\_tab[0]\ =\ NULL;\ \textcolor{comment}{//(void*)icvFloodFill\_8u\_CnIR2;}}
+\DoxyCodeLine{00386\ \ \ \ \ ffill\_tab[1]\ =\ NULL;\ \textcolor{comment}{//(void*)icvFloodFill\_32f\_CnIR2;}}
+\DoxyCodeLine{00387\ }
+\DoxyCodeLine{00388\ \ \ \ \ ffillgrad\_tab[0]\ =\ NULL;\ \textcolor{comment}{//(void*)icvFloodFill\_Grad\_8u\_CnIR2;}}
+\DoxyCodeLine{00389\ \ \ \ \ ffillgrad\_tab[1]\ =\ (\textcolor{keywordtype}{void}*)icvFloodFill\_Grad\_32f\_CnIR2;}
+\DoxyCodeLine{00390\ \}}
+\DoxyCodeLine{00391\ }
+\DoxyCodeLine{00392\ }
+\DoxyCodeLine{00393\ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{00394\ cvFloodFill2(\ CvArr*\ arr,\ CvPoint\ seed\_point,}
+\DoxyCodeLine{00395\ \ \ \ \ \ \ \ \ \ \ \ \ \ CvScalar\ newVal,\ CvScalar\ lo\_diff,\ CvScalar\ up\_diff,}
+\DoxyCodeLine{00396\ \ \ \ \ \ \ \ \ \ \ \ \ \ CvConnectedComp*\ comp,\ \textcolor{keywordtype}{int}\ flags,\ CvArr*\ maskarr\ )}
+\DoxyCodeLine{00397\ \{}
+\DoxyCodeLine{00398\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}*\ ffill\_tab[4];}
+\DoxyCodeLine{00399\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}*\ ffillgrad\_tab[4];}
+\DoxyCodeLine{00400\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ inittab\ =\ 0;}
+\DoxyCodeLine{00401\ }
+\DoxyCodeLine{00402\ \ \ \ \ CvMat*\ tempMask\ =\ 0;}
+\DoxyCodeLine{00403\ \ \ \ \ CvFFillSegment*\ buffer\ =\ 0;}
+\DoxyCodeLine{00404\ \ \ \ \ CV\_FUNCNAME(\ \textcolor{stringliteral}{"{}cvFloodFill"{}}\ );}
+\DoxyCodeLine{00405\ }
+\DoxyCodeLine{00406\ \ \ \ \ \textcolor{keywordflow}{if}(\ comp\ )}
+\DoxyCodeLine{00407\ \ \ \ \ \ \ \ \ memset(\ comp,\ 0,\ \textcolor{keyword}{sizeof}(*comp)\ );}
+\DoxyCodeLine{00408\ }
+\DoxyCodeLine{00409\ \ \ \ \ \_\_BEGIN\_\_;}
+\DoxyCodeLine{00410\ }
+\DoxyCodeLine{00411\ \ \ \ \ \textcolor{keywordtype}{int}\ i,\ type,\ depth,\ cn,\ is\_simple,\ idx;}
+\DoxyCodeLine{00412\ \ \ \ \ \textcolor{keywordtype}{int}\ buffer\_size,\ connectivity\ =\ flags\ \&\ 255;}
+\DoxyCodeLine{00413\ \ \ \ \ \textcolor{keywordtype}{double}\ nv\_buf[4]\ =\ \{0,0,0,0\};}
+\DoxyCodeLine{00414\ \ \ \ \ \textcolor{keyword}{union\ }\{\ uchar\ b[4];\ \textcolor{keywordtype}{float}\ f[4];\ \}\ ld\_buf,\ ud\_buf;}
+\DoxyCodeLine{00415\ \ \ \ \ CvMat\ stub,\ *img\ =\ (CvMat*)arr;}
+\DoxyCodeLine{00416\ \ \ \ \ CvMat\ maskstub,\ *mask\ =\ (CvMat*)maskarr;}
+\DoxyCodeLine{00417\ \ \ \ \ CvSize\ size;}
+\DoxyCodeLine{00418\ }
+\DoxyCodeLine{00419\ \ \ \ \ \textcolor{keywordflow}{if}(\ !inittab\ )}
+\DoxyCodeLine{00420\ \ \ \ \ \{}
+\DoxyCodeLine{00421\ \ \ \ \ \ \ \ \ icvInitFloodFill(\ ffill\_tab,\ ffillgrad\_tab\ );}
+\DoxyCodeLine{00422\ \ \ \ \ \ \ \ \ inittab\ =\ 1;}
+\DoxyCodeLine{00423\ \ \ \ \ \}}
+\DoxyCodeLine{00424\ }
+\DoxyCodeLine{00425\ \ \ \ \ CV\_CALL(\ img\ =\ cvGetMat(\ img,\ \&stub\ ));}
+\DoxyCodeLine{00426\ \ \ \ \ type\ =\ CV\_MAT\_TYPE(\ img-\/>type\ );}
+\DoxyCodeLine{00427\ \ \ \ \ depth\ =\ CV\_MAT\_DEPTH(type);}
+\DoxyCodeLine{00428\ \ \ \ \ cn\ =\ CV\_MAT\_CN(type);}
+\DoxyCodeLine{00429\ }
+\DoxyCodeLine{00430\ \ \ \ \ idx\ =\ type\ ==\ CV\_8UC1\ ||\ type\ ==\ CV\_8UC3\ ?\ 0\ :}
+\DoxyCodeLine{00431\ \ \ \ \ \ \ \ \ \ \ type\ ==\ CV\_32FC1\ ||\ type\ ==\ CV\_32FC3\ ?\ 1\ :\ -\/1;}
+\DoxyCodeLine{00432\ }
+\DoxyCodeLine{00433\ \ \ \ \ \textcolor{keywordflow}{if}(\ idx\ <\ 0\ )}
+\DoxyCodeLine{00434\ \ \ \ \ \ \ \ \ CV\_ERROR(\ CV\_StsUnsupportedFormat,\ \textcolor{stringliteral}{"{}"{}}\ );}
+\DoxyCodeLine{00435\ }
+\DoxyCodeLine{00436\ \ \ \ \ \textcolor{keywordflow}{if}(\ connectivity\ ==\ 0\ )}
+\DoxyCodeLine{00437\ \ \ \ \ \ \ \ \ connectivity\ =\ 4;}
+\DoxyCodeLine{00438\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}(\ connectivity\ !=\ 4\ \&\&\ connectivity\ !=\ 8\ )}
+\DoxyCodeLine{00439\ \ \ \ \ \ \ \ \ CV\_ERROR(\ CV\_StsBadFlag,\ \textcolor{stringliteral}{"{}Connectivity\ must\ be\ 4,\ 0(=4)\ or\ 8"{}}\ );}
+\DoxyCodeLine{00440\ }
+\DoxyCodeLine{00441\ \ \ \ \ is\_simple\ =\ mask\ ==\ 0\ \&\&\ (flags\ \&\ CV\_FLOODFILL\_MASK\_ONLY)\ ==\ 0;}
+\DoxyCodeLine{00442\ }
+\DoxyCodeLine{00443\ \ \ \ \ \textcolor{keywordflow}{for}(\ i\ =\ 0;\ i\ <\ cn;\ i++\ )}
+\DoxyCodeLine{00444\ \ \ \ \ \{}
+\DoxyCodeLine{00445\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ lo\_diff.val[i]\ <\ 0\ ||\ up\_diff.val[i]\ <\ 0\ )}
+\DoxyCodeLine{00446\ \ \ \ \ \ \ \ \ \ \ \ \ CV\_ERROR(\ CV\_StsBadArg,\ \textcolor{stringliteral}{"{}lo\_diff\ and\ up\_diff\ must\ be\ non-\/negative"{}}\ );}
+\DoxyCodeLine{00447\ \ \ \ \ \ \ \ \ is\_simple\ \&=\ fabs(lo\_diff.val[i])\ <\ DBL\_EPSILON\ \&\&\ fabs(up\_diff.val[i])\ <\ DBL\_EPSILON;}
+\DoxyCodeLine{00448\ \ \ \ \ \}}
+\DoxyCodeLine{00449\ }
+\DoxyCodeLine{00450\ \ \ \ \ \textcolor{keywordflow}{if}(\ (\textcolor{keywordtype}{unsigned})seed\_point.x\ >=\ (\textcolor{keywordtype}{unsigned})size.width\ ||}
+\DoxyCodeLine{00451\ \ \ \ \ \ \ \ \ (\textcolor{keywordtype}{unsigned})seed\_point.y\ >=\ (\textcolor{keywordtype}{unsigned})size.height\ )}
+\DoxyCodeLine{00452\ \ \ \ \ \ \ \ \ CV\_ERROR(\ CV\_StsOutOfRange,\ \textcolor{stringliteral}{"{}Seed\ point\ is\ outside\ of\ image"{}}\ );}
+\DoxyCodeLine{00453\ }
+\DoxyCodeLine{00454\ \ \ \ \ cvScalarToRawData(\ \&newVal,\ \&nv\_buf,\ type,\ 0\ );}
+\DoxyCodeLine{00455\ \ \ \ \ buffer\_size\ =\ MAX(\ size.width,\ size.height\ )*2;}
+\DoxyCodeLine{00456\ \ \ \ \ CV\_CALL(\ buffer\ =\ (CvFFillSegment*)cvAlloc(\ buffer\_size*\textcolor{keyword}{sizeof}(buffer[0])));}
+\DoxyCodeLine{00457\ }
+\DoxyCodeLine{00458\ \ \ \ \ \textcolor{keywordflow}{if}(\ is\_simple\ )}
+\DoxyCodeLine{00459\ \ \ \ \ \{}
+\DoxyCodeLine{00460\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ elem\_size\ =\ CV\_ELEM\_SIZE(type);}
+\DoxyCodeLine{00461\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ uchar*\ seed\_ptr\ =\ img-\/>data.ptr\ +\ img-\/>step*seed\_point.y\ +\ elem\_size*seed\_point.x;}
+\DoxyCodeLine{00462\ \ \ \ \ \ \ \ \ CvFloodFillFunc2\ func\ =\ (CvFloodFillFunc2)ffill\_tab[idx];}
+\DoxyCodeLine{00463\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ !func\ )}
+\DoxyCodeLine{00464\ \ \ \ \ \ \ \ \ \ \ \ \ CV\_ERROR(\ CV\_StsUnsupportedFormat,\ \textcolor{stringliteral}{"{}"{}}\ );}
+\DoxyCodeLine{00465\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ check\ if\ the\ new\ value\ is\ different\ from\ the\ current\ value\ at\ the\ seed\ point.}}
+\DoxyCodeLine{00466\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ if\ they\ are\ exactly\ the\ same,\ use\ the\ generic\ version\ with\ mask\ to\ avoid\ infinite\ loops.}}
+\DoxyCodeLine{00467\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(\ i\ =\ 0;\ i\ <\ elem\_size;\ i++\ )}
+\DoxyCodeLine{00468\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ seed\_ptr[i]\ !=\ ((uchar*)nv\_buf)[i]\ )}
+\DoxyCodeLine{00469\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00470\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ i\ <\ elem\_size\ )}
+\DoxyCodeLine{00471\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00472\ \ \ \ \ \ \ \ \ \ \ \ \ func(\ img-\/>data.ptr,\ img-\/>step,\ size,}
+\DoxyCodeLine{00473\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ seed\_point,\ \&nv\_buf,\ comp,\ flags,}
+\DoxyCodeLine{00474\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ buffer,\ buffer\_size,\ cn\ );}
+\DoxyCodeLine{00475\ \ \ \ \ \ \ \ \ \ \ \ \ EXIT;}
+\DoxyCodeLine{00476\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00477\ \ \ \ \ \}}
+\DoxyCodeLine{00478\ }
+\DoxyCodeLine{00479\ \ \ \ \ \{}
+\DoxyCodeLine{00480\ \ \ \ \ \ \ \ \ CvFloodFillGradFunc2\ func\ =\ (CvFloodFillGradFunc2)ffillgrad\_tab[idx];}
+\DoxyCodeLine{00481\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ !func\ )}
+\DoxyCodeLine{00482\ \ \ \ \ \ \ \ \ \ \ \ \ CV\_ERROR(\ CV\_StsUnsupportedFormat,\ \textcolor{stringliteral}{"{}"{}}\ );}
+\DoxyCodeLine{00483\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00484\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ !mask\ )}
+\DoxyCodeLine{00485\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00486\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ created\ mask\ will\ be\ 8-\/byte\ aligned\ */}}
+\DoxyCodeLine{00487\ \ \ \ \ \ \ \ \ \ \ \ \ tempMask\ =\ cvCreateMat(\ size.height\ +\ 2,\ (size.width\ +\ 9)\ \&\ -\/8,\ CV\_8UC1\ );}
+\DoxyCodeLine{00488\ \ \ \ \ \ \ \ \ \ \ \ \ mask\ =\ tempMask;}
+\DoxyCodeLine{00489\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00490\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00491\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00492\ \ \ \ \ \ \ \ \ \ \ \ \ CV\_CALL(\ mask\ =\ cvGetMat(\ mask,\ \&maskstub\ ));}
+\DoxyCodeLine{00493\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ !CV\_IS\_MASK\_ARR(\ mask\ ))}
+\DoxyCodeLine{00494\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CV\_ERROR(\ CV\_StsBadMask,\ \textcolor{stringliteral}{"{}"{}}\ );}
+\DoxyCodeLine{00495\ }
+\DoxyCodeLine{00496\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ mask-\/>width\ !=\ size.width\ +\ 2\ ||\ mask-\/>height\ !=\ size.height\ +\ 2\ )}
+\DoxyCodeLine{00497\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CV\_ERROR(\ CV\_StsUnmatchedSizes,\ \textcolor{stringliteral}{"{}mask\ must\ be\ 2\ pixel\ wider\ "{}}}
+\DoxyCodeLine{00498\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}and\ 2\ pixel\ taller\ than\ filled\ image"{}}\ );}
+\DoxyCodeLine{00499\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00500\ }
+\DoxyCodeLine{00501\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00502\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ width\ =\ tempMask\ ?\ mask-\/>step\ :\ size.width\ +\ 2;}
+\DoxyCodeLine{00503\ \ \ \ \ \ \ \ \ \ \ \ \ uchar*\ mask\_row\ =\ mask-\/>data.ptr\ +\ mask-\/>step;}
+\DoxyCodeLine{00504\ \ \ \ \ \ \ \ \ \ \ \ \ memset(\ mask\_row\ -\/\ mask-\/>step,\ 1,\ width\ );}
+\DoxyCodeLine{00505\ }
+\DoxyCodeLine{00506\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(\ i\ =\ 1;\ i\ <=\ size.height;\ i++,\ mask\_row\ +=\ mask-\/>step\ )}
+\DoxyCodeLine{00507\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00508\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ tempMask\ )}
+\DoxyCodeLine{00509\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ memset(\ mask\_row,\ 0,\ width\ );}
+\DoxyCodeLine{00510\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mask\_row[0]\ =\ mask\_row[size.width+1]\ =\ (uchar)1;}
+\DoxyCodeLine{00511\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00512\ \ \ \ \ \ \ \ \ \ \ \ \ memset(\ mask\_row,\ 1,\ width\ );}
+\DoxyCodeLine{00513\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00514\ }
+\DoxyCodeLine{00515\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ depth\ ==\ CV\_8U\ )}
+\DoxyCodeLine{00516\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(\ i\ =\ 0;\ i\ <\ cn;\ i++\ )}
+\DoxyCodeLine{00517\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00518\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ld\_buf.b[i]\ =\ cv::saturate\_cast<uchar>(cvFloor(lo\_diff.val[i]));}
+\DoxyCodeLine{00519\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ud\_buf.b[i]\ =\ cv::saturate\_cast<uchar>(cvFloor(up\_diff.val[i]));}
+\DoxyCodeLine{00520\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00521\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00522\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(\ i\ =\ 0;\ i\ <\ cn;\ i++\ )}
+\DoxyCodeLine{00523\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00524\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ld\_buf.f[i]\ =\ (float)lo\_diff.val[i];}
+\DoxyCodeLine{00525\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ud\_buf.f[i]\ =\ (float)up\_diff.val[i];}
+\DoxyCodeLine{00526\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00527\ }
+\DoxyCodeLine{00528\ \ \ \ \ \ \ \ \ func(\ img-\/>data.ptr,\ img-\/>step,\ mask-\/>data.ptr,\ mask-\/>step,}
+\DoxyCodeLine{00529\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ size,\ seed\_point,\ \&nv\_buf,\ ld\_buf.f,\ ud\_buf.f,}
+\DoxyCodeLine{00530\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ comp,\ flags,\ buffer,\ buffer\_size,\ cn\ );}
+\DoxyCodeLine{00531\ \ \ \ \ \}}
+\DoxyCodeLine{00532\ }
+\DoxyCodeLine{00533\ \ \ \ \ \_\_END\_\_;}
+\DoxyCodeLine{00534\ }
+\DoxyCodeLine{00535\ \ \ \ \ cvFree(\ \&buffer\ );}
+\DoxyCodeLine{00536\ \ \ \ \ cvReleaseMat(\ \&tempMask\ );}
+\DoxyCodeLine{00537\ \}}
+
+\end{DoxyCode}

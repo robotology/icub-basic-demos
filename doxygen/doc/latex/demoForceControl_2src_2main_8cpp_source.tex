@@ -1,0 +1,83 @@
+\doxysection{main.\+cpp}
+\label{demoForceControl_2src_2main_8cpp_source}\index{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/demoForceControl/src/main.cpp@{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/demoForceControl/src/main.cpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ \ *\ Copyright\ (C)\ 2016\ \ Department\ of\ Robotics\ Brain\ and\ Cognitive\ Sciences\ -\/\ Istituto\ Italiano\ di\ Tecnologia}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ \ *\ Author:\ Marco\ Randazzo}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ \ *\ email:\ marco.randazzo@iit.it}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ \ *\ Permission\ is\ granted\ to\ copy,\ distribute,\ and/or\ modify\ this\ program}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ \ *\ under\ the\ terms\ of\ the\ GNU\ General\ Public\ License,\ version\ 2\ or\ any}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ \ *\ later\ version\ published\ by\ the\ Free\ Software\ Foundation.}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ \ *}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ \ *\ A\ copy\ of\ the\ license\ can\ be\ found\ at}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ \ *\ http://www.robotcub.org/icub/license/gpl.txt}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ \ *}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ \ *\ This\ program\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,\ but}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ \ *\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ \ *\ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ See\ the\ GNU\ General}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ \ *\ Public\ License\ for\ more\ details}}
+\DoxyCodeLine{00016\ \textcolor{comment}{*/}}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#include\ <yarp/os/all.h>}}
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#include\ <yarp/sig/all.h>}}
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#include\ <yarp/dev/all.h>}}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#include\ <QApplication>}}
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#include\ "{}mainwindow.h"{}}}
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}robot\_interfaces.h"{}}}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \textcolor{keyword}{using\ namespace\ }yarp::os;}
+\DoxyCodeLine{00028\ \textcolor{keyword}{using\ namespace\ }yarp::sig;}
+\DoxyCodeLine{00029\ \textcolor{keyword}{using\ namespace\ }yarp::dev;}
+\DoxyCodeLine{00030\ \textcolor{keyword}{using\ namespace\ }std;}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{keywordtype}{int}\ main(\textcolor{keywordtype}{int}\ argc,\ \textcolor{keywordtype}{char}\ *\ argv[])}
+\DoxyCodeLine{00033\ \{}
+\DoxyCodeLine{00034\ \ \ \ \ QApplication\ a(argc,\ argv);}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \ \ \ \ yarp::os::Network\ yarp;}
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keywordflow}{if}\ (!yarp.checkNetwork())}
+\DoxyCodeLine{00038\ \ \ \ \ \{}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \ \ yError(\textcolor{stringliteral}{"{}ERROR:\ check\ Yarp\ network."{}});}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00041\ \ \ \ \ \}}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \ \ \ \ yarp::os::ResourceFinder*\ rf\ =\ \textcolor{keyword}{new}\ ResourceFinder;}
+\DoxyCodeLine{00044\ \ \ \ \ rf-\/>configure(argc,\ argv);}
+\DoxyCodeLine{00045\ \ \ \ \ }
+\DoxyCodeLine{00046\ \ \ \ \ robot\_interfaces\ *robot;}
+\DoxyCodeLine{00047\ \ \ \ \ robot\ =\ \textcolor{keyword}{new}\ robot\_interfaces();}
+\DoxyCodeLine{00048\ \ \ \ \ std::string\ robot\_name\ =\ \textcolor{stringliteral}{"{}icub"{}};}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keywordflow}{if}\ (rf-\/>check(\textcolor{stringliteral}{"{}robot"{}}))}
+\DoxyCodeLine{00051\ \ \ \ \ \{}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ robot\_name=rf-\/>find(\textcolor{stringliteral}{"{}robot"{}}).asString();}
+\DoxyCodeLine{00053\ \ \ \ \ \}}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keywordflow}{if}\ (robot-\/>init(robot\_name)\ ==\ \textcolor{keyword}{false})}
+\DoxyCodeLine{00056\ \ \ \ \ \{}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{00058\ \textcolor{comment}{\ \ \ \ \ \ \ \ yError("{}Failed\ to\ connect\ to\ robot"{});}}
+\DoxyCodeLine{00059\ \textcolor{comment}{\ \ \ \ \ \ \ \ delete\ rf;}}
+\DoxyCodeLine{00060\ \textcolor{comment}{\ \ \ \ \ \ \ \ delete\ robot;}}
+\DoxyCodeLine{00061\ \textcolor{comment}{\ \ \ \ \ \ \ \ return\ 0;}}
+\DoxyCodeLine{00062\ \textcolor{comment}{\ \ \ \ \ \ \ \ */}}
+\DoxyCodeLine{00063\ \ \ \ \ \}}
+\DoxyCodeLine{00064\ \ \ \ \ }
+\DoxyCodeLine{00065\ \ \ \ \ MainWindow\ w;}
+\DoxyCodeLine{00066\ \ \ \ \ w.init(\textcolor{stringliteral}{"{}icub"{}},\ rf,\ robot);}
+\DoxyCodeLine{00067\ \ \ \ \ w.show();}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keywordtype}{int}\ appRet\ =\ a.exec();}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keyword}{delete}\ rf;}
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{keyword}{delete}\ robot;}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{keywordflow}{return}\ (appRet\ !=\ 0\ ?\ 1\ :\ 0);}
+\DoxyCodeLine{00075\ \}}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ }
+
+\end{DoxyCode}

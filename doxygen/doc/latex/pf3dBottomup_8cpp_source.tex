@@ -1,0 +1,487 @@
+\doxysection{pf3d\+Bottomup.\+cpp}
+\label{pf3dBottomup_8cpp_source}\index{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/pf3dBottomup/src/pf3dBottomup.cpp@{/home/runner/work/icub-\/basic-\/demos/icub-\/basic-\/demos/gh-\/pages/pf3dBottomup/src/pf3dBottomup.cpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *\ A\ bottom-\/up\ approach\ for\ generating\ particles\ for\ the\ "{}pf3dTracker"{}\ module}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *\ Copyright\ (C)\ 2010\ RobotCub\ Consortium}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *\ Author:\ Martim\ Brandao}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ Note:\ Should\ you\ use\ or\ reference\ my\ work\ on\ your\ own\ research,\ please\ let\ me\ know\ (mbrandao\ \_AT\_\ isr.ist.utl.pt)}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ Image\ sequence\ as\ input,\ N\ particles\ (3D\ position\ of\ balls)\ as\ output.}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *\ CopyPolicy:\ Released\ under\ the\ terms\ of\ the\ GNU\ GPL\ v2.0.}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <yarp/cv/Cv.h>}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#include\ <iCub/pf3dBottomup.hpp>}}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#include\ <iomanip>}}
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#include\ <fstream>}}
+\DoxyCodeLine{00021\ \textcolor{preprocessor}{\#include\ <sstream>}}
+\DoxyCodeLine{00022\ \textcolor{preprocessor}{\#include\ <ctime>}}
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#include\ <utility>}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{comment}{//member\ that\ is\ repeatedly\ called\ by\ YARP,\ to\ give\ this\ object\ the\ chance\ to\ do\ something.}}
+\DoxyCodeLine{00026\ \textcolor{comment}{//should\ this\ function\ return\ "{}false"{},\ the\ object\ would\ be\ terminated.}}
+\DoxyCodeLine{00027\ \textcolor{comment}{//I\ already\ have\ one\ image,\ when\ I\ get\ here\ (I\ either\ acquire\ it\ in\ the\ initialization\ method\ or\ in\ the\ end\ of\ this\ same\ method).}}
+\DoxyCodeLine{00028\ \textcolor{keywordtype}{bool}\ pf3dBottomup::updateModule()}
+\DoxyCodeLine{00029\ \{}
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{keywordflow}{if}(\_doneInitializing)}
+\DoxyCodeLine{00031\ \ \ \ \ \{}
+\DoxyCodeLine{00032\ \ \ \ \ \ \ \ \ CvMemStorage*\ storage\ =\ cvCreateMemStorage(0);}
+\DoxyCodeLine{00033\ \ \ \ \ \ \ \ \ CvSeq*\ contours\ =\ 0;}
+\DoxyCodeLine{00034\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ raio=0.03;}
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ num\_detected\_objects;}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\_blur>0)\ cvSmooth(image,image,\ CV\_GAUSSIAN,\ 0,\ 0,\ \_blur,\ 0);}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ cvCvtColor(image,\ hsv,\ CV\_BGR2HSV\ );}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ cvInRangeS(hsv,\ cvScalar(0,\_maskSmin,MIN(\_maskVmin,\_maskVmax),0),\ }
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cvScalar(181,256,MAX(\_maskVmin,\_maskVmax),0),\ mask);\ \textcolor{comment}{//update\ mask}}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ cvSplit(hsv,\ hue,\ sat,\ val,\ 0\ );}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Histogram\ Backprojection}}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ cvCalcBackProject(\&hue,\ backproject,\ \_object\_model.hist);}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ cvAnd(backproject,\ mask,\ backproject,\ 0);}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Bottom-\/up\ detection\ algorithm...}}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \textcolor{comment}{//cvThreshold(backproject,\ backproject,\ 40,\ 0,\ CV\_THRESH\_TOZERO\ );}}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Normalize\ backprojection\ to\ global\ max}}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ normalize\_to\_global\_max(backproject);}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Build\ scale-\/space}}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ cvConvert(backproject,\ infloat);}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ ss.BuildAll((\textcolor{keywordtype}{float}*)infloat-\/>imageData);}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Segmentation\ (localmaxima\ +\ floodfill)}}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ scale\_space\_segmentation(backproject,\ \&ss,\ backprojectmask2);}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 3D\ Localization}}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ cvSetImageROI(backprojectmask2,\ cvRect(1,1,image-\/>width,image-\/>height));}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ num\_detected\_objects\ =\ object\_localization\_simple(backprojectmask2,\ \&\_object\_model,\ \&\_camera);}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \textcolor{comment}{//object\_localization(backprojectmask2,\ \_object\_model,\ \_camera);}}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ cvResetImageROI(backprojectmask2);}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Output\ particles}}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(num\_detected\_objects>0)\{}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ Bottle\&\ particleOutput=\_outputParticlePort.prepare();\ \textcolor{keywordtype}{int}\ count;}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \ \ \ \ particleOutput.clear();}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \ \ \ \ particleOutput.addInt32(\_nParticles);}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(count=0;count<\_nParticles;count++)}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ particleOutput.addFloat64((\textcolor{keywordtype}{double})cvmGet(\_object\_model.particles,0,count));}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ particleOutput.addFloat64((\textcolor{keywordtype}{double})cvmGet(\_object\_model.particles,1,count));}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ particleOutput.addFloat64((\textcolor{keywordtype}{double})cvmGet(\_object\_model.particles,2,count));}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//particleOutput.addInt32(num\_detected\_objects);}}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ \_outputParticlePort.write();}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ acquire\ a\ new\ image}}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \_yarpImage\ =\ \_inputVideoPort.read();\ \textcolor{comment}{//read\ one\ image\ from\ the\ buffer.}}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \textcolor{comment}{//temporary\ cheating\ (resize\ to\ 640x480)}}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ cv::Mat\ imageMat=cv::cvarrToMat(image);}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ cv::resize(yarp::cv::toCvMat(*\_yarpImage),imageMat,imageMat.size());}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \textcolor{comment}{//-\/-\/end}}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ cvCvtColor(image,\ image,\ CV\_RGB2BGR);}
+\DoxyCodeLine{00090\ \ \ \ \ \}\ \ \ \ }
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};\ \textcolor{comment}{//continue.\ //in\ this\ case\ it\ means\ everything\ is\ fine.}}
+\DoxyCodeLine{00093\ \}}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \textcolor{comment}{//member\ function\ that\ set\ the\ object\ up.}}
+\DoxyCodeLine{00100\ \textcolor{keywordtype}{bool}\ pf3dBottomup::configure(ResourceFinder\ \&rf)}
+\DoxyCodeLine{00101\ \{}
+\DoxyCodeLine{00102\ \ \ \ \ \_doneInitializing=\textcolor{keyword}{false};}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \ \ \ \ \textcolor{keywordtype}{string}\ trackedObjectColorTemplate;}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \ \ \ \ \textcolor{comment}{//***********************************}}
+\DoxyCodeLine{00107\ \ \ \ \ \textcolor{comment}{//Read\ options\ from\ the\ command\ line.}}
+\DoxyCodeLine{00108\ \ \ \ \ \textcolor{comment}{//***********************************}}
+\DoxyCodeLine{00109\ \ \ \ \ \_inputVideoPortName\ =\ rf.check(\textcolor{stringliteral}{"{}inputVideoPort"{}},}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Value(\textcolor{stringliteral}{"{}/pf3dBottomup/video:i"{}}),}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Input\ video\ port\ (string)"{}}).asString();}
+\DoxyCodeLine{00112\ \ \ \ \ \_outputParticlePortName\ =\ rf.check(\textcolor{stringliteral}{"{}outputParticlePort"{}},}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Value(\textcolor{stringliteral}{"{}/pf3dBottomup/particles:o"{}}),}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Output\ particle\ port\ (string)"{}}).asString();}
+\DoxyCodeLine{00115\ }
+\DoxyCodeLine{00116\ \ \ \ \ \_inputVideoPort.open(\_inputVideoPortName);}
+\DoxyCodeLine{00117\ \ \ \ \ \_outputParticlePort.open(\_outputParticlePortName);}
+\DoxyCodeLine{00118\ }
+\DoxyCodeLine{00119\ \ \ \ \ \_nParticles\ =\ rf.check(\textcolor{stringliteral}{"{}nParticles"{}},}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Value(\textcolor{stringliteral}{"{}100"{}}),}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Number\ of\ particles\ used\ in\ the\ tracker\ (int)"{}}).asInt32();}
+\DoxyCodeLine{00122\ \ \ \ \ \_calibrationImageWidth\ =\ rf.check(\textcolor{stringliteral}{"{}w"{}},}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Value(640),}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Image\ width\ \ (int)"{}}).asInt32();}
+\DoxyCodeLine{00125\ \ \ \ \ \_calibrationImageHeight\ =\ rf.check(\textcolor{stringliteral}{"{}h"{}},}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Value(480),}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Image\ height\ (int)"{}}).asInt32();}
+\DoxyCodeLine{00128\ \ \ \ \ \_camera.fx\ =\ rf.check(\textcolor{stringliteral}{"{}perspectiveFx"{}},}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Value(1),}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Focal\ distance\ *\ kx\ \ (double)"{}}).asFloat64();}
+\DoxyCodeLine{00131\ \ \ \ \ \_camera.fy\ =\ rf.check(\textcolor{stringliteral}{"{}perspectiveFy"{}},}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Value(1),}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Focal\ distance\ *\ ky\ \ (double)"{}}).asFloat64();}
+\DoxyCodeLine{00134\ \ \ \ \ \_camera.cx\ =\ rf.check(\textcolor{stringliteral}{"{}perspectiveCx"{}},}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Value(1),}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}X\ position\ of\ the\ projection\ center,\ in\ pixels\ (double)"{}}).asFloat64();}
+\DoxyCodeLine{00137\ \ \ \ \ \_camera.cy\ =\ rf.check(\textcolor{stringliteral}{"{}perspectiveCy"{}},}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Value(1),}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Y\ position\ of\ the\ projection\ center,\ in\ pixels\ (double)"{}}).asFloat64();}
+\DoxyCodeLine{00140\ \ \ \ \ \_scaleSpaceLevels\ =\ rf.check(\textcolor{stringliteral}{"{}scaleSpaceLevels"{}},}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Value(3),}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Number\ of\ levels\ on\ the\ scale\ space\ (int)"{}}).asInt32();}
+\DoxyCodeLine{00143\ \ \ \ \ \_maskVmin\ =\ rf.check(\textcolor{stringliteral}{"{}maskVmin"{}},}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Value(15),}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Minimum\ acceptable\ image\ value\ (int)"{}}).asInt32();}
+\DoxyCodeLine{00146\ \ \ \ \ \_maskVmax\ =\ rf.check(\textcolor{stringliteral}{"{}maskVmax"{}},}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Value(255),}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Maximum\ acceptable\ image\ value\ (int)"{}}).asInt32();}
+\DoxyCodeLine{00149\ \ \ \ \ \_maskSmin\ =\ rf.check(\textcolor{stringliteral}{"{}maskSmin"{}},}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Value(70),}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Minimum\ acceptable\ image\ saturation\ (int)"{}}).asInt32();}
+\DoxyCodeLine{00152\ \ \ \ \ \_blur\ =\ rf.check(\textcolor{stringliteral}{"{}Blur"{}},}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Value(0),}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Blur\ variance\ applied\ to\ the\ input\ image\ (int)"{}}).asInt32();}
+\DoxyCodeLine{00155\ \ \ \ \ \_object\_model.raio\_esfera\ =\ rf.check(\textcolor{stringliteral}{"{}sphereRadius"{}},}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Value(0.03),}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Radius\ of\ the\ sphere\ in\ case\ that\ is\ our\ object\ (double)"{}}).asFloat64();}
+\DoxyCodeLine{00158\ }
+\DoxyCodeLine{00159\ \ \ \ \ trackedObjectColorTemplate\ =\ rf.findFile(\textcolor{stringliteral}{"{}trackedObjectColorTemplate"{}});}
+\DoxyCodeLine{00160\ \ \ \ \ \textcolor{keywordflow}{if}(trackedObjectColorTemplate==\textcolor{stringliteral}{"{}"{}})\{\ }
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ cout<<\textcolor{stringliteral}{"{}Couldnt\ find\ color\ model\ specified\ in\ pf3dBottomup.ini\(\backslash\)n"{}};}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00163\ \ \ \ \ \}}
+\DoxyCodeLine{00164\ }
+\DoxyCodeLine{00165\ \ \ \ \ \textcolor{comment}{//\ object\ model}}
+\DoxyCodeLine{00166\ \ \ \ \ calc\_hist\_from\_model\_2D(trackedObjectColorTemplate,\ \&\_object\_model.hist,\ \_maskVmin,\ \_maskVmax);}
+\DoxyCodeLine{00167\ \ \ \ \ \_object\_model.particles\ =\ cvCreateMat(3,\_nParticles,CV\_32FC1);}
+\DoxyCodeLine{00168\ }
+\DoxyCodeLine{00169\ \ \ \ \ \textcolor{comment}{//\ camera\ model}}
+\DoxyCodeLine{00170\ \ \ \ \ \_camera.fov\ =\ 2*atan(\_calibrationImageHeight/(2*\_camera.fy))*180/PI;\ \textcolor{comment}{//field\ of\ view\ in\ degrees}}
+\DoxyCodeLine{00171\ \ \ \ \ \_camera.aspect\ =\ \_calibrationImageWidth/(double)\_calibrationImageHeight\ *\ (\_camera.fy/\_camera.fx);\ \textcolor{comment}{//aspect\ ratio}}
+\DoxyCodeLine{00172\ \ \ \ \ \_camera.znear\ =\ 0.01;\ \textcolor{comment}{//Z\ near}}
+\DoxyCodeLine{00173\ \ \ \ \ \_camera.zfar\ =\ 1000;\ \textcolor{comment}{//Z\ far}}
+\DoxyCodeLine{00174\ }
+\DoxyCodeLine{00175\ \ \ \ \ \textcolor{comment}{//\ scale\ space}}
+\DoxyCodeLine{00176\ \ \ \ \ \_scaleSpaceLevels=3;}
+\DoxyCodeLine{00177\ \ \ \ \ \_scaleSpaceScales[0]=16.0\ *\ \_calibrationImageWidth/640;}
+\DoxyCodeLine{00178\ \ \ \ \ \_scaleSpaceScales[1]=\ 8.0\ *\ \_calibrationImageWidth/640;}
+\DoxyCodeLine{00179\ \ \ \ \ \_scaleSpaceScales[2]=\ 4.0\ *\ \_calibrationImageWidth/640;}
+\DoxyCodeLine{00180\ \ \ \ \ ss.AllocateResources(\_calibrationImageHeight,\ \_calibrationImageWidth,\ \_scaleSpaceLevels,\ \_scaleSpaceScales);}
+\DoxyCodeLine{00181\ }
+\DoxyCodeLine{00182\ \ \ \ \ \textcolor{comment}{//\ read\ one\ image\ from\ the\ stream}}
+\DoxyCodeLine{00183\ \ \ \ \ \_yarpImage\ =\ \_inputVideoPort.read();}
+\DoxyCodeLine{00184\ \ \ \ \ image\ =\ cvCreateImage(cvSize(\_calibrationImageWidth,\ \_calibrationImageHeight),\ 8,\ 3);}
+\DoxyCodeLine{00185\ \ \ \ \ cv::cvtColor(yarp::cv::toCvMat(*\_yarpImage),cv::cvarrToMat(image),CV\_RGB2BGR);}
+\DoxyCodeLine{00186\ }
+\DoxyCodeLine{00187\ \ \ \ \ \textcolor{comment}{//\ allocate\ all\ images}}
+\DoxyCodeLine{00188\ \ \ \ \ infloat\ =\ \ \ \ \ \ \ \ \ cvCreateImage(\ cvGetSize(image),\ IPL\_DEPTH\_32F,\ 1);}
+\DoxyCodeLine{00189\ \ \ \ \ hsv\ =\ \ \ \ \ \ \ \ \ \ \ \ cvCreateImage(\ cvGetSize(image),\ 8,\ 3\ );}
+\DoxyCodeLine{00190\ \ \ \ \ hue\ =\ \ \ \ \ \ \ \ \ \ \ \ cvCreateImage(\ cvGetSize(image),\ 8,\ 1\ );}
+\DoxyCodeLine{00191\ \ \ \ \ sat\ =\ \ \ \ \ \ \ \ \ \ \ \ cvCreateImage(\ cvGetSize(image),\ 8,\ 1\ );}
+\DoxyCodeLine{00192\ \ \ \ \ val\ =\ \ \ \ \ \ \ \ \ \ \ \ cvCreateImage(\ cvGetSize(image),\ 8,\ 1\ );}
+\DoxyCodeLine{00193\ \ \ \ \ mask\ =\ \ \ \ \ \ \ \ \ \ \ \ cvCreateImage(\ cvGetSize(image),\ 8,\ 1\ );}
+\DoxyCodeLine{00194\ \ \ \ \ backproject\ =\ \ \ \ \ \ \ \ cvCreateImage(\ cvGetSize(image),\ 8,\ 1\ );}
+\DoxyCodeLine{00195\ \ \ \ \ backprojectmask2\ =\ \ \ \ cvCreateImage(\ cvSize(image-\/>width+2,image-\/>height+2),\ 8,\ 1\ );}
+\DoxyCodeLine{00196\ }
+\DoxyCodeLine{00197\ \ \ \ \ \textcolor{comment}{//\ done}}
+\DoxyCodeLine{00198\ \ \ \ \ \_doneInitializing=\textcolor{keyword}{true};}
+\DoxyCodeLine{00199\ }
+\DoxyCodeLine{00200\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00201\ \}}
+\DoxyCodeLine{00202\ }
+\DoxyCodeLine{00203\ }
+\DoxyCodeLine{00204\ \textcolor{comment}{//member\ that\ closes\ the\ object.}}
+\DoxyCodeLine{00205\ \textcolor{keywordtype}{bool}\ pf3dBottomup::close()}
+\DoxyCodeLine{00206\ \{}
+\DoxyCodeLine{00207\ \ \ \ \ \textcolor{comment}{//\ ports}}
+\DoxyCodeLine{00208\ \ \ \ \ \_inputVideoPort.close();}
+\DoxyCodeLine{00209\ \ \ \ \ \_outputParticlePort.close();}
+\DoxyCodeLine{00210\ }
+\DoxyCodeLine{00211\ \ \ \ \ \textcolor{comment}{//resources}}
+\DoxyCodeLine{00212\ \ \ \ \ ss.FreeResources();}
+\DoxyCodeLine{00213\ \ \ \ \ cvReleaseMat(\&\_object\_model.particles);}
+\DoxyCodeLine{00214\ \ \ \ \ cvReleaseImage(\&image);}
+\DoxyCodeLine{00215\ \ \ \ \ cvReleaseImage(\&infloat);}
+\DoxyCodeLine{00216\ \ \ \ \ cvReleaseImage(\&hsv);}
+\DoxyCodeLine{00217\ \ \ \ \ cvReleaseImage(\&hue);}
+\DoxyCodeLine{00218\ \ \ \ \ cvReleaseImage(\&sat);}
+\DoxyCodeLine{00219\ \ \ \ \ cvReleaseImage(\&val);}
+\DoxyCodeLine{00220\ \ \ \ \ cvReleaseImage(\&mask);}
+\DoxyCodeLine{00221\ \ \ \ \ cvReleaseImage(\&backproject);}
+\DoxyCodeLine{00222\ \ \ \ \ cvReleaseImage(\&backprojectmask2);}
+\DoxyCodeLine{00223\ }
+\DoxyCodeLine{00224\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00225\ \}}
+\DoxyCodeLine{00226\ }
+\DoxyCodeLine{00227\ }
+\DoxyCodeLine{00228\ \textcolor{comment}{//member\ that\ closes\ the\ object.}}
+\DoxyCodeLine{00229\ \textcolor{keywordtype}{bool}\ pf3dBottomup::interruptModule()}
+\DoxyCodeLine{00230\ \{}
+\DoxyCodeLine{00231\ \ \ \ \ \textcolor{comment}{//ports}}
+\DoxyCodeLine{00232\ \ \ \ \ \_inputVideoPort.interrupt();}
+\DoxyCodeLine{00233\ \ \ \ \ \_outputParticlePort.interrupt();}
+\DoxyCodeLine{00234\ }
+\DoxyCodeLine{00235\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00236\ \}}
+\DoxyCodeLine{00237\ }
+\DoxyCodeLine{00238\ }
+\DoxyCodeLine{00239\ \textcolor{comment}{//constructor}}
+\DoxyCodeLine{00240\ pf3dBottomup::pf3dBottomup()}
+\DoxyCodeLine{00241\ \{}
+\DoxyCodeLine{00242\ \}}
+\DoxyCodeLine{00243\ }
+\DoxyCodeLine{00244\ }
+\DoxyCodeLine{00245\ \textcolor{comment}{//destructor}}
+\DoxyCodeLine{00246\ pf3dBottomup::\string~pf3dBottomup()}
+\DoxyCodeLine{00247\ \{}
+\DoxyCodeLine{00248\ \ \ \ \ cout<<\textcolor{stringliteral}{"{}oh\ my\ god!\ they\ killed\ kenny!\ \ \ \ you\ bastards!\(\backslash\)n"{}};}
+\DoxyCodeLine{00249\ \}}
+\DoxyCodeLine{00250\ }
+\DoxyCodeLine{00251\ }
+\DoxyCodeLine{00252\ }
+\DoxyCodeLine{00253\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00254\ \textcolor{comment}{//}}
+\DoxyCodeLine{00255\ \textcolor{comment}{//\ \ \ \ Segmentation\ and\ localization\ functions}}
+\DoxyCodeLine{00256\ \textcolor{comment}{//}}
+\DoxyCodeLine{00257\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00258\ }
+\DoxyCodeLine{00259\ }
+\DoxyCodeLine{00260\ }
+\DoxyCodeLine{00261\ \textcolor{comment}{//compute\ histogram\ from\ color\ template}}
+\DoxyCodeLine{00262\ \textcolor{keywordtype}{void}\ pf3dBottomup::calc\_hist\_from\_model\_2D(\textcolor{keywordtype}{string}\ file,\ CvHistogram\ **objhist,\ \textcolor{keywordtype}{int}\ \_vmin,\ \textcolor{keywordtype}{int}\ \_vmax)}
+\DoxyCodeLine{00263\ \{}
+\DoxyCodeLine{00264\ \ \ \ \ \textcolor{keywordtype}{float}\ max\_val\ =\ 0.f;}
+\DoxyCodeLine{00265\ \ \ \ \ \textcolor{keywordtype}{float}\ bins[35][10],\ *curbin;}
+\DoxyCodeLine{00266\ \ \ \ \ \textcolor{keywordtype}{int}\ i,\ j;}
+\DoxyCodeLine{00267\ \ \ \ \ \textcolor{keywordtype}{float}\ kernFactor=0.1F;}
+\DoxyCodeLine{00268\ \ \ \ \ IplImage\ *histmodel\ =\ 0,\ *histmask\ =\ 0,\ *histhue\ =\ 0,\ *histsat\ =\ 0,\ *histval\ =\ 0;}
+\DoxyCodeLine{00269\ \ \ \ \ CvHistogram\ *hist;}
+\DoxyCodeLine{00270\ }
+\DoxyCodeLine{00271\ \ \ \ \ \textcolor{keywordtype}{int}\ dims[]\ \ \ \ \ \ \ =\ \{35,\ 10\};}
+\DoxyCodeLine{00272\ \ \ \ \ \textcolor{keywordtype}{float}\ cbRanges[]\ =\ \{0,\ 180\};}
+\DoxyCodeLine{00273\ \ \ \ \ \textcolor{keywordtype}{float}\ crRanges[]\ =\ \{0,\ 255\};}
+\DoxyCodeLine{00274\ \ \ \ \ \textcolor{keywordtype}{float}*\ ranges[]\ \ =\ \{cbRanges,\ crRanges\};}
+\DoxyCodeLine{00275\ \ \ \ \ IplImage*\ imgs[]\ =\ \{0,\ 0\};}
+\DoxyCodeLine{00276\ }
+\DoxyCodeLine{00277\ \ \ \ \ \textcolor{keyword}{auto}\ histMat\ =\ cv::imread(file);}
+\DoxyCodeLine{00278\ \ \ \ \ histmodel\ =\ cvCreateImage(cvSize(histMat.cols,histMat.rows),histMat.depth(),histMat.channels());}
+\DoxyCodeLine{00279\ \ \ \ \ IplImage\ ipltemp;}
+\DoxyCodeLine{00280\ \ \ \ \ cvInitImageHeader(\&ipltemp,\ cvSize(histMat.cols,\ histMat.rows),\ cvIplDepth(histMat.flags),\ histMat.channels());}
+\DoxyCodeLine{00281\ \ \ \ \ cvSetData(\&ipltemp,\ histMat.data,\ (\textcolor{keywordtype}{int})histMat.step[0]);}
+\DoxyCodeLine{00282\ \ \ \ \ histmodel\ =\ \&ipltemp;}
+\DoxyCodeLine{00283\ \ \ \ \ cvCvtColor(histmodel,\ histmodel,\ CV\_BGR2HSV);}
+\DoxyCodeLine{00284\ \ \ \ \ histmask\ =\ cvCreateImage(cvGetSize(histmodel),\ 8,\ 1);}
+\DoxyCodeLine{00285\ \ \ \ \ histhue\ =\ cvCreateImage(cvGetSize(histmodel),\ 8,\ 1);}
+\DoxyCodeLine{00286\ \ \ \ \ histsat\ =\ cvCreateImage(cvGetSize(histmodel),\ 8,\ 1);}
+\DoxyCodeLine{00287\ \ \ \ \ histval\ =\ cvCreateImage(cvGetSize(histmodel),\ 8,\ 1);}
+\DoxyCodeLine{00288\ \ \ \ \ cvInRangeS(histmodel,\ cvScalar(0,70,MIN(\_vmin,\_vmax),0),cvScalar(181,256,MAX(\_vmin,\_vmax),0),\ histmask);}
+\DoxyCodeLine{00289\ \ \ \ \ cvSplit(histmodel,\ histhue,\ histsat,\ histval,\ 0);}
+\DoxyCodeLine{00290\ }
+\DoxyCodeLine{00291\ \ \ \ \ imgs[0]=histhue;\ imgs[1]=histsat;}
+\DoxyCodeLine{00292\ \ \ \ \ hist\ =\ cvCreateHist(2,\ dims,\ CV\_HIST\_ARRAY,\ ranges,\ CV\_HIST\_UNIFORM);}
+\DoxyCodeLine{00293\ }
+\DoxyCodeLine{00294\ \ \ \ \ cvCalcHist((IplImage\ **)imgs,\ hist,\ 0,\ histmask);}
+\DoxyCodeLine{00295\ }
+\DoxyCodeLine{00296\ \ \ \ \ \textcolor{comment}{//martim:\ add\ some\ variance\ to\ the\ histogram}}
+\DoxyCodeLine{00297\ \ \ \ \ \textcolor{keywordflow}{for}(i=0;i<dims[0];i++)}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(j=0;j<dims[1];j++)}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ \ \ \ \ bins[i][j]=0;}
+\DoxyCodeLine{00300\ \ \ \ \ \textcolor{keywordflow}{for}(i=0;i<dims[0];i++)}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(j=0;j<dims[1];j++)\{}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \ \ \ \ bins[i][j]+=(float)((1+kernFactor)*cvGetReal2D(hist-\/>bins,i,j));}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//hue\ e'\ circular}}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(i>0)\ bins[i-\/1][j]+=(float)(kernFactor*cvGetReal2D(hist-\/>bins,i,j));}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ bins[dims[0]-\/1][j]+=(float)(kernFactor*cvGetReal2D(hist-\/>bins,i,j));}
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(i<dims[0]-\/1)\ bins[i+1][j]+=(float)(kernFactor*cvGetReal2D(hist-\/>bins,i,j));}
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ bins[0][j]+=(float)(kernFactor*cvGetReal2D(hist-\/>bins,i,j));}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//saturacao\ nao\ e'\ circular}}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(j>0)\ bins[i][j-\/1]+=(float)(kernFactor*cvGetReal2D(hist-\/>bins,i,j));}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(j<dims[1]-\/1)\ bins[i][j+1]+=(float)(kernFactor*cvGetReal2D(hist-\/>bins,i,j));}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(j>1)\ bins[i][j-\/2]+=(float)(kernFactor*cvGetReal2D(hist-\/>bins,i,j));}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(j<dims[1]-\/2)\ bins[i][j+2]+=(float)(kernFactor*cvGetReal2D(hist-\/>bins,i,j));}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00314\ \ \ \ \ \textcolor{keywordflow}{for}(i=0;i<dims[0];i++)}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(j=0;j<dims[1];j++)\{}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ \ \ \ \ curbin\ =\ (\textcolor{keywordtype}{float}*)cvPtr2D(hist-\/>bins,\ i,\ j);}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ \ \ \ \ (*curbin)\ =\ bins[i][j];}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00319\ \ \ \ \ \textcolor{comment}{//-\/-\/end}}
+\DoxyCodeLine{00320\ }
+\DoxyCodeLine{00321\ \ \ \ \ cvGetMinMaxHistValue(\ hist,\ 0,\ \&max\_val,\ 0,\ 0\ );}
+\DoxyCodeLine{00322\ \ \ \ \ \textcolor{comment}{//cvNormalizeHist(hist,\ 2500);\ //tolerancia.\ 1000\ durante\ o\ dia\ (pouca\ variabilidade);\ 10000\ durante\ a\ noite}}
+\DoxyCodeLine{00323\ \ \ \ \ cvConvertScale(\ hist-\/>bins,\ hist-\/>bins,\ max\_val\ ?\ 255.\ /\ max\_val\ :\ 0.,\ 0\ );}
+\DoxyCodeLine{00324\ }
+\DoxyCodeLine{00325\ \ \ \ \ *objhist\ =\ hist;}
+\DoxyCodeLine{00326\ \ \ \ \ cvReleaseImage(\&histmask);}
+\DoxyCodeLine{00327\ \ \ \ \ cvReleaseImage(\&histhue);}
+\DoxyCodeLine{00328\ \}}
+\DoxyCodeLine{00329\ }
+\DoxyCodeLine{00330\ \textcolor{comment}{//normalize\ grayscale\ image\ so\ that\ its\ global\ max\ becomes\ =\ 255}}
+\DoxyCodeLine{00331\ \textcolor{keywordtype}{void}\ pf3dBottomup::normalize\_to\_global\_max(IplImage\ *img)}
+\DoxyCodeLine{00332\ \{}
+\DoxyCodeLine{00333\ \ \ \ \ \textcolor{keywordtype}{int}\ i,j;}
+\DoxyCodeLine{00334\ \ \ \ \ \textcolor{keywordtype}{int}\ step;}
+\DoxyCodeLine{00335\ \ \ \ \ uchar\ *data;}
+\DoxyCodeLine{00336\ \ \ \ \ \textcolor{keywordtype}{int}\ pmax=0,\ max=0;}
+\DoxyCodeLine{00337\ \ \ \ \ \textcolor{keywordtype}{int}\ M=255;}
+\DoxyCodeLine{00338\ \ \ \ \ \textcolor{keywordtype}{int}\ px1=0,numpx1=0,px2=0,numpx2=0;}
+\DoxyCodeLine{00339\ }
+\DoxyCodeLine{00340\ \ \ \ \ step\ =\ img-\/>widthStep/\textcolor{keyword}{sizeof}(uchar);}
+\DoxyCodeLine{00341\ \ \ \ \ data\ =\ (uchar\ *)img-\/>imageData;}
+\DoxyCodeLine{00342\ }
+\DoxyCodeLine{00343\ \ \ \ \ \textcolor{comment}{//find\ global\ maximum}}
+\DoxyCodeLine{00344\ \ \ \ \ \textcolor{keywordflow}{for}(i=0\ ;\ i<img-\/>height\ ;\ i++)}
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(j=0\ ;\ j<img-\/>width\ ;\ j++)}
+\DoxyCodeLine{00346\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(data[i*step+j]\ >\ max)\{\ pmax=i*step+j;\ max=data[pmax];\ \}}
+\DoxyCodeLine{00347\ \ \ \ \ \textcolor{comment}{//max\ must\ be\ big\ enough}}
+\DoxyCodeLine{00348\ \ \ \ \ \textcolor{keywordflow}{if}(max\ >\ 50)\{}
+\DoxyCodeLine{00349\ \ \ \ \ \ \ \ \ \textcolor{comment}{//normalize}}
+\DoxyCodeLine{00350\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(i=0\ ;\ i<img-\/>height\ ;\ i++)}
+\DoxyCodeLine{00351\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(j=0\ ;\ j<img-\/>width\ ;\ j++)}
+\DoxyCodeLine{00352\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ data[i*step+j]\ =\ ((data[i*step+j]*M)/max);}
+\DoxyCodeLine{00353\ \ \ \ \ \}}
+\DoxyCodeLine{00354\ \}}
+\DoxyCodeLine{00355\ }
+\DoxyCodeLine{00356\ \textcolor{comment}{//segmentation\ algorithm\ (local\ maxima\ followed\ by\ kind\ of\ floodfill)\ on\ all\ scale-\/space\ levels,\ joined\ in\ one\ resulting\ grayscale\ img}}
+\DoxyCodeLine{00357\ \textcolor{keywordtype}{void}\ pf3dBottomup::scale\_space\_segmentation(IplImage\ *img,\ ScaleSpace\ *ss,\ IplImage\ *result)}
+\DoxyCodeLine{00358\ \{}
+\DoxyCodeLine{00359\ \ \ \ \ \textcolor{keywordtype}{int}\ pmax=0;}
+\DoxyCodeLine{00360\ \ \ \ \ \textcolor{keywordtype}{int}\ l,i,j,si,sj,aux;}
+\DoxyCodeLine{00361\ \ \ \ \ \textcolor{keywordtype}{int}\ r=1;}
+\DoxyCodeLine{00362\ \ \ \ \ IplImage\ *outgray,\ *outfloat,\ *floodmask;}
+\DoxyCodeLine{00363\ \ \ \ \ \textcolor{keywordtype}{float}\ *data;}
+\DoxyCodeLine{00364\ \ \ \ \ \textcolor{keywordtype}{int}\ step;}
+\DoxyCodeLine{00365\ \ \ \ \ uchar\ *maxdata;}
+\DoxyCodeLine{00366\ \ \ \ \ \textcolor{keywordtype}{int}\ maxstep;}
+\DoxyCodeLine{00367\ }
+\DoxyCodeLine{00368\ \ \ \ \ step\ =\ img-\/>widthStep/\textcolor{keyword}{sizeof}(uchar);}
+\DoxyCodeLine{00369\ }
+\DoxyCodeLine{00370\ \ \ \ \ outgray\ =\ cvCreateImage(cvGetSize(img),\ 8,\ 1);}
+\DoxyCodeLine{00371\ \ \ \ \ outfloat\ =\ cvCreateImage(cvGetSize(img),\ IPL\_DEPTH\_32F,\ 1);}
+\DoxyCodeLine{00372\ \ \ \ \ floodmask\ =\ cvCreateImage(cvGetSize(result),\ 8,\ 1\ );}
+\DoxyCodeLine{00373\ }
+\DoxyCodeLine{00374\ \ \ \ \ cvZero(result);}
+\DoxyCodeLine{00375\ }
+\DoxyCodeLine{00376\ \ \ \ \ \textcolor{comment}{//\ For\ each\ level...\ do\ segmentation}}
+\DoxyCodeLine{00377\ \ \ \ \ \textcolor{keywordflow}{for}(l=0\ ;\ l\ <\ ss-\/>GetLevels()\ ;\ l++)\{}
+\DoxyCodeLine{00378\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ thres\ =\ 128;\ \textcolor{comment}{//maximos\ so\ acima\ deste\ valor...}}
+\DoxyCodeLine{00379\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ max\ =\ 0;}
+\DoxyCodeLine{00380\ \ \ \ \ \ \ \ \ cvZero(floodmask);}
+\DoxyCodeLine{00381\ }
+\DoxyCodeLine{00382\ \ \ \ \ \ \ \ \ outfloat-\/>imageData\ =\ (\textcolor{keywordtype}{char}*)(ss-\/>GetLevel(l));}
+\DoxyCodeLine{00383\ }
+\DoxyCodeLine{00384\ \ \ \ \ \ \ \ \ \textcolor{comment}{//aux}}
+\DoxyCodeLine{00385\ \ \ \ \ \ \ \ \ cvConvert(outfloat,\ outgray);}
+\DoxyCodeLine{00386\ \ \ \ \ \ \ \ \ data\ =\ (\textcolor{keywordtype}{float}\ *)outfloat-\/>imageData;}
+\DoxyCodeLine{00387\ \ \ \ \ \ \ \ \ step\ =\ outfloat-\/>widthStep/\textcolor{keyword}{sizeof}(float);}
+\DoxyCodeLine{00388\ \ \ \ \ \ \ \ \ maxdata\ =\ (uchar\ *)outgray-\/>imageData;}
+\DoxyCodeLine{00389\ \ \ \ \ \ \ \ \ maxstep\ =\ outgray-\/>widthStep/\textcolor{keyword}{sizeof}(uchar);}
+\DoxyCodeLine{00390\ }
+\DoxyCodeLine{00391\ \ \ \ \ \ \ \ \ \textcolor{comment}{//localmaxima\ v2}}
+\DoxyCodeLine{00392\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(i=r;i<img-\/>height-\/r;i++)\{}
+\DoxyCodeLine{00393\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(j=r;j<img-\/>width-\/r;j++)\{}
+\DoxyCodeLine{00394\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//maximos\ so\ a\ partir\ de\ threshold.\ todo:\ T\ depende\ da\ variancia!}}
+\DoxyCodeLine{00395\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(data[i*step+j]\ <\ thres)\{\ maxdata[i*maxstep+j]=0;\ \textcolor{keywordflow}{continue};\ \}}
+\DoxyCodeLine{00396\ }
+\DoxyCodeLine{00397\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//3x3\ window}}
+\DoxyCodeLine{00398\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(si=i-\/r,aux=0\ ;\ si<=i+r\ \&\&\ !aux\ ;\ si++)}
+\DoxyCodeLine{00399\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(sj=j-\/r\ ;\ sj<=j+r\ ;\ sj++)}
+\DoxyCodeLine{00400\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(!(si==i\ \&\&\ sj==j)\ \&\&\ data[i*step+j]\ <=\ data[si*step+sj])\{\ }
+\DoxyCodeLine{00401\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ maxdata[i*maxstep+j]=0;\ aux=1;\ \textcolor{keywordflow}{break};\ }
+\DoxyCodeLine{00402\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00403\ }
+\DoxyCodeLine{00404\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//em\ cada\ maximo:\ FloodFill}}
+\DoxyCodeLine{00405\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(!aux)\{}
+\DoxyCodeLine{00406\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ T=80;\ \textcolor{comment}{//data[i*step+j]*0.8;}}
+\DoxyCodeLine{00407\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cvFloodFill2(outfloat,\ cvPoint(j,i),\ cvScalar(255),\ }
+\DoxyCodeLine{00408\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cvScalar(T),\ cvScalar(T),\ NULL,\ }
+\DoxyCodeLine{00409\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 4+(255<<8)+CV\_FLOODFILL\_MASK\_ONLY+CV\_FLOODFILL\_FIXED\_RANGE,\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ floodmask);}
+\DoxyCodeLine{00410\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00411\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00412\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00413\ \ \ \ \ \ \ \ \ cvOr(floodmask,\ result,\ result,\ 0);}
+\DoxyCodeLine{00414\ \ \ \ \ \ \ \ \ \textcolor{comment}{//-\/-\/end}}
+\DoxyCodeLine{00415\ \ \ \ \ \}}
+\DoxyCodeLine{00416\ }
+\DoxyCodeLine{00417\ \ \ \ \ cvReleaseImage(\&floodmask);}
+\DoxyCodeLine{00418\ \ \ \ \ cvReleaseImage(\&outfloat);}
+\DoxyCodeLine{00419\ \ \ \ \ cvReleaseImage(\&outgray);}
+\DoxyCodeLine{00420\ \}}
+\DoxyCodeLine{00421\ }
+\DoxyCodeLine{00422\ \textcolor{comment}{//guess\ 3D\ position\ of\ object\ from\ segmentation\ (assuming\ it\ is\ a\ ball).\ returns\ number\ of\ objects}}
+\DoxyCodeLine{00423\ \textcolor{keywordtype}{int}\ pf3dBottomup::object\_localization\_simple(IplImage\ *segm,\ ObjectModel\ *model,\ CameraModel\ *camera)}
+\DoxyCodeLine{00424\ \{}
+\DoxyCodeLine{00425\ \ \ \ \ CvMemStorage*\ storage\ =\ cvCreateMemStorage(0);}
+\DoxyCodeLine{00426\ \ \ \ \ CvSeq*\ contours\ =\ 0;}
+\DoxyCodeLine{00427\ \ \ \ \ CvMoments\ moments;}
+\DoxyCodeLine{00428\ \ \ \ \ CvPoint\ center;}
+\DoxyCodeLine{00429\ \ \ \ \ \textcolor{keywordtype}{double}\ raio=0.03;}
+\DoxyCodeLine{00430\ \ \ \ \ \textcolor{keywordtype}{double}\ m00,m01,m10,area;}
+\DoxyCodeLine{00431\ \ \ \ \ \textcolor{keywordtype}{double}\ fx,fy,cx,cy;}
+\DoxyCodeLine{00432\ \ \ \ \ \textcolor{keywordtype}{int}\ i,j,count=0;}
+\DoxyCodeLine{00433\ }
+\DoxyCodeLine{00434\ \ \ \ \ fx=camera-\/>fx;\ fy=camera-\/>fy;\ cx=camera-\/>cx;\ cy=camera-\/>cy;}
+\DoxyCodeLine{00435\ \ \ \ \ raio\ =\ model-\/>raio\_esfera;}
+\DoxyCodeLine{00436\ }
+\DoxyCodeLine{00437\ \ \ \ \ \textcolor{comment}{//careful!\ "{}segm"{}\ image\ will\ change...}}
+\DoxyCodeLine{00438\ \ \ \ \ cvFindContours(\ segm,\ storage,\ \&contours,\ \textcolor{keyword}{sizeof}(CvContour),\ CV\_RETR\_CCOMP,\ CV\_CHAIN\_APPROX\_SIMPLE,\ cvPoint(0,0)\ );\ }
+\DoxyCodeLine{00439\ }
+\DoxyCodeLine{00440\ \ \ \ \ \textcolor{keywordflow}{while}(contours)}
+\DoxyCodeLine{00441\ \ \ \ \ \{}
+\DoxyCodeLine{00442\ \ \ \ \ \ \ \ \ area\ =\ fabs(cvContourArea(\ contours,\ CV\_WHOLE\_SEQ\ ));}
+\DoxyCodeLine{00443\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(area>300.0\ *\ segm-\/>width/640)\{\ \textcolor{comment}{//threshold\ area\ -\/-\/-\/>\ depends\ on\ image\ size....}}
+\DoxyCodeLine{00444\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ uu,vv,raiopx,xx,yy,zz;}
+\DoxyCodeLine{00445\ }
+\DoxyCodeLine{00446\ \ \ \ \ \ \ \ \ \ \ \ \ cvMoments(contours,\&moments,0);}
+\DoxyCodeLine{00447\ \ \ \ \ \ \ \ \ \ \ \ \ m00\ =\ cvGetSpatialMoment(\ \&moments,\ 0,\ 0);}
+\DoxyCodeLine{00448\ \ \ \ \ \ \ \ \ \ \ \ \ m10\ =\ cvGetSpatialMoment(\ \&moments,\ 1,\ 0);}
+\DoxyCodeLine{00449\ \ \ \ \ \ \ \ \ \ \ \ \ m01\ =\ cvGetSpatialMoment(\ \&moments,\ 0,\ 1);}
+\DoxyCodeLine{00450\ \ \ \ \ \ \ \ \ \ \ \ \ uu\ =\ m10/m00;}
+\DoxyCodeLine{00451\ \ \ \ \ \ \ \ \ \ \ \ \ vv\ =\ m01/m00;}
+\DoxyCodeLine{00452\ \ \ \ \ \ \ \ \ \ \ \ \ center\ =\ cvPoint((\textcolor{keywordtype}{int})uu,\ (\textcolor{keywordtype}{int})vv);}
+\DoxyCodeLine{00453\ \ \ \ \ \ \ \ \ \ \ \ \ raiopx\ =\ sqrt(1.0*area/PI);}
+\DoxyCodeLine{00454\ \ \ \ \ \ \ \ \ \ \ \ \ zz\ =\ raio/(\ ((uu+raiopx-\/cx)/fx)-\/((uu-\/cx)/fx)\ );\ \textcolor{comment}{//usar\ eixo\ vv\ tb?\ media}}
+\DoxyCodeLine{00455\ \ \ \ \ \ \ \ \ \ \ \ \ xx\ =\ zz*(uu-\/cx)/fx;}
+\DoxyCodeLine{00456\ \ \ \ \ \ \ \ \ \ \ \ \ yy\ =\ zz*(vv-\/cy)/fy;}
+\DoxyCodeLine{00457\ }
+\DoxyCodeLine{00458\ \ \ \ \ \ \ \ \ \ \ \ \ cvmSet(model-\/>particles,0,count,\ xx*1000);}
+\DoxyCodeLine{00459\ \ \ \ \ \ \ \ \ \ \ \ \ cvmSet(model-\/>particles,1,count,\ yy*1000);}
+\DoxyCodeLine{00460\ \ \ \ \ \ \ \ \ \ \ \ \ cvmSet(model-\/>particles,2,count,\ zz*1000);}
+\DoxyCodeLine{00461\ }
+\DoxyCodeLine{00462\ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00463\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00464\ \ \ \ \ \ \ \ \ contours\ =\ contours-\/>h\_next;}
+\DoxyCodeLine{00465\ \ \ \ \ \}}
+\DoxyCodeLine{00466\ }
+\DoxyCodeLine{00467\ \ \ \ \ \textcolor{comment}{//\ generate\ particles\ (fill\ the\ rest\ of\ particle\ vector\ with\ scattered\ versions\ of\ the\ measured\ ones)}}
+\DoxyCodeLine{00468\ \ \ \ \ \textcolor{keywordflow}{for}(i=0\ ,\ j=count\ ;\ i<count\ ;\ i++)}
+\DoxyCodeLine{00469\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(\ ;\ j<count+(i+1)*(\_nParticles-\/count)/count\ ;\ j++)\{}
+\DoxyCodeLine{00470\ \ \ \ \ \ \ \ \ \ \ \ \ cvmSet(model-\/>particles,0,j,\ cvmGet(model-\/>particles,0,i)+SCATTER(30));}
+\DoxyCodeLine{00471\ \ \ \ \ \ \ \ \ \ \ \ \ cvmSet(model-\/>particles,1,j,\ cvmGet(model-\/>particles,1,i)+SCATTER(30));}
+\DoxyCodeLine{00472\ \ \ \ \ \ \ \ \ \ \ \ \ cvmSet(model-\/>particles,2,j,\ cvmGet(model-\/>particles,2,i)+SCATTER(50));}
+\DoxyCodeLine{00473\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00474\ }
+\DoxyCodeLine{00475\ \ \ \ \ cvReleaseMemStorage(\ \&storage\ );}
+\DoxyCodeLine{00476\ }
+\DoxyCodeLine{00477\ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00478\ \}}
+\DoxyCodeLine{00479\ }
+\DoxyCodeLine{00480\ }
+\DoxyCodeLine{00481\ }
+
+\end{DoxyCode}
