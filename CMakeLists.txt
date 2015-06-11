@@ -13,6 +13,7 @@ option(BUILD_YOGA "Build Yoga Demo" ON)
 
 find_package(ICUBcontrib REQUIRED)
 list(APPEND CMAKE_MODULE_PATH ${ICUBCONTRIB_MODULE_PATH})
+include(ICUBcontribOptions)
 include(ICUBcontribHelpers)
 icubcontrib_set_default_prefix()
 

@@ -17,6 +17,7 @@ if(WIN32 AND GTK2_FOUND)
 endif()
 
 include(YarpInstallationHelpers)
+include(ICUBcontribOptions)
 include(ICUBcontribHelpers)
 icubcontrib_set_default_prefix()
 

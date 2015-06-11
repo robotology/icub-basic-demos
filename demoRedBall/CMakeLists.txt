@@ -15,6 +15,7 @@ list(APPEND CMAKE_MODULE_PATH ${YARP_MODULE_PATH}
 find_package(GSL REQUIRED)
 
 include(YarpInstallationHelpers)
+include(ICUBcontribOptions)
 include(ICUBcontribHelpers)
 icubcontrib_set_default_prefix()
 
