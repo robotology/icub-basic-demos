@@ -7,8 +7,10 @@ set(PROJECTNAME demoForceControl)
 project(${PROJECTNAME})
 
 find_package(YARP REQUIRED)
+find_package(ICUB REQUIRED)
 find_package(ICUBcontrib REQUIRED)
 list(APPEND CMAKE_MODULE_PATH ${YARP_MODULE_PATH}
+                              ${ICUB_MODULE_PATH}
                               ${ICUBCONTRIB_MODULE_PATH})
 
 find_package(GTK2 COMPONENTS gtk gtkmm REQUIRED)
