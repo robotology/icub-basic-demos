@@ -29,13 +29,13 @@
   
         <module>
                 <name>yarpview</name>
-                <parameters>--name /motionViewerLeft --x 0 --y 0 --RefreshTime 50</parameters>
+                <parameters>--name /motionViewerLeft --x 0 --y 0 --p 50 --compact</parameters>
                 <node>console</node>
         </module>
   
         <module>
                 <name>yarpview</name>
-                <parameters>--name /motionViewerRight --x 320 --y 0 --RefreshTime 50</parameters>
+                <parameters>--name /motionViewerRight --x 320 --y 0 --p 50 --compact</parameters>
                 <node>console</node>
         </module>
 

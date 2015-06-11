@@ -1,5 +1,5 @@
 <application>
-<name>Red-Ball with Bottom-Up</name>
+<name>Red-Ball Demo with Bottom-Up</name>
 
         <dependencies>
                 <port>/icub/camcalib/left/out</port>
@@ -25,7 +25,7 @@
   
         <module>
                 <name>yarpview</name>
-                <parameters>--name /PF3DTracker_viewer --x 320 --y 0 --RefreshTime 50</parameters>
+                <parameters>--name /PF3DTracker_viewer --x 320 --y 0 --p 50 --compact</parameters>
                 <node>console</node>
         </module>
   
