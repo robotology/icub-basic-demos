@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright (C) 2010 RobotCub Consortium, European Commission FP6 Project IST-004370
  * Author: Ugo Pattacini
  * email:  ugo.pattacini@iit.it
@@ -23,7 +23,6 @@
 The manager module for the Red-Ball Demo developed by IIT and ISR.
 
 Copyright (C) 2010 RobotCub Consortium
-
 Author: Ugo Pattacini
 
 CopyPolicy: Released under the terms of the GNU GPL v2.0.
@@ -54,23 +53,22 @@ None.
 The robot interface is assumed to be operative; in particular,
 the ICartesianControl interface must be available. The
 \ref iKinGazeCtrl must be running.
-
 \section portsc_sec Ports Created
 
 - \e /demoRedBall/trackTarget:i receives the 3-d
   position to track.
-
 - \e /demoRedBall/imdTargetLeft:i receives the
   blobs list as produced by the motionCUT module for the
   left eye.
-
 - \e /demoRedBall/imdTargetRight:i receives the
   blobs list as produced by the motionCUT module for the
   right eye.
-
 - \e /demoRedBall/cmdFace:o sends out commands to
   the face expression high level interface in order to give an
   emotional representation of the current robot state.
+ 
+- \e /demoGraspManager/gui:o sends out info to update target
+  within the \ref icub_gui.
 
 - \e /demoRedBall/gui:o sends out info to update target
   within the icub_gui.
@@ -78,17 +76,15 @@ the ICartesianControl interface must be available. The
 - \e /demoRedBall/rpc remote procedure
     call. Recognized remote commands:
     -'quit' quit the module
-
+ 
 \section in_files_sec Input Data Files
 None.
 
 \section out_data_sec Output Data Files
 None.
-
 \section conf_file_sec Configuration Files
 The configuration file passed through the option \e --from
 should look like as follows:
-
 \code
 [general]
 // the robot name to connect to
@@ -140,7 +136,6 @@ hand_orientation    -0.012968 -0.721210 0.692595 2.917075
 impedance_velocity_mode off
 impedance_stiffness 0.5 0.5 0.5 0.2 0.1
 impedance_damping 60.0 60.0 60.0 20.0 0.0
-
 [home_arm]
 // home position [deg]
 poss    -30.0 30.0 0.0  45.0 0.0  0.0  0.0
@@ -180,6 +175,7 @@ Windows, Linux
 #include <yarp/dev/all.h>
 #include <yarp/sig/Vector.h>
 #include <yarp/math/Math.h>
+#include <yarp/math/Rand.h>
 #include <iCub/ctrl/neuralNetworks.h>
 
 #define DEFAULT_THR_PER     20
@@ -259,6 +255,10 @@ protected:
     string robot;
     string eyeUsed;
 
+    std::vector<string> speech_grasp;
+    std::vector<string> speech_reach;
+    std::vector<string> speech_idle;
+
     bool useLeftArm;
     bool useRightArm;
     int  armSel;
@@ -275,18 +275,20 @@ protected:
     IControlMode2     *modeArm;
     IPositionControl  *posArm;
     ICartesianControl *cartArm;
-    IGazeControl      *gazeCtrl;
+    IGazeControl      *gazeCtrl;    
 
     BufferedPort<Bottle> inportTrackTarget;
     BufferedPort<Bottle> inportIMDTargetLeft;
     BufferedPort<Bottle> inportIMDTargetRight;
     Port outportGui;
     Port outportCmdFace;
+    Port outportSpeech;
 
     RpcClient breatherHrpc;
     RpcClient breatherLArpc;
     RpcClient breatherRArpc;
     RpcClient blinkerrpc;
+    RpcClient lookSkinrpc;
 
     Vector leftArmReachOffs;
     Vector leftArmGraspOffs;
@@ -347,25 +349,40 @@ protected:
 
         if (breatherHrpc.getOutputCount()>0)
         {
-            breatherHrpc.write(msg,reply);
+            breatherHrpc.write(msg);
         }
 
         if (breatherLArpc.getOutputCount()>0)
         {
-            breatherLArpc.write(msg,reply);
+            breatherLArpc.write(msg);
         }
 
         if (breatherRArpc.getOutputCount()>0)
         {
-            breatherRArpc.write(msg,reply);
+            breatherRArpc.write(msg);
         }
 
         if (blinkerrpc.getOutputCount()>0)
         {
-            blinkerrpc.write(msg,reply);
+            blinkerrpc.write(msg);
+        }
+
+        if (lookSkinrpc.getOutputCount()>0)
+        {
+            lookSkinrpc.write(msg);
         }
 
         state_breathers = !sw;
+    }
+
+    void sendSpeak(const string &txt)
+    {
+        if (outportSpeech.getOutputCount()>0)
+        {
+            Bottle msg,reply;
+            msg.addString(txt);
+            outportSpeech.write(msg);
+        }
     }
 
     void getTorsoOptions(Bottle &b, const char *type, const int i, Vector &sw, Matrix &lim)
@@ -659,12 +676,13 @@ protected:
                 resetTargetBall();
                 breathersHandler(false);
                 fprintf(stdout,"--- Got target => REACHING\n");
-
+                
                 wentHome=false;
                 state=STATE_REACH;
+                sendSpeak(speech_reach[Rand::scalar(0,speech_reach.size()-1e-3)]);
             }
         }
-        else if (((state==STATE_IDLE) || (state==STATE_REACH)) &&
+        else if (((state==STATE_IDLE) || (state==STATE_REACH)) && 
                  ((Time::now()-idleTimer)>idleTmo) && !wentHome)
         {
             fprintf(stdout,"--- Target timeout => IDLE\n");
@@ -677,6 +695,7 @@ protected:
 
             wentHome=true;
             deleteGuiTarget();
+            sendSpeak(speech_idle[Rand::scalar(0,speech_idle.size()-1e-3)]);
             state=STATE_IDLE;
         }
     }
@@ -735,7 +754,7 @@ protected:
         if (state!=STATE_IDLE)
         {
             gazeCtrl->lookAtFixationPoint(targetPos);
-
+            
             if (outportGui.getOutputCount()>0)
             {
                 Bottle obj;
@@ -994,7 +1013,6 @@ protected:
             type=armSel==LEFTARM?"left_hand":"right_hand";
 
         fprintf(stdout,"*** %s %s\n",actionStr.c_str(),type.c_str());
-
         for (size_t j=0; j<handVels.length(); j++)
             imode->setControlMode(homeVels.length()+j,VOCAB_CM_POSITION);
 
@@ -1120,6 +1138,9 @@ protected:
                     fprintf(stdout,"--- Target in %s\n",targetPos.toString().c_str());
                     fprintf(stdout,"*** Grasping x=%s\n",x.toString().c_str());
 
+                    //speak something
+                    sendSpeak(speech_grasp[Rand::scalar(0,speech_grasp.size()-1e-3)]);
+
                     cartArm->goToPoseSync(x,*armHandOrien);
                     closeHand();
 
@@ -1128,6 +1149,8 @@ protected:
                 }
             }
         }
+
+
     }
 
     void doRelease()
@@ -1190,7 +1213,7 @@ protected:
         Vector x,o;
         cartArm->getPose(x,o);
 
-        // true if arm has reached the position
+        // true if arm has reached the position 
         if (norm(targetPos+*armReachOffs-x)<sphereRadius)
             return true;
         else
@@ -1296,7 +1319,7 @@ protected:
 
         return Rz;
     }
-
+    
     void deleteGuiTarget()
     {
         if (outportGui.getOutputCount()>0)
@@ -1335,10 +1358,14 @@ protected:
         outportGui.interrupt();
         outportGui.close();
 
+        outportSpeech.interrupt();
+        outportSpeech.close();
+
         breatherHrpc.close();
         breatherLArpc.close();
         breatherRArpc.close();
         blinkerrpc.close();
+        lookSkinrpc.close();
     }
 
 public:
@@ -1442,10 +1469,12 @@ public:
         inportIMDTargetRight.open((name+"/imdTargetRight:i").c_str());
         outportCmdFace.open((name+"/cmdFace:rpc").c_str());
         outportGui.open((name+"/gui:o").c_str());
+        outportSpeech.open((name+"/speech:o").c_str());
         breatherHrpc.open((name+"/breather/head:rpc").c_str());
         breatherLArpc.open((name+"/breather/left_arm:rpc").c_str());
         breatherRArpc.open((name+"/breather/right_arm:rpc").c_str());
         blinkerrpc.open((name+"/blinker:rpc").c_str());
+        lookSkinrpc.open((name+"/lookSkin:rpc").c_str());
 
         string fwslash="/";
 
@@ -1656,6 +1685,29 @@ public:
         wentHome=false;
         state=STATE_IDLE;
         state_breathers=true;
+
+        // populate the speech strings
+        Rand::init();
+        speech_grasp.push_back("""shi shie?""");
+        speech_grasp.push_back("""Thank you dear""");
+        speech_grasp.push_back("""Did I take it?""");
+        speech_grasp.push_back("""shi shie?""");
+        speech_grasp.push_back("""I like playing with the red ball!""");
+        speech_grasp.push_back("""Yippi ka yeah!""");
+
+        speech_reach.push_back("""nehao""");
+        speech_reach.push_back("""nehao ma?""");
+        speech_reach.push_back("""Oh.! dhereIt is!!""");
+        speech_reach.push_back("""Stay still, otherwise I cant catch it!""");
+        speech_reach.push_back("""Give me the red ball!""");
+        speech_reach.push_back("""Red ball is my precious... Give it to me!""");
+        speech_reach.push_back("""Wait!! I want that ball!""");
+
+        speech_idle.push_back("""Oh no! I want to play with the red ball again!""");
+        speech_idle.push_back("""I want the red ball to be my wife""");
+        speech_idle.push_back("""Playing with the red ball makes me happy, let's do it again.""");
+        speech_idle.push_back("""I don't feel tired, let's play again.""");
+        speech_idle.push_back("""oh my Gosh!! Where's the red ball??""");
 
         return true;
     }
