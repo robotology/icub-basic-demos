@@ -66,7 +66,20 @@ the ICartesianControl interface must be available. The
 - \e /demoRedBall/cmdFace:o sends out commands to
   the face expression high level interface in order to give an
   emotional representation of the current robot state.
-
+- \e /demoRedBall/speech:o sends a set of predefined sentences
+  in order for an eventual TTS module to use them during the demo.
+  This feature successfully works with the iSpeak module. The set
+  of predefined sentences to be spoken is defined via .ini file.
+- \e /demoRedBall/breather/head:rpc interfaces with the head breather 
+  (if available) and disables/enables it according when needed
+- \e /demoRedBall/breather/left_arm:rpc interfaces with the left arm
+  breather (if available) and disables/enables it according when needed
+- \e /demoRedBall/breather/right_arm:rpc interfaces with the right arm
+  breather (if available) and disables/enables it according when needed
+- \e /demoRedBall/blinker:rpc interfaces with the iCubBlinker module
+  (if available) and disables/enables it according when needed
+- \e /demoRedBall/lookSkin:rpc interfaces with the lookSkin module 
+  (if available) and disables/enables it according when needed
 - \e /demoRedBall/gui:o sends out info to update target
   within the icub_gui.
 
@@ -156,6 +169,44 @@ open_hand       0.0 0.0 0.0   0.0   0.0 0.0 0.0   0.0   0.0
 close_hand      0.0 80.0 12.0 18.0 27.0 50.0 20.0  50.0 135.0
 // velocities to reach hand positions [deg/s]
 vels_hand       10.0 10.0  10.0 10.0 10.0 10.0 10.0 10.0  10.0
+
+[include speech "speech_English.ini"]
+\endcode
+
+The latter inclusion is the .ini file needed for the predefined
+set of sentences to be spoken. The speech during the red ball demo
+is divided into three states:
+  - [speech_reach] -> it is used when the robot "sees" the ball,
+                      and is trying to reach it
+  - [speech_grasp] -> is performed after the grasping action
+                      (regardless of its success/failure)
+  - [speech_idle] -> is used after the red ball is pulled away
+                     from the robot's sight
+For each of these states, there is a group in the .ini file.
+Each line is a sentence that will be spoken by the robot
+according to its state. Add as many sentences (i.e. lines)
+as you'd like to these groups: they will be chosen randomly
+by the manager at runtime. The speech file should look as follows:
+\code
+[speech_reach]
+"Oh.! There it is!!"
+"Stay still, otherwise I can't catch it!"
+"Give me the red ball!"
+"Red ball is my precious... Give it to me!"
+"Wait!! I want that ball!"
+
+[speech_grasp]
+"Thank you dear"
+"Did I take it?"
+"I like playing with the red ball!"
+"Yippi ka yeah!"
+
+[speech_idle]
+"Oh no! I want to play with the red ball again!"
+"I want the red ball to be my wife"
+"Playing with the red ball makes me happy, let's do it again."
+"I don't feel tired, let's play again."
+"Oh my Gosh!! Where's the red ball??"
 \endcode
 
 \section tested_os_sec Tested OS
