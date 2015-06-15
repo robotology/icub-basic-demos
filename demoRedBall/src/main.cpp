@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2010 RobotCub Consortium, European Commission FP6 Project IST-004370
  * Author: Ugo Pattacini
  * email:  ugo.pattacini@iit.it
@@ -66,9 +66,6 @@ the ICartesianControl interface must be available. The
 - \e /demoRedBall/cmdFace:o sends out commands to
   the face expression high level interface in order to give an
   emotional representation of the current robot state.
- 
-- \e /demoGraspManager/gui:o sends out info to update target
-  within the \ref icub_gui.
 
 - \e /demoRedBall/gui:o sends out info to update target
   within the icub_gui.
@@ -76,7 +73,7 @@ the ICartesianControl interface must be available. The
 - \e /demoRedBall/rpc remote procedure
     call. Recognized remote commands:
     -'quit' quit the module
- 
+
 \section in_files_sec Input Data Files
 None.
 
@@ -275,7 +272,7 @@ protected:
     IControlMode2     *modeArm;
     IPositionControl  *posArm;
     ICartesianControl *cartArm;
-    IGazeControl      *gazeCtrl;    
+    IGazeControl      *gazeCtrl;
 
     BufferedPort<Bottle> inportTrackTarget;
     BufferedPort<Bottle> inportIMDTargetLeft;
@@ -676,13 +673,13 @@ protected:
                 resetTargetBall();
                 breathersHandler(false);
                 fprintf(stdout,"--- Got target => REACHING\n");
-                
+
                 wentHome=false;
                 state=STATE_REACH;
                 sendSpeak(speech_reach[Rand::scalar(0,speech_reach.size()-1e-3)]);
             }
         }
-        else if (((state==STATE_IDLE) || (state==STATE_REACH)) && 
+        else if (((state==STATE_IDLE) || (state==STATE_REACH)) &&
                  ((Time::now()-idleTimer)>idleTmo) && !wentHome)
         {
             fprintf(stdout,"--- Target timeout => IDLE\n");
@@ -754,7 +751,7 @@ protected:
         if (state!=STATE_IDLE)
         {
             gazeCtrl->lookAtFixationPoint(targetPos);
-            
+
             if (outportGui.getOutputCount()>0)
             {
                 Bottle obj;
@@ -1213,7 +1210,7 @@ protected:
         Vector x,o;
         cartArm->getPose(x,o);
 
-        // true if arm has reached the position 
+        // true if arm has reached the position
         if (norm(targetPos+*armReachOffs-x)<sphereRadius)
             return true;
         else
@@ -1319,7 +1316,7 @@ protected:
 
         return Rz;
     }
-    
+
     void deleteGuiTarget()
     {
         if (outportGui.getOutputCount()>0)
