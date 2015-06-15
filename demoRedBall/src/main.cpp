@@ -165,6 +165,7 @@ Windows, Linux
 */
 
 #include <string>
+#include <algorithm>
 
 #include <gsl/gsl_math.h>
 
@@ -523,6 +524,29 @@ protected:
 
             for (int i=0; i<len; i++)
                 vels[i]=grp.get(1+i).asDouble();
+        }
+    }
+
+    void getSpeechOptions(Bottle &b, std::vector<string> &grasp,
+                          std::vector<string> &reach, std::vector<string> &idle)
+    {
+        printf("%s\n", b.toString().c_str());
+        Bottle &bSpeechGrasp=b.findGroup("speech_grasp");
+        for (int i=1; i<bSpeechGrasp.size(); i++)
+        {
+            grasp.push_back(bSpeechGrasp.get(i).asList()->toString());
+        }
+
+        Bottle &bSpeechReach=b.findGroup("speech_reach");
+        for (int i=1; i<bSpeechReach.size(); i++)
+        {
+            reach.push_back(bSpeechReach.get(i).asList()->toString());
+        }
+
+        Bottle &bSpeechIdle=b.findGroup("speech_idle");
+        for (int i=1; i<bSpeechIdle.size(); i++)
+        {
+            idle.push_back(bSpeechIdle.get(i).asList()->toString());
         }
     }
 
@@ -1685,26 +1709,11 @@ public:
 
         // populate the speech strings
         Rand::init();
-        speech_grasp.push_back("""shi shie?""");
-        speech_grasp.push_back("""Thank you dear""");
-        speech_grasp.push_back("""Did I take it?""");
-        speech_grasp.push_back("""shi shie?""");
-        speech_grasp.push_back("""I like playing with the red ball!""");
-        speech_grasp.push_back("""Yippi ka yeah!""");
-
-        speech_reach.push_back("""nehao""");
-        speech_reach.push_back("""nehao ma?""");
-        speech_reach.push_back("""Oh.! dhereIt is!!""");
-        speech_reach.push_back("""Stay still, otherwise I cant catch it!""");
-        speech_reach.push_back("""Give me the red ball!""");
-        speech_reach.push_back("""Red ball is my precious... Give it to me!""");
-        speech_reach.push_back("""Wait!! I want that ball!""");
-
-        speech_idle.push_back("""Oh no! I want to play with the red ball again!""");
-        speech_idle.push_back("""I want the red ball to be my wife""");
-        speech_idle.push_back("""Playing with the red ball makes me happy, let's do it again.""");
-        speech_idle.push_back("""I don't feel tired, let's play again.""");
-        speech_idle.push_back("""oh my Gosh!! Where's the red ball??""");
+        Bottle &bSpeech=rf.findGroup("speech");
+        if (bSpeech.size()>0)
+        {
+            getSpeechOptions(bSpeech,speech_grasp,speech_reach,speech_idle);
+        }
 
         return true;
     }
