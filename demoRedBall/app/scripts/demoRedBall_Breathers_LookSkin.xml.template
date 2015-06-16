@@ -53,8 +53,7 @@
     <module>
         <name>lookSkin</name>
         <parameters></parameters>
-        <node>localhost</node>
-        <stdio>pwrNode1</stdio>
+        <node>pwrNode1</node>
     </module>  
 
     <module>

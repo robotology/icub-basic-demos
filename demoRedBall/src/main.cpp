@@ -1766,6 +1766,11 @@ public:
             getSpeechOptions(bSpeech,speech_grasp,speech_reach,speech_idle);
         }
 
+        for (int i = 0; i < speech_grasp.size(); i++)
+        {
+            printf("%s\n", speech_grasp[i].c_str());
+        }
+
         return true;
     }
 
