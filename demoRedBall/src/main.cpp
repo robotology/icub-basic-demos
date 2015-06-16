@@ -581,23 +581,28 @@ protected:
     void getSpeechOptions(Bottle &b, std::vector<string> &grasp,
                           std::vector<string> &reach, std::vector<string> &idle)
     {
-        printf("%s\n", b.toString().c_str());
         Bottle &bSpeechGrasp=b.findGroup("speech_grasp");
         for (int i=1; i<bSpeechGrasp.size(); i++)
         {
-            grasp.push_back(bSpeechGrasp.get(i).asList()->toString());
+            std::string str = bSpeechGrasp.get(i).asList()->toString();
+            str.erase(std::remove(str.begin(), str.end(), '\"'), str.end());
+            grasp.push_back(str);
         }
 
         Bottle &bSpeechReach=b.findGroup("speech_reach");
         for (int i=1; i<bSpeechReach.size(); i++)
         {
-            reach.push_back(bSpeechReach.get(i).asList()->toString());
+            std::string str = bSpeechReach.get(i).asList()->toString();
+            str.erase(std::remove(str.begin(), str.end(), '\"'), str.end());
+            reach.push_back(str);
         }
 
         Bottle &bSpeechIdle=b.findGroup("speech_idle");
         for (int i=1; i<bSpeechIdle.size(); i++)
         {
-            idle.push_back(bSpeechIdle.get(i).asList()->toString());
+            std::string str = bSpeechIdle.get(i).asList()->toString();
+            str.erase(std::remove(str.begin(), str.end(), '\"'), str.end());
+            idle.push_back(str);
         }
     }
 
@@ -1764,11 +1769,6 @@ public:
         if (bSpeech.size()>0)
         {
             getSpeechOptions(bSpeech,speech_grasp,speech_reach,speech_idle);
-        }
-
-        for (int i = 0; i < speech_grasp.size(); i++)
-        {
-            printf("%s\n", speech_grasp[i].c_str());
         }
 
         return true;
