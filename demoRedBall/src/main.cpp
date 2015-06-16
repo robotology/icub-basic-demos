@@ -23,7 +23,7 @@
 The manager module for the Red-Ball Demo developed by IIT and ISR.
 
 Copyright (C) 2010 RobotCub Consortium
-Author: Ugo Pattacini
+Author: Ugo Pattacini, Alessandro Roncone
 
 CopyPolicy: Released under the terms of the GNU GPL v2.0.
 
