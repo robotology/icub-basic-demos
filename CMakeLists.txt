@@ -10,6 +10,7 @@ option(BUILD_FORCECONTROL "Build Force Control Demo (GTK is required)" OFF)
 option(BUILD_FORCEIMITATION "Build Force Imitation Demo" ON)
 option(BUILD_REDBALL "Build Red-Ball Demo" ON)
 option(BUILD_YOGA "Build Yoga Demo" ON)
+option(BUILD_LOOKSKIN "Build LookSkin Demo" ON)
 
 find_package(ICUBcontrib REQUIRED)
 list(APPEND CMAKE_MODULE_PATH ${ICUBCONTRIB_MODULE_PATH})
@@ -31,6 +32,10 @@ endif()
 
 if (BUILD_YOGA)
     add_subdirectory(demoYoga)
+endif()
+
+if (BUILD_LOOKSKIN)
+    add_subdirectory(demoLookSkin)
 endif()
 
 icubcontrib_add_uninstall_target()
