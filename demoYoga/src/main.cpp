@@ -516,7 +516,7 @@ int main(int argc, char *argv[])
     if (inifile=="")
     {
         yError("No position file specified");
-        return 0;
+        return 1;
     }
     else
     {
@@ -578,7 +578,7 @@ int main(int argc, char *argv[])
     if (!icub.createDevices())
     {
         yError("Error creating devices, check parameters");
-        return -1;
+        return 1;
     }
 
     RobotMover *robot_mover=new RobotMover(&icub,SAMPLER_RATE);
