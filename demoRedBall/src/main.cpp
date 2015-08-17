@@ -1861,7 +1861,7 @@ int main(int argc, char *argv[])
     if (!yarp.checkNetwork())
     {
         fprintf(stdout,"YARP server not available!\n");
-        return -1;
+        return 1;
     }
 
     myReport rep;
