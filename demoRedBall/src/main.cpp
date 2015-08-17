@@ -23,8 +23,7 @@
 The manager module for the Red-Ball Demo developed by IIT and ISR.
 
 Copyright (C) 2010 RobotCub Consortium
-
-Author: Ugo Pattacini
+Author: Ugo Pattacini, Alessandro Roncone
 
 CopyPolicy: Released under the terms of the GNU GPL v2.0.
 
@@ -54,24 +53,33 @@ None.
 The robot interface is assumed to be operative; in particular,
 the ICartesianControl interface must be available. The
 \ref iKinGazeCtrl must be running.
-
 \section portsc_sec Ports Created
 
 - \e /demoRedBall/trackTarget:i receives the 3-d
   position to track.
-
 - \e /demoRedBall/imdTargetLeft:i receives the
   blobs list as produced by the motionCUT module for the
   left eye.
-
 - \e /demoRedBall/imdTargetRight:i receives the
   blobs list as produced by the motionCUT module for the
   right eye.
-
 - \e /demoRedBall/cmdFace:o sends out commands to
   the face expression high level interface in order to give an
   emotional representation of the current robot state.
-
+- \e /demoRedBall/speech:o sends a set of predefined sentences
+  in order for an eventual TTS module to use them during the demo.
+  This feature successfully works with the iSpeak module. The set
+  of predefined sentences to be spoken is defined via .ini file.
+- \e /demoRedBall/breather/head:rpc interfaces with the head breather 
+  (if available) and disables/enables it according when needed
+- \e /demoRedBall/breather/left_arm:rpc interfaces with the left arm
+  breather (if available) and disables/enables it according when needed
+- \e /demoRedBall/breather/right_arm:rpc interfaces with the right arm
+  breather (if available) and disables/enables it according when needed
+- \e /demoRedBall/blinker:rpc interfaces with the iCubBlinker module
+  (if available) and disables/enables it according when needed
+- \e /demoRedBall/lookSkin:rpc interfaces with the lookSkin module 
+  (if available) and disables/enables it according when needed
 - \e /demoRedBall/gui:o sends out info to update target
   within the icub_gui.
 
@@ -84,11 +92,9 @@ None.
 
 \section out_data_sec Output Data Files
 None.
-
 \section conf_file_sec Configuration Files
 The configuration file passed through the option \e --from
 should look like as follows:
-
 \code
 [general]
 // the robot name to connect to
@@ -140,7 +146,6 @@ hand_orientation    -0.012968 -0.721210 0.692595 2.917075
 impedance_velocity_mode off
 impedance_stiffness 0.5 0.5 0.5 0.2 0.1
 impedance_damping 60.0 60.0 60.0 20.0 0.0
-
 [home_arm]
 // home position [deg]
 poss    -30.0 30.0 0.0  45.0 0.0  0.0  0.0
@@ -164,6 +169,44 @@ open_hand       0.0 0.0 0.0   0.0   0.0 0.0 0.0   0.0   0.0
 close_hand      0.0 80.0 12.0 18.0 27.0 50.0 20.0  50.0 135.0
 // velocities to reach hand positions [deg/s]
 vels_hand       10.0 10.0  10.0 10.0 10.0 10.0 10.0 10.0  10.0
+
+[include speech "speech_English.ini"]
+\endcode
+
+The latter inclusion is the .ini file needed for the predefined
+set of sentences to be spoken. The speech during the red ball demo
+is divided into three states:
+  - [speech_reach] -> it is used when the robot "sees" the ball,
+                      and is trying to reach it
+  - [speech_grasp] -> is performed after the grasping action
+                      (regardless of its success/failure)
+  - [speech_idle] -> is used after the red ball is pulled away
+                     from the robot's sight
+For each of these states, there is a group in the .ini file.
+Each line is a sentence that will be spoken by the robot
+according to its state. Add as many sentences (i.e. lines)
+as you'd like to these groups: they will be chosen randomly
+by the manager at runtime. The speech file should look as follows:
+\code
+[speech_reach]
+"Oh.! There it is!!"
+"Stay still, otherwise I can't catch it!"
+"Give me the red ball!"
+"Red ball is my precious... Give it to me!"
+"Wait!! I want that ball!"
+
+[speech_grasp]
+"Thank you dear"
+"Did I take it?"
+"I like playing with the red ball!"
+"Yippi ka yeah!"
+
+[speech_idle]
+"Oh no! I want to play with the red ball again!"
+"I want the red ball to be my wife"
+"Playing with the red ball makes me happy, let's do it again."
+"I don't feel tired, let's play again."
+"Oh my Gosh!! Where's the red ball??"
 \endcode
 
 \section tested_os_sec Tested OS
@@ -173,6 +216,7 @@ Windows, Linux
 */
 
 #include <string>
+#include <algorithm>
 
 #include <gsl/gsl_math.h>
 
@@ -180,6 +224,7 @@ Windows, Linux
 #include <yarp/dev/all.h>
 #include <yarp/sig/Vector.h>
 #include <yarp/math/Math.h>
+#include <yarp/math/Rand.h>
 #include <iCub/ctrl/neuralNetworks.h>
 
 #define DEFAULT_THR_PER     20
@@ -259,6 +304,11 @@ protected:
     string robot;
     string eyeUsed;
 
+    std::vector<string> speech_grasp;
+    std::vector<string> speech_reach;
+    std::vector<string> speech_idle;
+
+    bool useSpeech;
     bool useLeftArm;
     bool useRightArm;
     int  armSel;
@@ -282,11 +332,13 @@ protected:
     BufferedPort<Bottle> inportIMDTargetRight;
     Port outportGui;
     Port outportCmdFace;
+    Port outportSpeech;
 
     RpcClient breatherHrpc;
     RpcClient breatherLArpc;
     RpcClient breatherRArpc;
     RpcClient blinkerrpc;
+    RpcClient lookSkinrpc;
 
     Vector leftArmReachOffs;
     Vector leftArmGraspOffs;
@@ -347,25 +399,40 @@ protected:
 
         if (breatherHrpc.getOutputCount()>0)
         {
-            breatherHrpc.write(msg,reply);
+            breatherHrpc.write(msg);
         }
 
         if (breatherLArpc.getOutputCount()>0)
         {
-            breatherLArpc.write(msg,reply);
+            breatherLArpc.write(msg);
         }
 
         if (breatherRArpc.getOutputCount()>0)
         {
-            breatherRArpc.write(msg,reply);
+            breatherRArpc.write(msg);
         }
 
         if (blinkerrpc.getOutputCount()>0)
         {
-            blinkerrpc.write(msg,reply);
+            blinkerrpc.write(msg);
+        }
+
+        if (lookSkinrpc.getOutputCount()>0)
+        {
+            lookSkinrpc.write(msg);
         }
 
         state_breathers = !sw;
+    }
+
+    void sendSpeak(const string &txt)
+    {
+        if (outportSpeech.getOutputCount()>0)
+        {
+            Bottle msg,reply;
+            msg.addString(txt);
+            outportSpeech.write(msg);
+        }
     }
 
     void getTorsoOptions(Bottle &b, const char *type, const int i, Vector &sw, Matrix &lim)
@@ -509,6 +576,34 @@ protected:
 
             for (int i=0; i<len; i++)
                 vels[i]=grp.get(1+i).asDouble();
+        }
+    }
+
+    void getSpeechOptions(Bottle &b, std::vector<string> &grasp,
+                          std::vector<string> &reach, std::vector<string> &idle)
+    {
+        Bottle &bSpeechGrasp=b.findGroup("speech_grasp");
+        for (int i=1; i<bSpeechGrasp.size(); i++)
+        {
+            std::string str = bSpeechGrasp.get(i).asList()->toString();
+            str.erase(std::remove(str.begin(), str.end(), '\"'), str.end());
+            grasp.push_back(str);
+        }
+
+        Bottle &bSpeechReach=b.findGroup("speech_reach");
+        for (int i=1; i<bSpeechReach.size(); i++)
+        {
+            std::string str = bSpeechReach.get(i).asList()->toString();
+            str.erase(std::remove(str.begin(), str.end(), '\"'), str.end());
+            reach.push_back(str);
+        }
+
+        Bottle &bSpeechIdle=b.findGroup("speech_idle");
+        for (int i=1; i<bSpeechIdle.size(); i++)
+        {
+            std::string str = bSpeechIdle.get(i).asList()->toString();
+            str.erase(std::remove(str.begin(), str.end(), '\"'), str.end());
+            idle.push_back(str);
         }
     }
 
@@ -662,6 +757,7 @@ protected:
 
                 wentHome=false;
                 state=STATE_REACH;
+                if(useSpeech) sendSpeak(speech_reach[Rand::scalar(0,speech_reach.size()-1e-3)]);
             }
         }
         else if (((state==STATE_IDLE) || (state==STATE_REACH)) &&
@@ -677,6 +773,7 @@ protected:
 
             wentHome=true;
             deleteGuiTarget();
+            if(useSpeech) sendSpeak(speech_idle[Rand::scalar(0,speech_idle.size()-1e-3)]);
             state=STATE_IDLE;
         }
     }
@@ -994,7 +1091,6 @@ protected:
             type=armSel==LEFTARM?"left_hand":"right_hand";
 
         fprintf(stdout,"*** %s %s\n",actionStr.c_str(),type.c_str());
-
         for (size_t j=0; j<handVels.length(); j++)
             imode->setControlMode(homeVels.length()+j,VOCAB_CM_POSITION);
 
@@ -1120,6 +1216,9 @@ protected:
                     fprintf(stdout,"--- Target in %s\n",targetPos.toString().c_str());
                     fprintf(stdout,"*** Grasping x=%s\n",x.toString().c_str());
 
+                    //speak something
+                    if(useSpeech) sendSpeak(speech_grasp[Rand::scalar(0,speech_grasp.size()-1e-3)]);
+
                     cartArm->goToPoseSync(x,*armHandOrien);
                     closeHand();
 
@@ -1128,6 +1227,8 @@ protected:
                 }
             }
         }
+
+
     }
 
     void doRelease()
@@ -1335,10 +1436,14 @@ protected:
         outportGui.interrupt();
         outportGui.close();
 
+        outportSpeech.interrupt();
+        outportSpeech.close();
+
         breatherHrpc.close();
         breatherLArpc.close();
         breatherRArpc.close();
         blinkerrpc.close();
+        lookSkinrpc.close();
     }
 
 public:
@@ -1358,6 +1463,7 @@ public:
         robot=bGeneral.check("robot",Value("icub"),"Getting robot name").asString().c_str();
         useLeftArm=bGeneral.check("left_arm",Value("on"),"Getting left arm use flag").asString()=="on"?true:false;
         useRightArm=bGeneral.check("right_arm",Value("on"),"Getting right arm use flag").asString()=="on"?true:false;
+        useSpeech=bGeneral.check("speech",Value("on"),"Getting speech use flag").asString()=="on"?true:false;
         useNetwork=bGeneral.check("use_network",Value("off"),"Getting network enable").asString()=="on"?true:false;
         trajTime=bGeneral.check("traj_time",Value(2.0),"Getting trajectory time").asDouble();
         reachTol=bGeneral.check("reach_tol",Value(0.01),"Getting reaching tolerance").asDouble();
@@ -1442,10 +1548,12 @@ public:
         inportIMDTargetRight.open((name+"/imdTargetRight:i").c_str());
         outportCmdFace.open((name+"/cmdFace:rpc").c_str());
         outportGui.open((name+"/gui:o").c_str());
+        outportSpeech.open((name+"/speech:o").c_str());
         breatherHrpc.open((name+"/breather/head:rpc").c_str());
         breatherLArpc.open((name+"/breather/left_arm:rpc").c_str());
         breatherRArpc.open((name+"/breather/right_arm:rpc").c_str());
         blinkerrpc.open((name+"/blinker:rpc").c_str());
+        lookSkinrpc.open((name+"/lookSkin:rpc").c_str());
 
         string fwslash="/";
 
@@ -1656,6 +1764,23 @@ public:
         wentHome=false;
         state=STATE_IDLE;
         state_breathers=true;
+
+        // populate the speech strings
+        if (useSpeech)
+        {
+            Rand::init();
+            Bottle &bSpeech=rf.findGroup("speech");
+            if (bSpeech.size()>0)
+            {
+                getSpeechOptions(bSpeech,speech_grasp,speech_reach,speech_idle);
+            }
+            else
+            {
+                printf("ERROR: no speech group has been found even though speech flag option was true!\n");
+                printf("WARNING: setting speech flag option to false.\n");
+                useSpeech = false;
+            }
+        }
 
         return true;
     }

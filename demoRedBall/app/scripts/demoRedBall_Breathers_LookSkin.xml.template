@@ -1,0 +1,143 @@
+<application>
+<name>Red-Ball Demo with Breathers and LookSkin</name>
+
+    <dependencies>
+        <port>/icub/camcalib/left/out</port>
+        <port>/iKinGazeCtrl/rpc</port>
+        <port>/icub/cartesianController/right_arm/state:o</port>
+        <port>/icub/cartesianController/left_arm/state:o</port>
+        <port>/wholeBodyDynamics/right_arm/FT:i</port>
+        <port>/wholeBodyDynamics/left_arm/FT:i</port>
+    </dependencies>
+      
+    <module>
+        <name>pf3dTracker</name>
+        <node>pwrNode1</node>
+    </module>
+   
+    <module>
+        <name>demoRedBall</name>
+        <node>pwrNode2</node>
+    </module>
+  
+    <module>
+        <name>yarpview</name>
+        <parameters>--name /PF3DTracker_viewer --x 320 --y 0 --p 50 --compact</parameters>
+        <node>console</node>
+    </module>
+
+    <module>
+        <name>iCubBreather</name>
+        <parameters>--name iCubBreatherRA --part right_arm</parameters>
+        <node>pwrNode2</node>
+    </module>
+
+    <module>
+        <name>iCubBreather</name>
+        <parameters>--name iCubBreatherLA --part left_arm</parameters>
+        <node>pwrNode2</node>
+    </module>
+
+    <module>
+        <name>iCubBreather</name>
+        <parameters>--name iCubBreatherH --part head --rate 1500</parameters>
+        <node>pwrNode2</node>
+    </module>
+  
+    <module>
+        <name>iCubBlinker</name>
+        <parameters></parameters>
+        <node>pwrNode2</node>
+    </module>  
+
+    <module>
+        <name>lookSkin</name>
+        <parameters></parameters>
+        <node>pwrNode1</node>
+    </module>  
+
+    <module>
+        <name>iSpeak</name>
+        <parameters>--package acapela-tts</parameters>
+        <node>winNode1</node>
+        <stdio></stdio>
+    </module>
+  
+    <connection>
+        <from>/icub/camcalib/left/out</from>
+        <to>/pf3dTracker/video:i</to>
+        <protocol>udp</protocol>
+    </connection>
+    <connection>
+        <from>/pf3dTracker/video:o</from>
+        <to>/PF3DTracker_viewer</to>
+        <protocol>udp</protocol>
+    </connection>
+    <connection>
+        <from>/pf3dTracker/data:o</from>
+        <to>/demoRedBall/trackTarget:i</to>
+        <protocol>udp</protocol>
+    </connection>
+    <connection>
+        <from>/demoRedBall/cmdFace:rpc</from>
+        <to>/icub/face/emotions/in</to>
+        <protocol>tcp</protocol>
+    </connection>
+    <connection>
+        <from>/demoRedBall/gui:o</from>
+        <to>/iCubGui/objects</to>
+        <protocol>tcp</protocol>
+    </connection>
+    <connection>
+        <from>/demoRedBall/breather/head:rpc</from>
+        <to>/iCubBreatherH/rpc:i</to>
+        <protocol>tcp</protocol>
+    </connection>
+    <connection>
+        <from>/demoRedBall/breather/left_arm:rpc</from>
+        <to>/iCubBreatherLA/rpc:i</to>
+        <protocol>tcp</protocol>
+    </connection>
+    <connection>
+        <from>/demoRedBall/breather/right_arm:rpc</from>
+        <to>/iCubBreatherRA/rpc:i</to>
+        <protocol>tcp</protocol>
+    </connection>
+    <connection>
+        <from>/demoRedBall/blinker:rpc</from>
+        <to>/iCubBlinker/rpc</to>
+        <protocol>tcp</protocol>
+    </connection>
+    <connection>
+        <from>/demoRedBall/lookSkin:rpc</from>
+        <to>/lookSkin/rpc:i</to>
+        <protocol>tcp</protocol>
+    </connection>
+    <connection>
+        <from>/demoRedBall/speech:o</from>
+        <to>/iSpeak</to>
+        <protocol>tcp</protocol>
+    </connection>
+    <connection>
+        <from>/iCubBlinker/emotions/raw</from>
+        <to>/icub/face/raw/in</to>
+        <protocol>tcp</protocol>
+    </connection>  
+    <connection>
+        <from>/iSpeak/emotions:o</from>
+        <to>/icub/face/emotions/in</to>
+        <protocol>tcp</protocol>
+    </connection>
+    <connection>
+        <from>/lookSkin/rpc:o</from>
+        <to>/iCubBreatherH/rpc:i</to>
+        <protocol>tcp</protocol>
+    </connection>
+    <connection>
+        <from>/skinManager/skin_events:o</from>
+        <to>/lookSkin/skin:i</to>
+        <protocol>tcp</protocol>
+    </connection>    
+
+</application>
+
