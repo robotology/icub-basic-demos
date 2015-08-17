@@ -114,6 +114,11 @@
         <protocol>tcp</protocol>
     </connection>
     <connection>
+        <from>/demoRedBall/speech:o</from>
+        <to>/iSpeak</to>
+        <protocol>tcp</protocol>
+    </connection>
+    <connection>
         <from>/iCubBlinker/emotions/raw</from>
         <to>/icub/face/raw/in</to>
         <protocol>tcp</protocol>
