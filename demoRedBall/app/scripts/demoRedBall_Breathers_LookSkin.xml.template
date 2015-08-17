@@ -58,7 +58,7 @@
 
     <module>
         <name>iSpeak</name>
-        <parameters>--package acapelacmd</parameters>
+        <parameters>--package acapela-tts</parameters>
         <node>winNode1</node>
         <stdio></stdio>
     </module>
