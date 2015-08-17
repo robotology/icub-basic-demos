@@ -308,6 +308,7 @@ protected:
     std::vector<string> speech_reach;
     std::vector<string> speech_idle;
 
+    bool useSpeech;
     bool useLeftArm;
     bool useRightArm;
     int  armSel;
@@ -756,7 +757,7 @@ protected:
 
                 wentHome=false;
                 state=STATE_REACH;
-                sendSpeak(speech_reach[Rand::scalar(0,speech_reach.size()-1e-3)]);
+                if(useSpeech) sendSpeak(speech_reach[Rand::scalar(0,speech_reach.size()-1e-3)]);
             }
         }
         else if (((state==STATE_IDLE) || (state==STATE_REACH)) &&
@@ -772,7 +773,7 @@ protected:
 
             wentHome=true;
             deleteGuiTarget();
-            sendSpeak(speech_idle[Rand::scalar(0,speech_idle.size()-1e-3)]);
+            if(useSpeech) sendSpeak(speech_idle[Rand::scalar(0,speech_idle.size()-1e-3)]);
             state=STATE_IDLE;
         }
     }
@@ -1216,7 +1217,7 @@ protected:
                     fprintf(stdout,"*** Grasping x=%s\n",x.toString().c_str());
 
                     //speak something
-                    sendSpeak(speech_grasp[Rand::scalar(0,speech_grasp.size()-1e-3)]);
+                    if(useSpeech) sendSpeak(speech_grasp[Rand::scalar(0,speech_grasp.size()-1e-3)]);
 
                     cartArm->goToPoseSync(x,*armHandOrien);
                     closeHand();
@@ -1462,6 +1463,7 @@ public:
         robot=bGeneral.check("robot",Value("icub"),"Getting robot name").asString().c_str();
         useLeftArm=bGeneral.check("left_arm",Value("on"),"Getting left arm use flag").asString()=="on"?true:false;
         useRightArm=bGeneral.check("right_arm",Value("on"),"Getting right arm use flag").asString()=="on"?true:false;
+        useSpeech=bGeneral.check("speech",Value("on"),"Getting speech use flag").asString()=="on"?true:false;
         useNetwork=bGeneral.check("use_network",Value("off"),"Getting network enable").asString()=="on"?true:false;
         trajTime=bGeneral.check("traj_time",Value(2.0),"Getting trajectory time").asDouble();
         reachTol=bGeneral.check("reach_tol",Value(0.01),"Getting reaching tolerance").asDouble();
@@ -1764,11 +1766,20 @@ public:
         state_breathers=true;
 
         // populate the speech strings
-        Rand::init();
-        Bottle &bSpeech=rf.findGroup("speech");
-        if (bSpeech.size()>0)
+        if (useSpeech)
         {
-            getSpeechOptions(bSpeech,speech_grasp,speech_reach,speech_idle);
+            Rand::init();
+            Bottle &bSpeech=rf.findGroup("speech");
+            if (bSpeech.size()>0)
+            {
+                getSpeechOptions(bSpeech,speech_grasp,speech_reach,speech_idle);
+            }
+            else
+            {
+                printf("ERROR: no speech group has been found even though speech flag option was true!\n");
+                printf("WARNING: setting speech flag option to false.\n");
+                useSpeech = false;
+            }
         }
 
         return true;
