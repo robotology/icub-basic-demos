@@ -48,6 +48,9 @@ using namespace iCub::skinDynLib;
 #define STATE_WAIT              2
 #define STATE_RELEASE           3
 
+#define MIN_TAXEL_NUMBER        2
+#define SKIN_THRES              40.0
+
 
 /***********************************************************/
 class LookingModule: public RFModule
@@ -85,7 +88,7 @@ class LookingModule: public RFModule
     std::vector<string> speech;
     string touchedSkinPart;
 
-    bool state;
+    int state;
     Vector targetPos;
     double timeNow;
 
@@ -124,7 +127,8 @@ class LookingModule: public RFModule
 
         for (size_t j=0; j<handVels.length(); j++)
         {
-            int k=7.0+j;
+            int k=7+j;
+            printf("setting link %i to pos %g with vel %g\n", k, (*poss)[j], handVels[j]);
             ipos->setRefSpeed(k,handVels[j]);
             ipos->positionMove(k,(*poss)[j]);
         }
@@ -180,7 +184,7 @@ public:
     /***********************************************************/
     bool configure(ResourceFinder &rf)
     {
-        string name=rf.check("name",Value("lookSkin")).asString().c_str();
+        string name=rf.check("name",Value("demoLookSkin")).asString().c_str();
         string robot=rf.check("robot",Value("icub")).asString().c_str();
 
         isRunning=rf.check("autoStart");
@@ -256,14 +260,16 @@ public:
         openHandPoss.resize(9,0.0);
 
         closeHandPoss.resize(9,0.0);
-        closeHandPoss[1]=0.0;   closeHandPoss[2]=80.0;  closeHandPoss[3]=30.0;
-        closeHandPoss[4]=70.0;  closeHandPoss[5]=40.0;  closeHandPoss[6]=45.0;
-        closeHandPoss[7]=40.0;  closeHandPoss[8]=55.0;  closeHandPoss[9]=250.0;
+        closeHandPoss[1]=10.0;  closeHandPoss[2]=40.0;  closeHandPoss[3]=30.0;
+        closeHandPoss[4]=30.0;  closeHandPoss[5]=40.0;
+        closeHandPoss[6]=45.0;  closeHandPoss[7]=40.0;
+        closeHandPoss[8]=250.0;
 
         handVels.resize(9,0.0);
         handVels[1]=20.0;   handVels[2]=60.0;   handVels[3]=30.0;
-        handVels[4]=50.0;   handVels[5]=30.0;   handVels[6]=30.0;
-        handVels[7]=30.0;   handVels[8]=40.0;   handVels[9]=200.0;
+        handVels[4]=50.0;   handVels[5]=50.0;
+        handVels[6]=50.0;   handVels[7]=50.0;
+        handVels[8]=100.0;
 
         touchedSkinPart="";
 
@@ -310,40 +316,43 @@ public:
     {
         for (skinContactList::iterator it=sCL->begin(); it!=sCL->end(); it++)
         {
-            if (it->getPressure()>40)
+            if( it -> getPressure() > SKIN_THRES && (it -> getTaxelList()).size() > MIN_TAXEL_NUMBER )
             {
-                yDebug("CONTACT! Skin part: %s",it->getSkinPartName().c_str());
-
                 ICartesianControl **icart;
-                if ((it->getSkinPartName()=="skin_right_upper_arm" && isRUAenabled) ||
-                    (it->getSkinPartName()=="skin_right_forearm" && isRFAenabled))
+                if ((it->getSkinPartName()=="r_upper_arm" && isRUAenabled) ||
+                    (it->getSkinPartName()=="r_forearm" && isRFAenabled))
                 {
                     icart=&icartR;
                 }
-                else if ((it->getSkinPartName()=="skin_right_hand" && isRHenabled))
+                else if ((it->getSkinPartName()=="r_hand" && isRHenabled))
                 {
-                    touchedSkinPart="skin_right_hand";
                     icart=&icartR;
                 }
-                else if ((it->getSkinPartName()=="skin_left_upper_arm" && isLUAenabled) ||
-                    (it->getSkinPartName()=="skin_left_forearm" && isLFAenabled))
+                else if ((it->getSkinPartName()=="l_upper_arm" && isLUAenabled) ||
+                         (it->getSkinPartName()=="l_forearm" && isLFAenabled))
                 {
                     icart=&icartL;
                 }
-                else if ((it->getSkinPartName()=="skin_left_hand" && isLHenabled))
+                else if ((it->getSkinPartName()=="l_hand" && isLHenabled))
                 {
-                    touchedSkinPart="skin_left_hand";
                     icart=&icartL;
                 }
-                else if (it->getSkinPartName()=="skin_front_torso" && isTenabled)
+                else if (it->getSkinPartName()=="chest" && isTenabled)
                 {
                     x.resize(3,0.0);
                     x[0]=-0.1;
+                    touchedSkinPart=it->getSkinPartName();
                     return true;
                 }
                 else
+                {
+                    touchedSkinPart="";
                     return false;
-                
+                }
+                touchedSkinPart=it->getSkinPartName();
+
+                yDebug("CONTACT! Skin part: %s Activation level: %g",it->getSkinPartName().c_str(), it->getPressure());
+
                 Vector pos,orien;
                 (*icart)->getPose(3+it->getLinkNumber(),pos,orien);
                 Matrix H=axis2dcm(orien);
@@ -375,7 +384,7 @@ public:
     /***********************************************************/
     bool updateModule()
     {
-        printf("State is %i\n",state );
+        // printf("State is %i\n",state );
         LockGuard lg(mutex);
 
         if (isRunning)
@@ -406,10 +415,10 @@ public:
                 igaze->lookAtFixationPoint(targetPos);
                 sendSpeak(speech[Rand::scalar(0,speech.size()-1e-3)]);
 
-                if (touchedSkinPart=="skin_right_hand" || touchedSkinPart=="skin_left_hand")
+                if (touchedSkinPart=="r_hand" || touchedSkinPart=="l_hand")
                 {
                     yDebug("Closing : %s",touchedSkinPart.c_str());
-                    closeHand(touchedSkinPart=="skin_left_hand"?LEFTARM:RIGHTARM);
+                    closeHand(touchedSkinPart=="l_hand"?LEFTARM:RIGHTARM);
                 }
 
                 timeNow=Time::now();
@@ -433,10 +442,10 @@ public:
 
                 igaze->lookAtAbsAngles(Vector(3,0.0));
 
-                if (touchedSkinPart=="skin_right_hand" || touchedSkinPart=="skin_left_hand")
+                if (touchedSkinPart=="r_hand" || touchedSkinPart=="l_hand")
                 {
                     yDebug("Opening: %s",touchedSkinPart.c_str());
-                    openHand(touchedSkinPart=="skin_left_hand"?LEFTARM:RIGHTARM);
+                    openHand(touchedSkinPart=="l_hand"?LEFTARM:RIGHTARM);
                 }
 
                 state=STATE_IDLE;
