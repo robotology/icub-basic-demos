@@ -216,9 +216,8 @@ Windows, Linux
 */
 
 #include <string>
+#include <cmath>
 #include <algorithm>
-
-#include <gsl/gsl_math.h>
 
 #include <yarp/os/all.h>
 #include <yarp/dev/all.h>
@@ -644,7 +643,7 @@ protected:
         else
             return;
 
-        fprintf(stdout,"*** Initializing %s controller ...\n",type.c_str());
+        yInfo("*** Initializing %s controller ...",type.c_str());
 
         icart->setTrackingMode(false);
         icart->setTrajTime(trajTime);
@@ -666,17 +665,14 @@ protected:
                 if (lim(j,2)!=0.0)
                     max=lim(j,3);
 
-                icart->setLimits(j,min,max);
-                fprintf(stdout,"jnt #%d in [%g, %g] deg\n",(int)j,min,max);
+                bool ok=icart->setLimits(j,min,max);
+                yInfo("jnt #%d in [%g, %g] deg => %s",(int)j,min,max,ok?"ok":"failed");
             }
         }
 
         icart->setDOF(dof,dof);
 
-        fprintf(stdout,"DOF's=( ");
-        for (size_t i=0; i<dof.length(); i++)
-            fprintf(stdout,"%s ",dof[i]>0.0?"on":"off");
-        fprintf(stdout,")\n");
+        yInfo("DOF=(%s)",dof.toString(0,1).c_str());
     }
 
     void getSensorData()
@@ -724,7 +720,7 @@ protected:
                     fp[2]=targetPosNew->get(2).asDouble();
                     fp[3]=1.0;
 
-                    if (!gsl_isnan(fp[0]) && !gsl_isnan(fp[1]) && !gsl_isnan(fp[2]))
+                    if ((isnan(fp[0])!=0) && (isnan(fp[1])!=0) && (isnan(fp[2])!=0))
                     {
                         Vector x,o;
                         if (eyeUsed=="left")
@@ -753,7 +749,7 @@ protected:
             {
                 resetTargetBall();
                 breathersHandler(false);
-                fprintf(stdout,"--- Got target => REACHING\n");
+                yInfo("--- Got target => REACHING");
 
                 wentHome=false;
                 state=STATE_REACH;
@@ -763,7 +759,7 @@ protected:
         else if (((state==STATE_IDLE) || (state==STATE_REACH)) &&
                  ((Time::now()-idleTimer)>idleTmo) && !wentHome)
         {
-            fprintf(stdout,"--- Target timeout => IDLE\n");
+            yInfo("--- Target timeout => IDLE");
 
             steerHeadToHome();
             stopControl();
@@ -875,7 +871,7 @@ protected:
         homeHead[1]=0.0;
         homeHead[2]=0.3;
 
-        fprintf(stdout,"*** Homing head\n");
+        yInfo("*** Homing head");
 
         gazeCtrl->lookAtFixationPoint(homeHead);
     }
@@ -888,7 +884,7 @@ protected:
         Vector velTorso(3);
         velTorso=10.0;
 
-        fprintf(stdout,"*** Homing torso\n");
+        yInfo("*** Homing torso");
 
         VectorOf<int> modes(3);
         modes[0]=modes[1]=modes[2]=VOCAB_CM_POSITION;
@@ -900,7 +896,7 @@ protected:
 
     void checkTorsoHome(const double timeout=10.0)
     {
-        fprintf(stdout,"*** Checking torso home position... ");
+        yInfo("*** Checking torso home position... ");
 
         bool done=false;
         double t0=Time::now();
@@ -910,7 +906,7 @@ protected:
             Time::delay(0.1);
         }
 
-        fprintf(stdout,"*** done\n");
+        yInfo("*** done");
     }
 
     void steerArmToHome(const int sel=USEDARM)
@@ -948,7 +944,7 @@ protected:
         else
             return;
 
-        fprintf(stdout,"*** Homing %s\n",type.c_str());
+        yInfo("*** Homing %s",type.c_str());
         for (size_t j=0; j<homeVels.length(); j++)
             imode->setControlMode(j,VOCAB_CM_POSITION);
 
@@ -989,7 +985,7 @@ protected:
         else
             return;
 
-        fprintf(stdout,"*** Checking %s home position... ",type.c_str());
+        yInfo("*** Checking %s home position... ",type.c_str());
 
         bool done=false;
         double t0=Time::now();
@@ -999,7 +995,7 @@ protected:
             Time::delay(0.1);
         }
 
-        fprintf(stdout,"*** done\n");
+        yInfo("*** done");
     }
 
     void stopArmJoints(const int sel=USEDARM)
@@ -1040,7 +1036,7 @@ protected:
         else
             return;
 
-        fprintf(stdout,"*** Stopping %s joints\n",type.c_str());
+        yInfo("*** Stopping %s joints",type.c_str());
         for (size_t j=0; j<homeVels.length(); j++)
             imode->setControlMode(j,VOCAB_CM_POSITION);
 
@@ -1090,7 +1086,7 @@ protected:
         else
             type=armSel==LEFTARM?"left_hand":"right_hand";
 
-        fprintf(stdout,"*** %s %s\n",actionStr.c_str(),type.c_str());
+        yInfo("*** %s %s",actionStr.c_str(),type.c_str());
         for (size_t j=0; j<handVels.length(); j++)
             imode->setControlMode(homeVels.length()+j,VOCAB_CM_POSITION);
 
@@ -1122,7 +1118,7 @@ protected:
                 if ((armSel==LEFTARM) && (targetPos[1]>hystThres) ||
                     (armSel==RIGHTARM) && (targetPos[1]<-hystThres))
                 {
-                    fprintf(stdout,"*** Change arm event triggered\n");
+                    yInfo("*** Change arm event triggered");
                     state=STATE_CHECKMOTIONDONE;
                     latchTimer=Time::now();
                 }
@@ -1135,7 +1131,7 @@ protected:
                 {
                     if (Time::now()-latchTimer>3.0*trajTime)
                     {
-                        fprintf(stdout,"--- Timeout elapsed => FORCE STOP and CHANGE ARM\n");
+                        yInfo("--- Timeout elapsed => FORCE STOP and CHANGE ARM");
                         done=true;
                     }
                 }
@@ -1173,7 +1169,7 @@ protected:
                         armHandOrien=&rightArmHandOrien;
                     }
 
-                    fprintf(stdout,"*** Using %s\n",armSel==LEFTARM?"left_arm":"right_arm");
+                    yInfo("*** Using %s",armSel==LEFTARM?"left_arm":"right_arm");
                     stopArmJoints();
                     state=STATE_REACH;
                 }
@@ -1212,9 +1208,9 @@ protected:
                     limitRange(x);
                     x=R*x;
 
-                    fprintf(stdout,"--- Hand in position AND Target still => GRASPING\n");
-                    fprintf(stdout,"--- Target in %s\n",targetPos.toString().c_str());
-                    fprintf(stdout,"*** Grasping x=%s\n",x.toString().c_str());
+                    yInfo("--- Hand in position AND Target still => GRASPING");
+                    yInfo("--- Target in %s",targetPos.toString().c_str());
+                    yInfo("*** Grasping x=%s",x.toString().c_str());
 
                     //speak something
                     if(useSpeech) sendSpeak(speech_grasp[(int)Rand::scalar(0,speech_grasp.size()-1e-3)]);
@@ -1239,7 +1235,7 @@ protected:
             {
                 if ((Time::now()-latchTimer)>releaseTmo)
                 {
-                    fprintf(stdout,"--- Timeout elapsed => RELEASING\n");
+                    yInfo("--- Timeout elapsed => RELEASING");
 
                     openHand();
 
@@ -1258,7 +1254,7 @@ protected:
             {
                 if ((Time::now()-latchTimer)>idleTmo)
                 {
-                    fprintf(stdout,"--- Timeout elapsed => IDLING\n");
+                    yInfo("--- Timeout elapsed => IDLING");
                     deleteGuiTarget();
                     state=STATE_IDLE;
                 }
@@ -1324,7 +1320,7 @@ protected:
     {
         if (useLeftArm || useRightArm)
         {
-            fprintf(stdout,"stopping control\n");
+            yInfo("stopping control");
             cartArm->stopControl();
             Time::delay(0.1);
         }
@@ -1776,8 +1772,8 @@ public:
             }
             else
             {
-                printf("ERROR: no speech group has been found even though speech flag option was true!\n");
-                printf("WARNING: setting speech flag option to false.\n");
+                yWarning("no speech group has been found even though speech flag option was true!");
+                yWarning("setting speech flag option to false.");
                 useSpeech = false;
             }
         }
@@ -1948,8 +1944,8 @@ public:
                     if (hasValue.length()>35)
                         hasValue=hasValue.substr(0,30)+" ...";
 
-                    fprintf(stdout,"Checking \"%s\": = %s (%s)\n",key.c_str(),
-                            hasValue.c_str(),comment.check(key.c_str(),Value("")).toString().c_str());
+                    yInfo("Checking \"%s\": = %s (%s)",key.c_str(),
+                          hasValue.c_str(),comment.check(key.c_str(),Value("")).toString().c_str());
                 }
                 else
                 {
@@ -1971,8 +1967,8 @@ public:
                         defString+=")";
                     }
 
-                    fprintf(stdout,"Checking \"%s\": %s%s\n",key.c_str(),
-                            comment.check(key.c_str(),Value("")).toString().c_str(),defString.c_str());
+                    yInfo("Checking \"%s\": %s%s",key.c_str(),
+                          comment.check(key.c_str(),Value("")).toString().c_str(),defString.c_str());
                 }
             }
         }
@@ -1985,7 +1981,7 @@ int main(int argc, char *argv[])
     Network yarp;
     if (!yarp.checkNetwork())
     {
-        fprintf(stdout,"YARP server not available!\n");
+        yError("YARP server not available!");
         return 1;
     }
 
