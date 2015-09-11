@@ -8,7 +8,7 @@ set(BUILD_BUNDLE ON)
 
 option(BUILD_FORCECONTROL "Build Force Control Demo (GTK is required)" OFF)
 option(BUILD_FORCEIMITATION "Build Force Imitation Demo" ON)
-option(BUILD_REDBALL "Build Red-Ball Demo" ON)
+option(BUILD_REDBALL "Build Red-Ball Demo (OpenCV > 2.0 is required)" ON)
 option(BUILD_YOGA "Build Yoga Demo" ON)
 
 find_package(ICUBcontrib REQUIRED)
