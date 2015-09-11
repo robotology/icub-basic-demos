@@ -660,10 +660,10 @@ protected:
                 double min, max;
                 icart->getLimits(j,&min,&max);
 
-                if (lim(j,0))
+                if (lim(j,0)!=0.0)
                     min=lim(j,1);
 
-                if (lim(j,2))
+                if (lim(j,2)!=0.0)
                     max=lim(j,3);
 
                 icart->setLimits(j,min,max);
