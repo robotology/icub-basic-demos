@@ -720,7 +720,7 @@ protected:
                     fp[2]=targetPosNew->get(2).asDouble();
                     fp[3]=1.0;
 
-                    if ((isnan(fp[0])!=0) && (isnan(fp[1])!=0) && (isnan(fp[2])!=0))
+                    if ((isnan(fp[0])==0) && (isnan(fp[1])==0) && (isnan(fp[2])==0))
                     {
                         Vector x,o;
                         if (eyeUsed=="left")
