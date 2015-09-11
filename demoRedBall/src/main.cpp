@@ -655,7 +655,7 @@ protected:
         {
             dof[j]=sw[j];
 
-            if (sw[j] && (lim(j,0) || lim(j,2)))
+            if ((sw[j]!=0.0) && ((lim(j,0)!=0.0) || (lim(j,2)!=0.0)))
             {
                 double min, max;
                 icart->getLimits(j,&min,&max);
