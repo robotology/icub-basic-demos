@@ -27,6 +27,8 @@ endif()
 
 if (BUILD_REDBALL)
     add_subdirectory(demoRedBall)
+    add_subdirectory(pf3dTracker)
+    add_subdirectory(pf3dBottomup)
 endif()
 
 if (BUILD_YOGA)

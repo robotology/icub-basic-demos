@@ -757,7 +757,7 @@ protected:
 
                 wentHome=false;
                 state=STATE_REACH;
-                if(useSpeech) sendSpeak(speech_reach[Rand::scalar(0,speech_reach.size()-1e-3)]);
+                if(useSpeech) sendSpeak(speech_reach[(int)Rand::scalar(0,speech_reach.size()-1e-3)]);
             }
         }
         else if (((state==STATE_IDLE) || (state==STATE_REACH)) &&
@@ -773,7 +773,7 @@ protected:
 
             wentHome=true;
             deleteGuiTarget();
-            if(useSpeech) sendSpeak(speech_idle[Rand::scalar(0,speech_idle.size()-1e-3)]);
+            if(useSpeech) sendSpeak(speech_idle[(int)Rand::scalar(0,speech_idle.size()-1e-3)]);
             state=STATE_IDLE;
         }
     }
@@ -1217,7 +1217,7 @@ protected:
                     fprintf(stdout,"*** Grasping x=%s\n",x.toString().c_str());
 
                     //speak something
-                    if(useSpeech) sendSpeak(speech_grasp[Rand::scalar(0,speech_grasp.size()-1e-3)]);
+                    if(useSpeech) sendSpeak(speech_grasp[(int)Rand::scalar(0,speech_grasp.size()-1e-3)]);
 
                     cartArm->goToPoseSync(x,*armHandOrien);
                     closeHand();
