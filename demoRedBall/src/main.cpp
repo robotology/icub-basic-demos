@@ -310,6 +310,7 @@ protected:
     bool useSpeech;
     bool useLeftArm;
     bool useRightArm;
+    bool useTorso;
     int  armSel;
 
     PolyDriver *drvTorso, *drvHead, *drvLeftArm, *drvRightArm;
@@ -678,10 +679,11 @@ protected:
     void getSensorData()
     {
         bool newTarget=false;
-
-        if (encTorso->getEncoders(torso.data()))
-            R=rotx(torso[1])*roty(-torso[2])*rotz(-torso[0]);
-
+        if(useTorso)
+        {
+            if (encTorso->getEncoders(torso.data()))
+                R=rotx(torso[1])*roty(-torso[2])*rotz(-torso[0]);
+        }
         encHead->getEncoders(head.data());
 
         if (useNetwork)
@@ -878,6 +880,9 @@ protected:
 
     void steerTorsoToHome()
     {
+        if(!useTorso)
+            return;
+
         Vector homeTorso(3);
         homeTorso.zero();
 
@@ -896,6 +901,9 @@ protected:
 
     void checkTorsoHome(const double timeout=10.0)
     {
+        if(!useTorso)
+            return;
+
         yInfo("*** Checking torso home position... ");
 
         bool done=false;
@@ -1459,6 +1467,7 @@ public:
         robot=bGeneral.check("robot",Value("icub"),"Getting robot name").asString().c_str();
         useLeftArm=bGeneral.check("left_arm",Value("on"),"Getting left arm use flag").asString()=="on"?true:false;
         useRightArm=bGeneral.check("right_arm",Value("on"),"Getting right arm use flag").asString()=="on"?true:false;
+        useTorso=bGeneral.check("torso",Value("on"),"Getting torso use flag").asString()=="on"?true:false;
         useSpeech=bGeneral.check("speech",Value("on"),"Getting speech use flag").asString()=="on"?true:false;
         useNetwork=bGeneral.check("use_network",Value("off"),"Getting network enable").asString()=="on"?true:false;
         trajTime=bGeneral.check("traj_time",Value(2.0),"Getting trajectory time").asDouble();
@@ -1466,6 +1475,9 @@ public:
         eyeUsed=bGeneral.check("eye",Value("left"),"Getting the used eye").asString().c_str();
         idleTmo=bGeneral.check("idle_tmo",Value(1e10),"Getting idle timeout").asDouble();
         setRate(bGeneral.check("thread_period",Value(DEFAULT_THR_PER),"Getting thread period [ms]").asInt());
+
+        if(!useTorso)
+            printf("I'm not using torso");
 
         // torso part
         Bottle &bTorso=rf.findGroup("torso");
@@ -1571,11 +1583,14 @@ public:
         optRightArm.put("remote",(fwslash+robot+"/right_arm").c_str());
         optRightArm.put("local",(name+"/right_arm").c_str());
 
-        drvTorso=new PolyDriver;
-        if (!drvTorso->open(optTorso))
+        if(useTorso)
         {
-            close();
-            return false;
+            drvTorso=new PolyDriver;
+            if (!drvTorso->open(optTorso))
+            {
+                close();
+                return false;
+            }
         }
 
         drvHead=new PolyDriver;
@@ -1683,9 +1698,18 @@ public:
         }
 
         // open views
-        drvTorso->view(modeTorso);
-        drvTorso->view(encTorso);
-        drvTorso->view(posTorso);
+        if(useTorso)
+        {
+            drvTorso->view(modeTorso);
+            drvTorso->view(encTorso);
+            drvTorso->view(posTorso);
+        }
+        else
+        {
+            modeTorso=NULL;
+            encTorso=NULL;
+            posTorso=NULL;
+        }
         drvHead->view(encHead);
         drvGazeCtrl->view(gazeCtrl);
 
@@ -1733,10 +1757,12 @@ public:
         }
 
         // init
-        int torsoAxes;
-        encTorso->getAxes(&torsoAxes);
-        torso.resize(torsoAxes,0.0);
-
+        if(useTorso)
+        {
+            int torsoAxes;
+            encTorso->getAxes(&torsoAxes);
+            torso.resize(torsoAxes,0.0);
+        }
         int headAxes;
         encHead->getAxes(&headAxes);
         head.resize(headAxes,0.0);
@@ -1744,9 +1770,11 @@ public:
         targetPos.resize(3,0.0);
         R=Rx=Ry=Rz=eye(3,3);
 
-        initCartesianCtrl(torsoSwitch,torsoLimits,LEFTARM);
-        initCartesianCtrl(torsoSwitch,torsoLimits,RIGHTARM);
-
+        if(useTorso)
+        {
+            initCartesianCtrl(torsoSwitch,torsoLimits,LEFTARM);
+            initCartesianCtrl(torsoSwitch,torsoLimits,RIGHTARM);
+        }
         // steer the robot to the initial configuration
         steerHeadToHome();
         stopControl();
