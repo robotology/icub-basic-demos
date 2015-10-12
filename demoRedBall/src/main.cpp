@@ -679,11 +679,9 @@ protected:
     void getSensorData()
     {
         bool newTarget=false;
-        if(useTorso)
-        {
+        if (useTorso)
             if (encTorso->getEncoders(torso.data()))
                 R=rotx(torso[1])*roty(-torso[2])*rotz(-torso[0]);
-        }
         encHead->getEncoders(head.data());
 
         if (useNetwork)
@@ -880,7 +878,7 @@ protected:
 
     void steerTorsoToHome()
     {
-        if(!useTorso)
+        if (!useTorso)
             return;
 
         Vector homeTorso(3);
@@ -901,7 +899,7 @@ protected:
 
     void checkTorsoHome(const double timeout=10.0)
     {
-        if(!useTorso)
+        if (!useTorso)
             return;
 
         yInfo("*** Checking torso home position... ");
@@ -1476,8 +1474,12 @@ public:
         idleTmo=bGeneral.check("idle_tmo",Value(1e10),"Getting idle timeout").asDouble();
         setRate(bGeneral.check("thread_period",Value(DEFAULT_THR_PER),"Getting thread period [ms]").asInt());
 
-        if(!useTorso)
-            printf("I'm not using torso");
+        if (!useTorso)
+        {
+            yWarning("Part \"torso\" is not employed!");
+            yWarning("Disabling arms too!");
+            useLeftArm=useRightArm=false;
+        }
 
         // torso part
         Bottle &bTorso=rf.findGroup("torso");
@@ -1583,7 +1585,7 @@ public:
         optRightArm.put("remote",(fwslash+robot+"/right_arm").c_str());
         optRightArm.put("local",(name+"/right_arm").c_str());
 
-        if(useTorso)
+        if (useTorso)
         {
             drvTorso=new PolyDriver;
             if (!drvTorso->open(optTorso))
@@ -1698,7 +1700,7 @@ public:
         }
 
         // open views
-        if(useTorso)
+        if (useTorso)
         {
             drvTorso->view(modeTorso);
             drvTorso->view(encTorso);
@@ -1710,6 +1712,7 @@ public:
             encTorso=NULL;
             posTorso=NULL;
         }
+
         drvHead->view(encHead);
         drvGazeCtrl->view(gazeCtrl);
 
@@ -1757,12 +1760,13 @@ public:
         }
 
         // init
-        if(useTorso)
+        if (useTorso)
         {
             int torsoAxes;
             encTorso->getAxes(&torsoAxes);
             torso.resize(torsoAxes,0.0);
         }
+
         int headAxes;
         encHead->getAxes(&headAxes);
         head.resize(headAxes,0.0);
@@ -1770,11 +1774,12 @@ public:
         targetPos.resize(3,0.0);
         R=Rx=Ry=Rz=eye(3,3);
 
-        if(useTorso)
+        if (useTorso)
         {
             initCartesianCtrl(torsoSwitch,torsoLimits,LEFTARM);
             initCartesianCtrl(torsoSwitch,torsoLimits,RIGHTARM);
         }
+
         // steer the robot to the initial configuration
         steerHeadToHome();
         stopControl();
