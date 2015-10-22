@@ -45,7 +45,6 @@ install:
   - cd icub-basic-demos
 
 before_script:
-  - cd main
   - mkdir build
   - cd build
   - cmake -DCMAKE_BUILD_TYPE=Release ..
