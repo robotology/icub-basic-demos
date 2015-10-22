@@ -24,6 +24,9 @@ cmake the project; for the latter method, just cmake from the root directory.
 
 Online documentation is available here: [http://robotology.github.com/icub-basic-demos](http://robotology.github.com/icub-basic-demos).
 
+#### CI Build
+- Linux: [![Build Status](https://travis-ci.org/robotology/icub-basic-demos.svg?branch=master)](https://travis-ci.org/robotology/icub-basic-demos)
+
 ## License
 
 Material included here is Copyright of _iCub Facility - Istituto Italiano di Tecnologia_ and is released under the terms of the GPL v2.0 or later. See the file LICENSE for details.
