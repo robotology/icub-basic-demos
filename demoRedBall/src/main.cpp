@@ -523,8 +523,9 @@ protected:
         }
     }
 
-    void getHomeOptions(Bottle &b, Vector &poss, Vector &vels)
+    bool getHomeOptions(Bottle &b, Vector &poss, Vector &vels)
     {
+        bool ret = true;
         if (b.check("poss","Getting home poss"))
         {
             Bottle &grp=b.findGroup("poss");
@@ -533,6 +534,11 @@ protected:
 
             for (int i=0; i<len; i++)
                 poss[i]=grp.get(1+i).asDouble();
+        }
+        else
+        {
+            yError("Missing 'poss' parameter");
+            ret = false;
         }
 
         if (b.check("vels","Getting home vels"))
@@ -544,10 +550,17 @@ protected:
             for (int i=0; i<len; i++)
                 vels[i]=grp.get(1+i).asDouble();
         }
+        else
+        {
+            yError("Missing 'vels' parameter");
+            ret = false;
+        }
+        return ret;
     }
 
-    void getGraspOptions(Bottle &b, Vector &openPoss, Vector &closePoss, Vector &vels)
+    bool getGraspOptions(Bottle &b, Vector &openPoss, Vector &closePoss, Vector &vels)
     {
+        bool ret = true;
         if (b.check("open_hand","Getting openHand poss"))
         {
             Bottle &grp=b.findGroup("open_hand");
@@ -556,6 +569,11 @@ protected:
 
             for (int i=0; i<len; i++)
                 openPoss[i]=grp.get(1+i).asDouble();
+        }
+        else
+        {
+            yError("Missing 'open_hand' parameter");
+            ret = false;
         }
 
         if (b.check("close_hand","Getting closeHand poss"))
@@ -567,6 +585,11 @@ protected:
             for (int i=0; i<len; i++)
                 closePoss[i]=grp.get(1+i).asDouble();
         }
+        else
+        {
+            yError("Missing 'close_hand' parameter");
+            ret = false;
+        }
 
         if (b.check("vels_hand","Getting hand vels"))
         {
@@ -577,6 +600,12 @@ protected:
             for (int i=0; i<len; i++)
                 vels[i]=grp.get(1+i).asDouble();
         }
+        else
+        {
+            yError("Missing 'vels_hand' parameter");
+            ret = false;
+        }
+        return ret;
     }
 
     void getSpeechOptions(Bottle &b, std::vector<string> &grasp,
@@ -1522,7 +1551,7 @@ public:
         Bottle &bHome=rf.findGroup("home_arm");
         bHome.setMonitor(rf.getMonitor());
         homePoss.resize(7,0.0); homeVels.resize(7,0.0);
-        getHomeOptions(bHome,homePoss,homeVels);
+        if (!getHomeOptions(bHome, homePoss, homeVels)) { yError ("Error in parameters section 'home_arm'"); return false; }
 
         // arm_selection part
         Bottle &bArmSel=rf.findGroup("arm_selection");
@@ -1539,7 +1568,7 @@ public:
         openHandPoss.resize(9,0.0); closeHandPoss.resize(9,0.0);
         handVels.resize(9,0.0);
 
-        getGraspOptions(bGrasp,openHandPoss,closeHandPoss,handVels);
+        if(!getGraspOptions(bGrasp, openHandPoss, closeHandPoss, handVels)) { yError ("Error in parameters section 'grasp'"); return false; }
 
         // init network
         if (useNetwork)
