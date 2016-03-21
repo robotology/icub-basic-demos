@@ -70,7 +70,7 @@ the ICartesianControl interface must be available. The
   in order for an eventual TTS module to use them during the demo.
   This feature successfully works with the iSpeak module. The set
   of predefined sentences to be spoken is defined via .ini file.
-- \e /demoRedBall/breather/head:rpc interfaces with the head breather 
+- \e /demoRedBall/breather/head:rpc interfaces with the head breather
   (if available) and disables/enables it according when needed
 - \e /demoRedBall/breather/left_arm:rpc interfaces with the left arm
   breather (if available) and disables/enables it according when needed
@@ -78,7 +78,7 @@ the ICartesianControl interface must be available. The
   breather (if available) and disables/enables it according when needed
 - \e /demoRedBall/blinker:rpc interfaces with the iCubBlinker module
   (if available) and disables/enables it according when needed
-- \e /demoRedBall/lookSkin:rpc interfaces with the lookSkin module 
+- \e /demoRedBall/lookSkin:rpc interfaces with the lookSkin module
   (if available) and disables/enables it according when needed
 - \e /demoRedBall/gui:o sends out info to update target
   within the icub_gui.
@@ -125,6 +125,8 @@ roll off
 yaw on
 
 [left_arm]
+// enable/disable the grasp
+grasp_enable        on
 // the offset [m] to be added to the desired position
 reach_offset        0.0 -0.15 -0.05
 // the offset [m] for grasping
@@ -139,6 +141,7 @@ impedance_stiffness 0.5 0.5 0.5 0.2 0.1
 impedance_damping 60.0 60.0 60.0 20.0 0.0
 
 [right_arm]
+grasp_enable        on
 reach_offset        0.0 0.15 -0.05
 grasp_offset        0.0 0.0 -0.05
 grasp_sigma         0.01 0.01 0.01
@@ -364,6 +367,8 @@ protected:
     Predictor pred;
     bool useNetwork;
     bool wentHome;
+    bool leftGraspEnable;
+    bool rightGraspEnable;
     bool leftArmImpVelMode;
     bool rightArmImpVelMode;
 
@@ -456,10 +461,12 @@ protected:
         }
     }
 
-    void getArmOptions(Bottle &b, Vector &reachOffs, Vector &graspOffs,
-                       Vector &graspSigma, Vector &orien, bool &impVelMode,
-                       Vector &impStiff, Vector &impDamp)
+    void getArmOptions(Bottle &b, bool &graspEnable, Vector &reachOffs,
+                       Vector &graspOffs, Vector &graspSigma, Vector &orien,
+                       bool &impVelMode, Vector &impStiff, Vector &impDamp)
     {
+        graspEnable=b.check("grasp_enable",Value("on"),"Getting arm grasp mode").asString()=="on"?true:false;
+
         if (b.check("reach_offset","Getting reaching offset"))
         {
             Bottle &grp=b.findGroup("reach_offset");
@@ -1540,10 +1547,10 @@ public:
         rightArmJointsStiffness.resize(5,0.0);
         rightArmJointsDamping.resize(5,0.0);
 
-        getArmOptions(bLeftArm,leftArmReachOffs,leftArmGraspOffs,
+        getArmOptions(bLeftArm,leftGraspEnable,leftArmReachOffs,leftArmGraspOffs,
                       leftArmGraspSigma,leftArmHandOrien,leftArmImpVelMode,
                       leftArmJointsStiffness,leftArmJointsDamping);
-        getArmOptions(bRightArm,rightArmReachOffs,rightArmGraspOffs,
+        getArmOptions(bRightArm,rightGraspEnable,rightArmReachOffs,rightArmGraspOffs,
                       rightArmGraspSigma,rightArmHandOrien,rightArmImpVelMode,
                       rightArmJointsStiffness,rightArmJointsDamping);
 
@@ -1850,9 +1857,15 @@ public:
         commandHead();
         selectArm();
         doReach();
-        doGrasp();
-        doRelease();
-        doWait();
+
+        if (((armSel==LEFTARM)  && leftGraspEnable) ||
+            ((armSel==RIGHTARM) && rightGraspEnable))
+        {
+            doGrasp();
+            doRelease();
+            doWait();
+        }
+
         commandFace();
     }
 
