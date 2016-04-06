@@ -48,8 +48,7 @@
  *
  */
 
-#include "cv.h"
-#include "cxmisc.h"
+#include <opencv2/opencv.hpp>
 
 #ifndef __BEGIN__
 #define __BEGIN__ __CV_BEGIN__
@@ -104,7 +103,7 @@ CvFFillSegment;
 
 #define DIFF_FLT_C1(p1,p2) (fabs((p1)[0] - (p2)[0] + d_lw[0]) <= interval[0])
 
-static CvStatus
+static void
 icvFloodFill_Grad_32f_CnIR2( float* pImage, int step, uchar* pMask, int maskStep,
                            CvSize /*roi*/, CvPoint seed, float* _newVal, float* _d_lw,
                            float* _d_up, CvConnectedComp* region, int flags,
@@ -132,12 +131,12 @@ icvFloodFill_Grad_32f_CnIR2( float* pImage, int step, uchar* pMask, int maskStep
     double varAdaptK=0.5; //sauvola's weight on the standard deviance component (0.2<=k<=0.5)
     double varAdaptKa=1.5; //alex's weight on the standard deviance component (ka~1)
     double varAdapt_aux=0;
-    if( cn!=1 ) return CV_OK;
+    if( cn!=1 ) return;
     //--end
 
     L = R = seed.x;
     if( mask[L] )
-        return CV_OK;
+        return;
 
     mask[L] = newMaskVal;
 
@@ -366,16 +365,14 @@ icvFloodFill_Grad_32f_CnIR2( float* pImage, int step, uchar* pMask, int maskStep
 //    printf("Tf=%.4f, avg=%.4f, sigma=%.4f\n", interval[0], varAdaptA/varAdaptN, sqrt(varAdaptB/varAdaptN-(varAdaptA*varAdaptA/(varAdaptN*varAdaptN))) );
 //    printf("----------end floodfill\n");
 
-    return CV_NO_ERR;
+    return;
 }
 
-
-typedef  CvStatus (CV_CDECL* CvFloodFillFunc2)(
+typedef void (*CvFloodFillFunc2)(
                void* img, int step, CvSize size, CvPoint seed, void* newval,
                CvConnectedComp* comp, int flags, void* buffer, int buffer_size, int cn );
 
-
-typedef  CvStatus (CV_CDECL* CvFloodFillGradFunc2)(
+typedef void (*CvFloodFillGradFunc2)(
                void* img, int step, uchar* mask, int maskStep, CvSize size,
                CvPoint seed, void* newval, void* d_lw, void* d_up, void* ccomp,
                int flags, void* buffer, int buffer_size, int cn );
@@ -448,8 +445,6 @@ cvFloodFill2( CvArr* arr, CvPoint seed_point,
         is_simple &= fabs(lo_diff.val[i]) < DBL_EPSILON && fabs(up_diff.val[i]) < DBL_EPSILON;
     }
 
-    size = cvGetMatSize( img );
-
     if( (unsigned)seed_point.x >= (unsigned)size.width ||
         (unsigned)seed_point.y >= (unsigned)size.height )
         CV_ERROR( CV_StsOutOfRange, "Seed point is outside of image" );
@@ -472,9 +467,9 @@ cvFloodFill2( CvArr* arr, CvPoint seed_point,
                 break;
         if( i < elem_size )
         {
-            IPPI_CALL( func( img->data.ptr, img->step, size,
+            func( img->data.ptr, img->step, size,
                              seed_point, &nv_buf, comp, flags,
-                             buffer, buffer_size, cn ));
+                             buffer, buffer_size, cn );
             EXIT;
         }
     }
@@ -518,10 +513,8 @@ cvFloodFill2( CvArr* arr, CvPoint seed_point,
         if( depth == CV_8U )
             for( i = 0; i < cn; i++ )
             {
-                int t = cvFloor(lo_diff.val[i]);
-                ld_buf.b[i] = CV_CAST_8U(t);
-                t = cvFloor(up_diff.val[i]);
-                ud_buf.b[i] = CV_CAST_8U(t);
+                ld_buf.b[i] = cv::saturate_cast<uchar>(cvFloor(lo_diff.val[i]));
+                ud_buf.b[i] = cv::saturate_cast<uchar>(cvFloor(up_diff.val[i]));
             }
         else
             for( i = 0; i < cn; i++ )
@@ -530,9 +523,9 @@ cvFloodFill2( CvArr* arr, CvPoint seed_point,
                 ud_buf.f[i] = (float)up_diff.val[i];
             }
 
-        IPPI_CALL( func( img->data.ptr, img->step, mask->data.ptr, mask->step,
+        func( img->data.ptr, img->step, mask->data.ptr, mask->step,
                          size, seed_point, &nv_buf, ld_buf.f, ud_buf.f,
-                         comp, flags, buffer, buffer_size, cn ));
+                         comp, flags, buffer, buffer_size, cn );
     }
 
     __END__;
@@ -540,4 +533,3 @@ cvFloodFill2( CvArr* arr, CvPoint seed_point,
     cvFree( &buffer );
     cvReleaseMat( &tempMask );
 }
-
