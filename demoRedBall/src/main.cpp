@@ -734,9 +734,7 @@ protected:
                     gazeCtrl->getRightEyePose(x,o);
 
                 Matrix T=axis2dcm(o);
-                T(0,3)=x[0];
-                T(1,3)=x[1];
-                T(2,3)=x[2];
+                T.setSubcol(x,0,3);
 
                 Vector netout=pred.predict(head,imdTargetLeft,imdTargetRight);
                 netout.push_back(1.0);
@@ -765,9 +763,7 @@ protected:
                             gazeCtrl->getRightEyePose(x,o);
 
                         Matrix T=axis2dcm(o);
-                        T(0,3)=x[0];
-                        T(1,3)=x[1];
-                        T(2,3)=x[2];
+                        T.setSubcol(x,0,3);
 
                         targetPos=T*fp;
                         targetPos.pop_back();
