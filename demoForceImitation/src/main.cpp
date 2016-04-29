@@ -98,8 +98,8 @@ class CtrlThread: public yarp::os::RateThread
         {
             double tmp_pos=0.0;
             robot->ienc[RIGHT_ARM]->getEncoder(i,&tmp_pos);
-            robot->icmd[LEFT_ARM]->setPositionMode(i);
-            robot->icmd[RIGHT_ARM]->setPositionMode(i);
+            robot->icmd[LEFT_ARM]->setControlMode(i, VOCAB_CM_POSITION);
+            robot->icmd[RIGHT_ARM]->setControlMode(i, VOCAB_CM_POSITION);
             robot->iint[LEFT_ARM]->setInteractionMode(i,VOCAB_IM_STIFF);
             robot->iint[RIGHT_ARM]->setInteractionMode(i,VOCAB_IM_STIFF);
             robot->ipos[LEFT_ARM]->setRefSpeed(i,10);
@@ -211,9 +211,8 @@ class CtrlThread: public yarp::os::RateThread
         {
             for (int i=jjj; i<5; i++)
             {
-                robot->icmd[LEFT_ARM]->setTorqueMode(i);
-
-                robot->icmd[RIGHT_ARM]->setPositionMode(i);
+                robot->icmd[LEFT_ARM]->setControlMode(i, VOCAB_CM_TORQUE);
+                robot->icmd[RIGHT_ARM]->setControlMode(i, VOCAB_CM_POSITION_DIRECT);
                 if (stiff==false) robot->iint[RIGHT_ARM]->setInteractionMode(i,VOCAB_IM_COMPLIANT);
                 else              robot->iint[RIGHT_ARM]->setInteractionMode(i,VOCAB_IM_STIFF);
             }
@@ -222,10 +221,10 @@ class CtrlThread: public yarp::os::RateThread
         {
             for (int i=jjj; i<5; i++)
             {
-                robot->icmd[LEFT_ARM]->setPositionMode(i);
+                robot->icmd[LEFT_ARM]->setControlMode(i, VOCAB_CM_POSITION_DIRECT);
                 if (stiff==false) robot->iint[LEFT_ARM]->setInteractionMode(i,VOCAB_IM_COMPLIANT);
                 else              robot->iint[LEFT_ARM]->setInteractionMode(i,VOCAB_IM_STIFF);
-                robot->icmd[RIGHT_ARM]->setTorqueMode(i);
+                robot->icmd[RIGHT_ARM]->setControlMode(i, VOCAB_CM_TORQUE);
             }
         }
     }
@@ -246,8 +245,8 @@ class CtrlThread: public yarp::os::RateThread
     {  
         for (int i=0; i<5; i++)
         {
-            robot->icmd[LEFT_ARM] ->setPositionMode(i);
-            robot->icmd[RIGHT_ARM]->setPositionMode(i);
+            robot->icmd[LEFT_ARM] ->setControlMode(i, VOCAB_CM_POSITION);
+            robot->icmd[RIGHT_ARM]->setControlMode(i, VOCAB_CM_POSITION);
             robot->iint[LEFT_ARM] ->setInteractionMode(i,VOCAB_IM_STIFF);
             robot->iint[RIGHT_ARM]->setInteractionMode(i,VOCAB_IM_STIFF);
         }
