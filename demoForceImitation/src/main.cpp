@@ -78,7 +78,7 @@ class CtrlThread: public yarp::os::RateThread
 
         if (autoconnect)
         {
-            Network::connect("/armSkinDriftComp/skin_events:o","/demoForceImitation/skin_contacs:i","tcp",false);
+            Network::connect("/skinManager/skin_events:o","/demoForceImitation/skin_contacs:i","tcp",false);
         }
         
         robot->iimp[LEFT_ARM]->setImpedance(0,0.2,0.02);
