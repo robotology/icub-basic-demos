@@ -22,9 +22,9 @@
         </module>
 
         <module>
-                <name>demoRedBall</name>
-                <parameters>--from config_Stereo.ini</parameters>
-                <node>pwrNode3</node>
+            <name>demoRedBall</name>
+            <parameters>--general::use_network on</parameters>
+            <node>pwrNode3</node>
         </module>
   
         <module>
