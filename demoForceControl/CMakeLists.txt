@@ -2,7 +2,7 @@
 # Authors: Marco Randazzo
 # CopyPolicy: Released under the terms of the GNU GPL v2.0.
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.11)
 set(PROJECTNAME demoForceControl)
 project(${PROJECTNAME})
 
@@ -13,35 +13,41 @@ list(APPEND CMAKE_MODULE_PATH ${YARP_MODULE_PATH}
                               ${ICUB_MODULE_PATH}
                               ${ICUBCONTRIB_MODULE_PATH})
 
-find_package(GTK2 COMPONENTS gtk gtkmm REQUIRED)
-if(WIN32 AND GTK2_FOUND)
-    list(REMOVE_ITEM GTK2_LIBRARIES ${FREETYPE_LIBRARY} ${GTK2_PANGOXFT_LIBRARY})
-endif()
+find_package(Qt5 COMPONENTS Core Widgets Gui REQUIRED)
+
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_AUTOMOC ON)
+
+file(GLOB demoForceControl_SRCS src/*.cpp)
+file(GLOB demoForceControl_HDRS src/*.h)
+file(GLOB demoForceControl_QRC_FILES src/*.qrc)
+file(GLOB demoForceControl_UI_FILES src/*.ui)
+  
+qt5_add_resources(demoForceControl_QRC_GEN_SRCS ${demoForceControl_QRC_FILES})
+qt5_wrap_ui(demoForceControl_UI_GEN_SRCS ${demoForceControl_UI_FILES})
 
 include(YarpInstallationHelpers)
 include(ICUBcontribOptions)
 include(ICUBcontribHelpers)
 icubcontrib_set_default_prefix()
 
-set(headers src/robot_interfaces.h)
-set(sources src/robot_interfaces.cpp src/main.cpp)
+set(headers src/robot_interfaces.h src/mainwindow.h)
+set(sources src/robot_interfaces.cpp src/main.cpp src/mainwindow.cpp)
 source_group("Header Files" FILES ${headers})
 source_group("Source Files" FILES ${sources})
 
-add_definitions(${GTK_DEFINITIONS})
 
 include_directories(${iCubDev_INCLUDE_DIRS}
                     ${ctrlLib_INCLUDE_DIRS}
-                    ${GtkPlus_INCLUDE_DIRS}
-                    ${GTK2_INCLUDE_DIRS}
                     ${YARP_INCLUDE_DIRS})
 
-add_executable(${PROJECTNAME} ${headers} ${sources})
+add_executable(${PROJECTNAME} WIN32 ${headers} ${sources} ${demoForceControl_UI_GEN_SRCS})
 
 target_link_libraries(${PROJECTNAME} ctrlLib
-                                     ${GtkPlus_LIBRARIES}
-                                     ${GTK2_LIBRARIES}
-                                     ${YARP_LIBRARIES})
+                                     ${YARP_LIBRARIES}
+                                     Qt5::Core
+                                     Qt5::Widgets
+                                     Qt5::Gui)
 
 install(TARGETS ${PROJECTNAME} DESTINATION bin)
 

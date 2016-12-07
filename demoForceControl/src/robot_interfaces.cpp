@@ -38,11 +38,25 @@ robot_interfaces::robot_interfaces()
     }
 }
 
-void robot_interfaces::init(std::string robot)
+robot_interfaces::~robot_interfaces()
+{
+    for (int i = 0; i < 5; i++)
+    {
+        if (dd[i] != 0)
+        {
+            dd[i]->close();
+            delete dd[i];
+            dd[i] = 0;
+        }
+    }
+}
+
+bool robot_interfaces::init(std::string robot)
 {
     std::string part;
     std::string localPort;
     std::string remotePort;
+    bool ok = true;
 
     for (int i=0; i<5; i++)
     {
@@ -66,11 +80,13 @@ void robot_interfaces::init(std::string robot)
         dd[i] = new PolyDriver(options[i]);
         if(!dd[i] || !(dd[i]->isValid()))
         {
-            fprintf(stderr,"Problems instantiating the device driver %d\n", i);
+            yError("Problems instantiating the device driver %d\n", i);
+            delete dd[i];
+            dd[i] = 0;
+            ok = false;
             continue;
         }
 
-        bool ok = true;
         ok = ok & dd[i]->view(ipos[i]);
         ok = ok & dd[i]->view(itrq[i]);
         ok = ok & dd[i]->view(iimp[i]);
@@ -81,6 +97,7 @@ void robot_interfaces::init(std::string robot)
         ok = ok & dd[i]->view(iamp[i]);
         ok = ok & dd[i]->view(iint[i]);
     }
+    return ok;
 }
 
 
