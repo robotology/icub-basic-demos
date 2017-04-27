@@ -13,7 +13,7 @@ This repository bundles a set of basic demos showing some of the iCub capabiliti
 - [YARP](https://github.com/robotology/yarp)
 - [iCub](https://github.com/robotology/icub-main)
 - [icub-contrib-common](https://github.com/robotology/icub-contrib-common)
-- GTK2 (for Force Control demo).
+- Qt5 (for Force Control demo).
 
 ##### Compilation
 Demos can be compiled independently or altogether as a bundle. For the former
