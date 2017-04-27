@@ -46,7 +46,8 @@ class robot_interfaces
     yarp::dev::PolyDriver           *dd[5];
 
     robot_interfaces();
-    void init(std::string robotName="icub");
+    ~robot_interfaces();
+    bool init(std::string robotName);
 };
 
 #endif

@@ -1,0 +1,667 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>872</width>
+    <height>760</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>:/logo.svg</normaloff>:/logo.svg</iconset>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QSplitter" name="splitter">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <widget class="QWidget" name="mainContainer" native="true">
+       <widget class="QGroupBox" name="groupBox">
+        <property name="geometry">
+         <rect>
+          <x>30</x>
+          <y>60</y>
+          <width>151</width>
+          <height>201</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string>Left Arm</string>
+        </property>
+        <property name="flat">
+         <bool>false</bool>
+        </property>
+        <widget class="QRadioButton" name="radioButton">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>30</y>
+           <width>111</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>position (stiff)</string>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="radioButton_5">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>150</y>
+           <width>95</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>hard spring</string>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="radioButton_3">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>90</y>
+           <width>95</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>soft spring</string>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="radioButton_4">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>120</y>
+           <width>121</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>medium spring</string>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="radioButton_2">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>60</y>
+           <width>95</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>zero torque </string>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QGroupBox" name="groupBox_2">
+        <property name="geometry">
+         <rect>
+          <x>190</x>
+          <y>60</y>
+          <width>151</width>
+          <height>201</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string>Right Arm</string>
+        </property>
+        <widget class="QRadioButton" name="radioButton_6">
+         <property name="geometry">
+          <rect>
+           <x>20</x>
+           <y>30</y>
+           <width>111</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>position (stiff)</string>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="radioButton_7">
+         <property name="geometry">
+          <rect>
+           <x>20</x>
+           <y>60</y>
+           <width>95</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>zero torque </string>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="radioButton_8">
+         <property name="geometry">
+          <rect>
+           <x>20</x>
+           <y>120</y>
+           <width>121</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>medium spring</string>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="radioButton_9">
+         <property name="geometry">
+          <rect>
+           <x>20</x>
+           <y>90</y>
+           <width>95</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>soft spring</string>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="radioButton_10">
+         <property name="geometry">
+          <rect>
+           <x>20</x>
+           <y>150</y>
+           <width>95</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>hard spring</string>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QGroupBox" name="groupBox_3">
+        <property name="geometry">
+         <rect>
+          <x>350</x>
+          <y>60</y>
+          <width>151</width>
+          <height>201</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string>Left Leg</string>
+        </property>
+        <widget class="QRadioButton" name="radioButton_11">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>30</y>
+           <width>111</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>position (stiff)</string>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="radioButton_12">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>60</y>
+           <width>95</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>zero torque </string>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="radioButton_13">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>120</y>
+           <width>121</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>medium spring</string>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="radioButton_14">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>90</y>
+           <width>95</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>soft spring</string>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="radioButton_15">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>150</y>
+           <width>95</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>hard spring</string>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QGroupBox" name="groupBox_4">
+        <property name="geometry">
+         <rect>
+          <x>510</x>
+          <y>60</y>
+          <width>151</width>
+          <height>201</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string>Right Leg</string>
+        </property>
+        <widget class="QRadioButton" name="radioButton_16">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>30</y>
+           <width>111</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>position (stiff)</string>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="radioButton_17">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>60</y>
+           <width>95</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>zero torque </string>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="radioButton_18">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>120</y>
+           <width>121</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>medium spring</string>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="radioButton_19">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>90</y>
+           <width>95</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>soft spring</string>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="radioButton_20">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>150</y>
+           <width>95</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>hard spring</string>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QGroupBox" name="groupBox_5">
+        <property name="geometry">
+         <rect>
+          <x>670</x>
+          <y>60</y>
+          <width>151</width>
+          <height>201</height>
+         </rect>
+        </property>
+        <property name="title">
+         <string>Torso (experimental)</string>
+        </property>
+        <widget class="QRadioButton" name="radioButton_21">
+         <property name="geometry">
+          <rect>
+           <x>20</x>
+           <y>30</y>
+           <width>111</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>position (stiff)</string>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="radioButton_22">
+         <property name="geometry">
+          <rect>
+           <x>20</x>
+           <y>60</y>
+           <width>95</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>zero torque </string>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="radioButton_23">
+         <property name="geometry">
+          <rect>
+           <x>20</x>
+           <y>120</y>
+           <width>121</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>medium spring</string>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="radioButton_24">
+         <property name="geometry">
+          <rect>
+           <x>20</x>
+           <y>90</y>
+           <width>95</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>soft spring</string>
+         </property>
+        </widget>
+        <widget class="QRadioButton" name="radioButton_25">
+         <property name="geometry">
+          <rect>
+           <x>20</x>
+           <y>150</y>
+           <width>95</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>hard spring</string>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QFrame" name="frame">
+        <property name="geometry">
+         <rect>
+          <x>30</x>
+          <y>270</y>
+          <width>151</width>
+          <height>431</height>
+         </rect>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::Box</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <widget class="QLabel" name="label1">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>10</y>
+           <width>131</width>
+           <height>411</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <family>Courier New</family>
+           <pointsize>5</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>PART UNAVAILABLE</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QFrame" name="frame_2">
+        <property name="geometry">
+         <rect>
+          <x>190</x>
+          <y>270</y>
+          <width>151</width>
+          <height>431</height>
+         </rect>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::Box</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <widget class="QLabel" name="label2">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>10</y>
+           <width>131</width>
+           <height>411</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <family>Courier New</family>
+           <pointsize>5</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>PART UNAVAILABLE</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QFrame" name="frame_3">
+        <property name="geometry">
+         <rect>
+          <x>350</x>
+          <y>270</y>
+          <width>151</width>
+          <height>431</height>
+         </rect>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::Box</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <widget class="QLabel" name="label3">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>10</y>
+           <width>131</width>
+           <height>411</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <family>Courier New</family>
+           <pointsize>5</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>PART UNAVAILABLE</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QFrame" name="frame_4">
+        <property name="geometry">
+         <rect>
+          <x>510</x>
+          <y>270</y>
+          <width>151</width>
+          <height>431</height>
+         </rect>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::Box</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <widget class="QLabel" name="label4">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>10</y>
+           <width>131</width>
+           <height>411</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <family>Courier New</family>
+           <pointsize>5</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>PART UNAVAILABLE</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QFrame" name="frame_5">
+        <property name="geometry">
+         <rect>
+          <x>670</x>
+          <y>270</y>
+          <width>151</width>
+          <height>431</height>
+         </rect>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::Box</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <widget class="QLabel" name="label5">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>10</y>
+           <width>131</width>
+           <height>411</height>
+          </rect>
+         </property>
+         <property name="font">
+          <font>
+           <family>Courier New</family>
+           <pointsize>5</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>PART UNAVAILABLE</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </widget>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>872</width>
+     <height>26</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>
