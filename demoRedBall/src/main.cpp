@@ -131,8 +131,6 @@ grasp_enable        on
 reach_offset        0.0 -0.15 -0.05
 // the offset [m] for grasping
 grasp_offset        0.0 0.0 -0.05
-// perturbation given as standard deviation [m]
-grasp_sigma 0.01 0.01 0.01
 // hand orientation to be kept [axis-angle rep.]
 hand_orientation 0.064485 0.707066 0.704201 3.140572
 // enable impedance velocity mode
@@ -144,7 +142,6 @@ impedance_damping 60.0 60.0 60.0 20.0 0.0
 grasp_enable        on
 reach_offset        0.0 0.15 -0.05
 grasp_offset        0.0 0.0 -0.05
-grasp_sigma         0.01 0.01 0.01
 hand_orientation    -0.012968 -0.721210 0.692595 2.917075
 impedance_velocity_mode off
 impedance_stiffness 0.5 0.5 0.5 0.2 0.1
@@ -345,21 +342,18 @@ protected:
 
     Vector leftArmReachOffs;
     Vector leftArmGraspOffs;
-    Vector leftArmGraspSigma;
     Vector leftArmHandOrien;
     Vector leftArmJointsStiffness;
     Vector leftArmJointsDamping;
 
     Vector rightArmReachOffs;
     Vector rightArmGraspOffs;
-    Vector rightArmGraspSigma;
     Vector rightArmHandOrien;
     Vector rightArmJointsStiffness;
     Vector rightArmJointsDamping;
 
     Vector *armReachOffs;
     Vector *armGraspOffs;
-    Vector *armGraspSigma;
     Vector *armHandOrien;
 
     Vector homePoss, homeVels;
@@ -462,8 +456,8 @@ protected:
     }
 
     void getArmOptions(Bottle &b, bool &graspEnable, Vector &reachOffs,
-                       Vector &graspOffs, Vector &graspSigma, Vector &orien,
-                       bool &impVelMode, Vector &impStiff, Vector &impDamp)
+                       Vector &graspOffs, Vector &orien, bool &impVelMode,
+                       Vector &impStiff, Vector &impDamp)
     {
         graspEnable=b.check("grasp_enable",Value("on"),"Getting arm grasp mode").asString()=="on"?true:false;
 
@@ -485,16 +479,6 @@ protected:
 
             for (int i=0; i<len; i++)
                 graspOffs[i]=grp.get(1+i).asDouble();
-        }
-
-        if (b.check("grasp_sigma","Getting grasping sigma"))
-        {
-            Bottle &grp=b.findGroup("grasp_sigma");
-            int sz=grp.size()-1;
-            int len=sz>3?3:sz;
-
-            for (int i=0; i<len; i++)
-                graspSigma[i]=grp.get(1+i).asDouble();
         }
 
         if (b.check("hand_orientation","Getting hand orientation"))
@@ -1190,7 +1174,6 @@ protected:
                         drvCartLeftArm->view(cartArm);
                         armReachOffs=&leftArmReachOffs;
                         armGraspOffs=&leftArmGraspOffs;
-                        armGraspSigma=&leftArmGraspSigma;
                         armHandOrien=&leftArmHandOrien;
                     }
                     else
@@ -1203,7 +1186,6 @@ protected:
                         drvCartRightArm->view(cartArm);
                         armReachOffs=&rightArmReachOffs;
                         armGraspOffs=&rightArmGraspOffs;
-                        armGraspSigma=&rightArmGraspSigma;
                         armHandOrien=&rightArmHandOrien;
                     }
 
@@ -1238,11 +1220,7 @@ protected:
             {
                 if (checkTargetForGrasp() && checkArmForGrasp())
                 {
-                    Vector graspOffs(3);
-                    for (size_t i=0; i<graspOffs.length(); i++)
-                        graspOffs[i]=Random::normal((*armGraspOffs)[i],(*armGraspSigma)[i]);
-
-                    Vector x=R.transposed()*(targetPos+graspOffs);
+                    Vector x=R.transposed()*(targetPos+*armGraspOffs);
                     limitRange(x);
                     x=R*x;
 
@@ -1532,23 +1510,19 @@ public:
 
         leftArmReachOffs.resize(3,0.0);
         leftArmGraspOffs.resize(3,0.0);
-        leftArmGraspSigma.resize(3,0.0);
         leftArmHandOrien.resize(4,0.0);
         leftArmJointsStiffness.resize(5,0.0);
         leftArmJointsDamping.resize(5,0.0);
         rightArmReachOffs.resize(3,0.0);
         rightArmGraspOffs.resize(3,0.0);
-        rightArmGraspSigma.resize(3,0.0);
         rightArmHandOrien.resize(4,0.0);
         rightArmJointsStiffness.resize(5,0.0);
         rightArmJointsDamping.resize(5,0.0);
 
         getArmOptions(bLeftArm,leftGraspEnable,leftArmReachOffs,leftArmGraspOffs,
-                      leftArmGraspSigma,leftArmHandOrien,leftArmImpVelMode,
-                      leftArmJointsStiffness,leftArmJointsDamping);
+                      leftArmHandOrien,leftArmImpVelMode,leftArmJointsStiffness,leftArmJointsDamping);
         getArmOptions(bRightArm,rightGraspEnable,rightArmReachOffs,rightArmGraspOffs,
-                      rightArmGraspSigma,rightArmHandOrien,rightArmImpVelMode,
-                      rightArmJointsStiffness,rightArmJointsDamping);
+                      rightArmHandOrien,rightArmImpVelMode,rightArmJointsStiffness,rightArmJointsDamping);
 
         // home part
         Bottle &bHome=rf.findGroup("home_arm");
@@ -1762,7 +1736,6 @@ public:
             drvCartLeftArm->view(cartArm);
             armReachOffs=&leftArmReachOffs;
             armGraspOffs=&leftArmGraspOffs;
-            armGraspSigma=&leftArmGraspSigma;
             armHandOrien=&leftArmHandOrien;
             armSel=LEFTARM;
         }
@@ -1774,7 +1747,6 @@ public:
             drvCartRightArm->view(cartArm);
             armReachOffs=&rightArmReachOffs;
             armGraspOffs=&rightArmGraspOffs;
-            armGraspSigma=&rightArmGraspSigma;
             armHandOrien=&rightArmHandOrien;
             armSel=RIGHTARM;
         }
@@ -1786,7 +1758,6 @@ public:
             cartArm=NULL;
             armReachOffs=NULL;
             armGraspOffs=NULL;
-            armGraspSigma=NULL;
             armHandOrien=NULL;
             armSel=NOARM;
         }
@@ -1820,7 +1791,6 @@ public:
         steerArmToHome(RIGHTARM);
 
         idleTimer=Time::now();
-        Random::seed((int)idleTimer);
 
         wentHome=false;
         state=STATE_IDLE;
