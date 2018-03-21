@@ -217,6 +217,7 @@ Windows, Linux
 
 #include <string>
 #include <cmath>
+#include <vector>
 #include <algorithm>
 
 #include <yarp/os/all.h>
@@ -905,9 +906,8 @@ protected:
 
         yInfo("*** Homing torso");
 
-        VectorOf<int> modes(3);
-        modes[0]=modes[1]=modes[2]=VOCAB_CM_POSITION;
-        modeTorso->setControlModes(modes.getFirst());
+        vector<int> modes(3,VOCAB_CM_POSITION);
+        modeTorso->setControlModes(modes.data());
 
         posTorso->setRefSpeeds(velTorso.data());
         posTorso->positionMove(homeTorso.data());

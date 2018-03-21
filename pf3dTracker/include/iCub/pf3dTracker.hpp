@@ -80,7 +80,7 @@ yarp::os::BufferedPort<yarp::os::Bottle> _inputParticlePort;
 yarp::os::ConstString _outputParticlePortName;
 yarp::os::BufferedPort<yarp::os::Bottle> _outputParticlePort;
 yarp::os::ConstString _outputAttentionPortName;
-yarp::os::BufferedPort<yarp::sig::VectorOf<double> > _outputAttentionPort;
+yarp::os::BufferedPort<yarp::sig::Vector> _outputAttentionPort;
 yarp::os::ConstString _outputUVDataPortName;
 yarp::os::BufferedPort<yarp::os::Bottle> _outputUVDataPort;
 bool supplyUVdata;

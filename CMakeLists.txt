@@ -4,8 +4,12 @@
 
 cmake_minimum_required(VERSION 2.8)
 project(icub-basic-demos)
-set(BUILD_BUNDLE ON)
 
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED 11)
+
+set(BUILD_BUNDLE ON)
 option(BUILD_FORCECONTROL "Build Force Control Demo (Qt5 is required)" ON)
 option(BUILD_FORCEIMITATION "Build Force Imitation Demo" ON)
 option(BUILD_REDBALL "Build Red-Ball Demo (OpenCV > 2.0 is required)" ON)

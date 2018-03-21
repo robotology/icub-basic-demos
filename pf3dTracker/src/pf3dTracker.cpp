@@ -1010,7 +1010,7 @@ bool PF3DTracker::updateModule()
             _outputUVDataPort.write();
         }
 
-        VectorOf<double>& tempVector=_outputAttentionPort.prepare();
+        Vector& tempVector=_outputAttentionPort.prepare();
         tempVector.resize(5);
         if(maxLikelihood>_likelihoodThreshold)
         {
