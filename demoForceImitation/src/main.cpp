@@ -186,10 +186,9 @@ class CtrlThread: public yarp::os::RateThread
                 port_right_arm->write();
             }            
             
-        //    robot->ipos[RIGHT_ARM] ->positionMove(3,encoders_master[3]);
             for (int i=jjj; i<5; i++)
             {
-                robot->ipid[RIGHT_ARM]->setReference(i,encoders_master[i]);
+                robot->ipid[RIGHT_ARM]->setPidReference(VOCAB_PIDTYPE_POSITION,i,encoders_master[i]);
             }
         }
         else
@@ -198,7 +197,7 @@ class CtrlThread: public yarp::os::RateThread
             robot->ienc[LEFT_ARM] ->getEncoders(encoders_slave);
             for (int i=jjj; i<5; i++)
             {
-                robot->ipid[LEFT_ARM]->setReference(i,encoders_master[i]);
+                robot->ipid[LEFT_ARM]->setPidReference(VOCAB_PIDTYPE_POSITION,i,encoders_master[i]);
             }
 
         }

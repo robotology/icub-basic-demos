@@ -128,11 +128,11 @@ bool MainWindow::slot_changed_trq(int kk)
             m_robot->iimp[kk]->setImpedance(2, 0.0, 0.0);
             m_robot->iimp[kk]->setImpedance(3, 0.0, 0.0);
             m_robot->iimp[kk]->setImpedance(4, 0.0, 0.0);
-            m_robot->icmd[kk]->setTorqueMode(0);
-            m_robot->icmd[kk]->setTorqueMode(1);
-            m_robot->icmd[kk]->setTorqueMode(2);
-            m_robot->icmd[kk]->setTorqueMode(3);
-            m_robot->icmd[kk]->setTorqueMode(4);
+            m_robot->icmd[kk]->setControlMode(0,VOCAB_CM_TORQUE);
+            m_robot->icmd[kk]->setControlMode(1,VOCAB_CM_TORQUE);
+            m_robot->icmd[kk]->setControlMode(2,VOCAB_CM_TORQUE);
+            m_robot->icmd[kk]->setControlMode(3,VOCAB_CM_TORQUE);
+            m_robot->icmd[kk]->setControlMode(4,VOCAB_CM_TORQUE);
             break;
         case LEFT_LEG:
         case RIGHT_LEG:
@@ -142,21 +142,20 @@ bool MainWindow::slot_changed_trq(int kk)
             m_robot->iimp[kk]->setImpedance(3, 0.0, 0.0);
             m_robot->iimp[kk]->setImpedance(4, 0.0, 0.0);
             m_robot->iimp[kk]->setImpedance(5, 0.0, 0.0);
-            m_robot->icmd[kk]->setTorqueMode(0);
-            m_robot->icmd[kk]->setTorqueMode(1);
-            m_robot->icmd[kk]->setTorqueMode(2);
-            m_robot->icmd[kk]->setTorqueMode(3);
-            m_robot->icmd[kk]->setTorqueMode(4);
-            m_robot->icmd[kk]->setTorqueMode(5);
+            m_robot->icmd[kk]->setControlMode(0,VOCAB_CM_TORQUE);
+            m_robot->icmd[kk]->setControlMode(1,VOCAB_CM_TORQUE);
+            m_robot->icmd[kk]->setControlMode(2,VOCAB_CM_TORQUE);
+            m_robot->icmd[kk]->setControlMode(3,VOCAB_CM_TORQUE);
+            m_robot->icmd[kk]->setControlMode(4,VOCAB_CM_TORQUE);
+            m_robot->icmd[kk]->setControlMode(5,VOCAB_CM_TORQUE);
             break;
         case TORSO:
             m_robot->iimp[kk]->setImpedance(0, 0.0, 0.0);
             m_robot->iimp[kk]->setImpedance(1, 0.0, 0.0);
             m_robot->iimp[kk]->setImpedance(2, 0.1, 0.0);
-            m_robot->icmd[kk]->setTorqueMode(0);
-            m_robot->icmd[kk]->setTorqueMode(1);
-            //m_robot->icmd[kk]->setTorqueMode(2);
-            m_robot->icmd[kk]->setPositionMode(2);
+            m_robot->icmd[kk]->setControlMode(0,VOCAB_CM_TORQUE);
+            m_robot->icmd[kk]->setControlMode(1,VOCAB_CM_TORQUE);
+            m_robot->icmd[kk]->setControlMode(2,VOCAB_CM_POSITION);
             m_robot->iint[kk]->setInteractionMode(2, VOCAB_IM_COMPLIANT);
             break;
         }
@@ -181,11 +180,11 @@ bool MainWindow::slot_changed_imp_soft(int kk)
             m_robot->iimp[kk]->setImpedance(2,0.2,0.0);
             m_robot->iimp[kk]->setImpedance(3,0.2,0.0);
             m_robot->iimp[kk]->setImpedance(4,0.1,0.0);
-            m_robot->icmd[kk]->setPositionMode(0);
-            m_robot->icmd[kk]->setPositionMode(1);
-            m_robot->icmd[kk]->setPositionMode(2);
-            m_robot->icmd[kk]->setPositionMode(3);
-            m_robot->icmd[kk]->setPositionMode(4);
+            m_robot->icmd[kk]->setControlMode(0,VOCAB_CM_POSITION);
+            m_robot->icmd[kk]->setControlMode(1,VOCAB_CM_POSITION);
+            m_robot->icmd[kk]->setControlMode(2,VOCAB_CM_POSITION);
+            m_robot->icmd[kk]->setControlMode(3,VOCAB_CM_POSITION);
+            m_robot->icmd[kk]->setControlMode(4,VOCAB_CM_POSITION);
             m_robot->iint[kk]->setInteractionMode(0, VOCAB_IM_COMPLIANT);
             m_robot->iint[kk]->setInteractionMode(1, VOCAB_IM_COMPLIANT);
             m_robot->iint[kk]->setInteractionMode(2, VOCAB_IM_COMPLIANT);
@@ -200,12 +199,12 @@ bool MainWindow::slot_changed_imp_soft(int kk)
             m_robot->iimp[kk]->setImpedance(3,0.2,0.0);
             m_robot->iimp[kk]->setImpedance(4,0.2,0.0);
             m_robot->iimp[kk]->setImpedance(5,0.2,0.0);
-            m_robot->icmd[kk]->setPositionMode(0);
-            m_robot->icmd[kk]->setPositionMode(1);
-            m_robot->icmd[kk]->setPositionMode(2);
-            m_robot->icmd[kk]->setPositionMode(3);
-            m_robot->icmd[kk]->setPositionMode(4);
-            m_robot->icmd[kk]->setPositionMode(5);
+            m_robot->icmd[kk]->setControlMode(0,VOCAB_CM_POSITION);
+            m_robot->icmd[kk]->setControlMode(1,VOCAB_CM_POSITION);
+            m_robot->icmd[kk]->setControlMode(2,VOCAB_CM_POSITION);
+            m_robot->icmd[kk]->setControlMode(3,VOCAB_CM_POSITION);
+            m_robot->icmd[kk]->setControlMode(4,VOCAB_CM_POSITION);
+            m_robot->icmd[kk]->setControlMode(5,VOCAB_CM_POSITION);
             m_robot->iint[kk]->setInteractionMode(0, VOCAB_IM_COMPLIANT);
             m_robot->iint[kk]->setInteractionMode(1, VOCAB_IM_COMPLIANT);
             m_robot->iint[kk]->setInteractionMode(2, VOCAB_IM_COMPLIANT);
@@ -217,9 +216,9 @@ bool MainWindow::slot_changed_imp_soft(int kk)
             m_robot->iimp[kk]->setImpedance(0,0.1,0.0);
             m_robot->iimp[kk]->setImpedance(1,0.1,0.0);
             m_robot->iimp[kk]->setImpedance(2,0.1,0.0);
-            m_robot->icmd[kk]->setPositionMode(0);
-            m_robot->icmd[kk]->setPositionMode(1);
-            m_robot->icmd[kk]->setPositionMode(2);
+            m_robot->icmd[kk]->setControlMode(0,VOCAB_CM_POSITION);
+            m_robot->icmd[kk]->setControlMode(1,VOCAB_CM_POSITION);
+            m_robot->icmd[kk]->setControlMode(2,VOCAB_CM_POSITION);
             m_robot->iint[kk]->setInteractionMode(0, VOCAB_IM_COMPLIANT);
             m_robot->iint[kk]->setInteractionMode(1, VOCAB_IM_COMPLIANT);
             m_robot->iint[kk]->setInteractionMode(2, VOCAB_IM_COMPLIANT);
@@ -248,11 +247,11 @@ bool MainWindow::slot_changed_imp_medium(int kk)
         m_robot->iimp[kk]->setImpedance(2,0.4,0.03);
         m_robot->iimp[kk]->setImpedance(3,0.2,0.01);
         m_robot->iimp[kk]->setImpedance(4,0.2,0.00);
-        m_robot->icmd[kk]->setPositionMode(0);
-        m_robot->icmd[kk]->setPositionMode(1);
-        m_robot->icmd[kk]->setPositionMode(2);
-        m_robot->icmd[kk]->setPositionMode(3);
-        m_robot->icmd[kk]->setPositionMode(4);
+        m_robot->icmd[kk]->setControlMode(0,VOCAB_CM_POSITION);
+        m_robot->icmd[kk]->setControlMode(1,VOCAB_CM_POSITION);
+        m_robot->icmd[kk]->setControlMode(2,VOCAB_CM_POSITION);
+        m_robot->icmd[kk]->setControlMode(3,VOCAB_CM_POSITION);
+        m_robot->icmd[kk]->setControlMode(4,VOCAB_CM_POSITION);
         m_robot->iint[kk]->setInteractionMode(0, VOCAB_IM_COMPLIANT);
         m_robot->iint[kk]->setInteractionMode(1, VOCAB_IM_COMPLIANT);
         m_robot->iint[kk]->setInteractionMode(2, VOCAB_IM_COMPLIANT);
@@ -267,12 +266,12 @@ bool MainWindow::slot_changed_imp_medium(int kk)
         m_robot->iimp[kk]->setImpedance(3,0.4,0.01);
         m_robot->iimp[kk]->setImpedance(4,0.4,0.01);
         m_robot->iimp[kk]->setImpedance(5,0.4,0.01);
-        m_robot->icmd[kk]->setPositionMode(0);
-        m_robot->icmd[kk]->setPositionMode(1);
-        m_robot->icmd[kk]->setPositionMode(2);
-        m_robot->icmd[kk]->setPositionMode(3);
-        m_robot->icmd[kk]->setPositionMode(4);
-        m_robot->icmd[kk]->setPositionMode(5);
+        m_robot->icmd[kk]->setControlMode(0,VOCAB_CM_POSITION);
+        m_robot->icmd[kk]->setControlMode(1,VOCAB_CM_POSITION);
+        m_robot->icmd[kk]->setControlMode(2,VOCAB_CM_POSITION);
+        m_robot->icmd[kk]->setControlMode(3,VOCAB_CM_POSITION);
+        m_robot->icmd[kk]->setControlMode(4,VOCAB_CM_POSITION);
+        m_robot->icmd[kk]->setControlMode(5,VOCAB_CM_POSITION);
         m_robot->iint[kk]->setInteractionMode(0, VOCAB_IM_COMPLIANT);
         m_robot->iint[kk]->setInteractionMode(1, VOCAB_IM_COMPLIANT);
         m_robot->iint[kk]->setInteractionMode(2, VOCAB_IM_COMPLIANT);
@@ -284,9 +283,9 @@ bool MainWindow::slot_changed_imp_medium(int kk)
         m_robot->iimp[kk]->setImpedance(0,0.3,0.0);
         m_robot->iimp[kk]->setImpedance(1,0.3,0.0);
         m_robot->iimp[kk]->setImpedance(2,0.3,0.0);
-        m_robot->icmd[kk]->setPositionMode(0);
-        m_robot->icmd[kk]->setPositionMode(1);
-        m_robot->icmd[kk]->setPositionMode(2);
+        m_robot->icmd[kk]->setControlMode(0,VOCAB_CM_POSITION);
+        m_robot->icmd[kk]->setControlMode(1,VOCAB_CM_POSITION);
+        m_robot->icmd[kk]->setControlMode(2,VOCAB_CM_POSITION);
         m_robot->iint[kk]->setInteractionMode(0, VOCAB_IM_COMPLIANT);
         m_robot->iint[kk]->setInteractionMode(1, VOCAB_IM_COMPLIANT);
         m_robot->iint[kk]->setInteractionMode(2, VOCAB_IM_COMPLIANT);
@@ -316,11 +315,11 @@ bool  MainWindow::slot_changed_imp_hard(int kk)
         m_robot->iimp[kk]->setImpedance(2,0.6,0.06);
         m_robot->iimp[kk]->setImpedance(3,0.3,0.02);
         m_robot->iimp[kk]->setImpedance(4,0.2,0.00);
-        m_robot->icmd[kk]->setPositionMode(0);
-        m_robot->icmd[kk]->setPositionMode(1);
-        m_robot->icmd[kk]->setPositionMode(2);
-        m_robot->icmd[kk]->setPositionMode(3);
-        m_robot->icmd[kk]->setPositionMode(4);
+        m_robot->icmd[kk]->setControlMode(0,VOCAB_CM_POSITION);
+        m_robot->icmd[kk]->setControlMode(1,VOCAB_CM_POSITION);
+        m_robot->icmd[kk]->setControlMode(2,VOCAB_CM_POSITION);
+        m_robot->icmd[kk]->setControlMode(3,VOCAB_CM_POSITION);
+        m_robot->icmd[kk]->setControlMode(4,VOCAB_CM_POSITION);
         m_robot->iint[kk]->setInteractionMode(0, VOCAB_IM_COMPLIANT);
         m_robot->iint[kk]->setInteractionMode(1, VOCAB_IM_COMPLIANT);
         m_robot->iint[kk]->setInteractionMode(2, VOCAB_IM_COMPLIANT);
@@ -335,12 +334,12 @@ bool  MainWindow::slot_changed_imp_hard(int kk)
         m_robot->iimp[kk]->setImpedance(3,0.6,0.02);
         m_robot->iimp[kk]->setImpedance(4,0.6,0.02);
         m_robot->iimp[kk]->setImpedance(5,0.6,0.02);
-        m_robot->icmd[kk]->setPositionMode(0);
-        m_robot->icmd[kk]->setPositionMode(1);
-        m_robot->icmd[kk]->setPositionMode(2);
-        m_robot->icmd[kk]->setPositionMode(3);
-        m_robot->icmd[kk]->setPositionMode(4);
-        m_robot->icmd[kk]->setPositionMode(5);
+        m_robot->icmd[kk]->setControlMode(0,VOCAB_CM_POSITION);
+        m_robot->icmd[kk]->setControlMode(1,VOCAB_CM_POSITION);
+        m_robot->icmd[kk]->setControlMode(2,VOCAB_CM_POSITION);
+        m_robot->icmd[kk]->setControlMode(3,VOCAB_CM_POSITION);
+        m_robot->icmd[kk]->setControlMode(4,VOCAB_CM_POSITION);
+        m_robot->icmd[kk]->setControlMode(5,VOCAB_CM_POSITION);
         m_robot->iint[kk]->setInteractionMode(0, VOCAB_IM_COMPLIANT);
         m_robot->iint[kk]->setInteractionMode(1, VOCAB_IM_COMPLIANT);
         m_robot->iint[kk]->setInteractionMode(2, VOCAB_IM_COMPLIANT);
@@ -352,9 +351,9 @@ bool  MainWindow::slot_changed_imp_hard(int kk)
         m_robot->iimp[kk]->setImpedance(0,0.7,0.015);
         m_robot->iimp[kk]->setImpedance(1,0.7,0.015);
         m_robot->iimp[kk]->setImpedance(2,0.7,0.015);
-        m_robot->icmd[kk]->setPositionMode(0);
-        m_robot->icmd[kk]->setPositionMode(1);
-        m_robot->icmd[kk]->setPositionMode(2);
+        m_robot->icmd[kk]->setControlMode(0,VOCAB_CM_POSITION);
+        m_robot->icmd[kk]->setControlMode(1,VOCAB_CM_POSITION);
+        m_robot->icmd[kk]->setControlMode(2,VOCAB_CM_POSITION);
         m_robot->iint[kk]->setInteractionMode(0, VOCAB_IM_COMPLIANT);
         m_robot->iint[kk]->setInteractionMode(1, VOCAB_IM_COMPLIANT);
         m_robot->iint[kk]->setInteractionMode(2, VOCAB_IM_COMPLIANT);
@@ -377,11 +376,11 @@ bool MainWindow::slot_changed_pos(int kk)
     {
     case LEFT_ARM:
     case RIGHT_ARM:
-        m_robot->icmd[kk]->setPositionMode(0);
-        m_robot->icmd[kk]->setPositionMode(1);
-        m_robot->icmd[kk]->setPositionMode(2);
-        m_robot->icmd[kk]->setPositionMode(3);
-        m_robot->icmd[kk]->setPositionMode(4);
+        m_robot->icmd[kk]->setControlMode(0,VOCAB_CM_POSITION);
+        m_robot->icmd[kk]->setControlMode(1,VOCAB_CM_POSITION);
+        m_robot->icmd[kk]->setControlMode(2,VOCAB_CM_POSITION);
+        m_robot->icmd[kk]->setControlMode(3,VOCAB_CM_POSITION);
+        m_robot->icmd[kk]->setControlMode(4,VOCAB_CM_POSITION);
         m_robot->iint[kk]->setInteractionMode(0, VOCAB_IM_STIFF);
         m_robot->iint[kk]->setInteractionMode(1, VOCAB_IM_STIFF);
         m_robot->iint[kk]->setInteractionMode(2, VOCAB_IM_STIFF);
@@ -390,12 +389,12 @@ bool MainWindow::slot_changed_pos(int kk)
         break;
     case LEFT_LEG:
     case RIGHT_LEG:
-        m_robot->icmd[kk]->setPositionMode(0);
-        m_robot->icmd[kk]->setPositionMode(1);
-        m_robot->icmd[kk]->setPositionMode(2);
-        m_robot->icmd[kk]->setPositionMode(3);
-        m_robot->icmd[kk]->setPositionMode(4);
-        m_robot->icmd[kk]->setPositionMode(5);
+        m_robot->icmd[kk]->setControlMode(0,VOCAB_CM_POSITION);
+        m_robot->icmd[kk]->setControlMode(1,VOCAB_CM_POSITION);
+        m_robot->icmd[kk]->setControlMode(2,VOCAB_CM_POSITION);
+        m_robot->icmd[kk]->setControlMode(3,VOCAB_CM_POSITION);
+        m_robot->icmd[kk]->setControlMode(4,VOCAB_CM_POSITION);
+        m_robot->icmd[kk]->setControlMode(5,VOCAB_CM_POSITION);
         m_robot->iint[kk]->setInteractionMode(0, VOCAB_IM_STIFF);
         m_robot->iint[kk]->setInteractionMode(1, VOCAB_IM_STIFF);
         m_robot->iint[kk]->setInteractionMode(2, VOCAB_IM_STIFF);
@@ -404,9 +403,9 @@ bool MainWindow::slot_changed_pos(int kk)
         m_robot->iint[kk]->setInteractionMode(5, VOCAB_IM_STIFF);
         break;
     case TORSO:
-        m_robot->icmd[kk]->setPositionMode(0);
-        m_robot->icmd[kk]->setPositionMode(1);
-        m_robot->icmd[kk]->setPositionMode(2);
+        m_robot->icmd[kk]->setControlMode(0,VOCAB_CM_POSITION);
+        m_robot->icmd[kk]->setControlMode(1,VOCAB_CM_POSITION);
+        m_robot->icmd[kk]->setControlMode(2,VOCAB_CM_POSITION);
         m_robot->iint[kk]->setInteractionMode(0, VOCAB_IM_STIFF);
         m_robot->iint[kk]->setInteractionMode(1, VOCAB_IM_STIFF);
         m_robot->iint[kk]->setInteractionMode(2, VOCAB_IM_STIFF);
