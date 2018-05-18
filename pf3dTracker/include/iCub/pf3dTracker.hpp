@@ -17,6 +17,7 @@
 #include <sstream>
 #include <string>
 
+#include <yarp/os/ConstString.h>
 #include <yarp/os/BufferedPort.h>
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Network.h>
