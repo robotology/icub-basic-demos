@@ -167,25 +167,20 @@ bool PF3DTracker::configure(ResourceFinder &rf)
     //***********************************
     //Read options from the command line.
     //***********************************
-    ConstString initializationFile = rf.check("from",
-                                       Value("pf3dTracker.ini"),
-                                      "Initialization file (string)").asString();
-    
-    ConstString context = rf.check("context",
-                                       Value("pf3dTracker"),
-                                      "Context (string)").asString();
+    string initializationFile = rf.check("from",Value("pf3dTracker.ini"),"Initialization file (string)").asString();
+    string context = rf.check("context",Value("pf3dTracker"),"Context (string)").asString();
 
     /*
     //create and initialize the resource finder
     ResourceFinder rf;
     rf.setVerbose(true);
-    rf.setDefaultContext(context.c_str());
-    rf.setDefaultConfigFile(initializationFile.c_str());
+    rf.setDefaultContext(context);
+    rf.setDefaultConfigFile(initializationFile);
     rf.configure(0, NULL);
     */
 
     // pass configuration over to bottle
-    Bottle botConfig(rf.toString().c_str());
+    Bottle botConfig(rf.toString());
     //botConfig.setMonitor(config.getMonitor()); //is this needed?
 
 
@@ -274,7 +269,7 @@ bool PF3DTracker::configure(ResourceFinder &rf)
             camera_rf.setVerbose();
             camera_rf.setDefaultConfigFile(botConfig.find("cameraFile").asString().c_str());
             camera_rf.configure(0,NULL);
-            Bottle &params=camera_rf.findGroup(botConfig.find("cameraGroup").asString().c_str());
+            Bottle &params=camera_rf.findGroup(botConfig.find("cameraGroup").asString());
             if (!params.isNull())
             {
                 _calibrationImageWidth =params.check("w",Value(320)).asInt();
@@ -377,8 +372,8 @@ bool PF3DTracker::configure(ResourceFinder &rf)
     //Build and read the color model for the tracked object
     //*****************************************************
     //
-    trackedObjectColorTemplate = rf.findFile("trackedObjectColorTemplate").c_str();
-    dataFileName = rf.findFile("trackedObjectTemp").c_str();
+    trackedObjectColorTemplate = rf.findFile("trackedObjectColorTemplate");
+    dataFileName = rf.findFile("trackedObjectTemp");
     //cout<<"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"<<trackedObjectColorTemplate<<endl;
   
     failure=computeTemplateHistogram(trackedObjectColorTemplate,dataFileName);
@@ -398,7 +393,7 @@ bool PF3DTracker::configure(ResourceFinder &rf)
     //*******************************************
     //Read the shape model for the tracked object
     //*******************************************
-    trackedObjectShapeTemplate = rf.findFile("trackedObjectShapeTemplate").c_str();
+    trackedObjectShapeTemplate = rf.findFile("trackedObjectShapeTemplate");
     failure=readInitialmodel3dPoints(_model3dPointsMat,trackedObjectShapeTemplate);
     if(failure)
     {
@@ -429,7 +424,7 @@ bool PF3DTracker::configure(ResourceFinder &rf)
                                         Value(150.0),
                                         "StDev of acceleration noise (double)").asDouble();
 
-    motionModelMatrix = rf.findFile("motionModelMatrix").c_str();
+    motionModelMatrix = rf.findFile("motionModelMatrix");
 
     //allocate space for the _A matrix. 32bit floats, one channel.
     _A=cvCreateMat(7,7,CV_32FC1);

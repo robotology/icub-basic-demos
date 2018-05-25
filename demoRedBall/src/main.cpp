@@ -320,10 +320,10 @@ protected:
 
     IEncoders         *encTorso;
     IEncoders         *encHead;
-    IControlMode2     *modeTorso;
+    IControlMode      *modeTorso;
     IPositionControl  *posTorso;
     IEncoders         *encArm;
-    IControlMode2     *modeArm;
+    IControlMode      *modeArm;
     IPositionControl  *posArm;
     ICartesianControl *cartArm;
     IGazeControl      *gazeCtrl;
@@ -933,7 +933,7 @@ protected:
 
     void steerArmToHome(const int sel=USEDARM)
     {
-        IControlMode2    *imode=modeArm;
+        IControlMode     *imode=modeArm;
         IPositionControl *ipos=posArm;
         string type;
 
@@ -1023,7 +1023,7 @@ protected:
     void stopArmJoints(const int sel=USEDARM)
     {
         IEncoders        *ienc=encArm;
-        IControlMode2    *imode=modeArm;
+        IControlMode     *imode=modeArm;
         IPositionControl *ipos=posArm;
         string type;
 
@@ -1072,7 +1072,7 @@ protected:
 
     void moveHand(const int action, const int sel=USEDARM)
     {
-        IControlMode2    *imode=modeArm;
+        IControlMode     *imode=modeArm;
         IPositionControl *ipos=posArm;
         Vector *poss=NULL;
         string actionStr, type;
@@ -1348,21 +1348,21 @@ protected:
 
         out.addVocab(Vocab::encode("set"));
         out.addVocab(Vocab::encode("mou"));
-        out.addVocab(Vocab::encode(type.c_str()));
+        out.addVocab(Vocab::encode(type));
         outportCmdFace.write(out,in);
 
         out.clear();
 
         out.addVocab(Vocab::encode("set"));
         out.addVocab(Vocab::encode("leb"));
-        out.addVocab(Vocab::encode(type.c_str()));
+        out.addVocab(Vocab::encode(type));
         outportCmdFace.write(out,in);
 
         out.clear();
 
         out.addVocab(Vocab::encode("set"));
         out.addVocab(Vocab::encode("reb"));
-        out.addVocab(Vocab::encode(type.c_str()));
+        out.addVocab(Vocab::encode(type));
         outportCmdFace.write(out,in);
     }
 
@@ -1472,7 +1472,7 @@ public:
         // general part
         Bottle &bGeneral=rf.findGroup("general");
         bGeneral.setMonitor(rf.getMonitor());
-        robot=bGeneral.check("robot",Value("icub"),"Getting robot name").asString().c_str();
+        robot=bGeneral.check("robot",Value("icub"),"Getting robot name").asString();
         useLeftArm=bGeneral.check("left_arm",Value("on"),"Getting left arm use flag").asString()=="on"?true:false;
         useRightArm=bGeneral.check("right_arm",Value("on"),"Getting right arm use flag").asString()=="on"?true:false;
         useTorso=bGeneral.check("torso",Value("on"),"Getting torso use flag").asString()=="on"?true:false;
@@ -1480,7 +1480,7 @@ public:
         useNetwork=bGeneral.check("use_network",Value("off"),"Getting network enable").asString()=="on"?true:false;
         trajTime=bGeneral.check("traj_time",Value(2.0),"Getting trajectory time").asDouble();
         reachTol=bGeneral.check("reach_tol",Value(0.01),"Getting reaching tolerance").asDouble();
-        eyeUsed=bGeneral.check("eye",Value("left"),"Getting the used eye").asString().c_str();
+        eyeUsed=bGeneral.check("eye",Value("left"),"Getting the used eye").asString();
         idleTmo=bGeneral.check("idle_tmo",Value(1e10),"Getting idle timeout").asDouble();
         setRate(bGeneral.check("thread_period",Value(DEFAULT_THR_PER),"Getting thread period [ms]").asInt());
 
@@ -1552,24 +1552,24 @@ public:
         {
             Property options;
             options.fromConfigFile(rf.findFile(bGeneral.check("network",Value("network.ini"),
-                                                              "Getting network data").asString().c_str()));
+                                                              "Getting network data").asString()));
 
             if (!pred.configure(options))
                 return false;
         }
 
         // open ports
-        inportTrackTarget.open((name+"/trackTarget:i").c_str());
-        inportIMDTargetLeft.open((name+"/imdTargetLeft:i").c_str());
-        inportIMDTargetRight.open((name+"/imdTargetRight:i").c_str());
-        outportCmdFace.open((name+"/cmdFace:rpc").c_str());
-        outportGui.open((name+"/gui:o").c_str());
-        outportSpeech.open((name+"/speech:o").c_str());
-        breatherHrpc.open((name+"/breather/head:rpc").c_str());
-        breatherLArpc.open((name+"/breather/left_arm:rpc").c_str());
-        breatherRArpc.open((name+"/breather/right_arm:rpc").c_str());
-        blinkerrpc.open((name+"/blinker:rpc").c_str());
-        lookSkinrpc.open((name+"/lookSkin:rpc").c_str());
+        inportTrackTarget.open(name+"/trackTarget:i");
+        inportIMDTargetLeft.open(name+"/imdTargetLeft:i");
+        inportIMDTargetRight.open(name+"/imdTargetRight:i");
+        outportCmdFace.open(name+"/cmdFace:rpc");
+        outportGui.open(name+"/gui:o");
+        outportSpeech.open(name+"/speech:o");
+        breatherHrpc.open(name+"/breather/head:rpc");
+        breatherLArpc.open(name+"/breather/left_arm:rpc");
+        breatherRArpc.open(name+"/breather/right_arm:rpc");
+        blinkerrpc.open(name+"/blinker:rpc");
+        lookSkinrpc.open(name+"/lookSkin:rpc");
 
         string fwslash="/";
 
@@ -1579,17 +1579,17 @@ public:
         Property optLeftArm("(device remote_controlboard)");
         Property optRightArm("(device remote_controlboard)");
 
-        optTorso.put("remote",(fwslash+robot+"/torso").c_str());
-        optTorso.put("local",(name+"/torso").c_str());
+        optTorso.put("remote",fwslash+robot+"/torso");
+        optTorso.put("local",name+"/torso");
 
-        optHead.put("remote",(fwslash+robot+"/head").c_str());
-        optHead.put("local",(name+"/head").c_str());
+        optHead.put("remote",fwslash+robot+"/head");
+        optHead.put("local",name+"/head");
 
-        optLeftArm.put("remote",(fwslash+robot+"/left_arm").c_str());
-        optLeftArm.put("local",(name+"/left_arm").c_str());
+        optLeftArm.put("remote",fwslash+robot+"/left_arm");
+        optLeftArm.put("local",name+"/left_arm");
 
-        optRightArm.put("remote",(fwslash+robot+"/right_arm").c_str());
-        optRightArm.put("local",(name+"/right_arm").c_str());
+        optRightArm.put("remote",fwslash+robot+"/right_arm");
+        optRightArm.put("local",name+"/right_arm");
 
         if (useTorso)
         {
@@ -1633,14 +1633,14 @@ public:
         Property optCartRightArm("(device cartesiancontrollerclient)");
         Property optGazeCtrl("(device gazecontrollerclient)");
 
-        optCartLeftArm.put("remote",(fwslash+robot+"/cartesianController/left_arm").c_str());
-        optCartLeftArm.put("local",(name+"/left_arm/cartesian").c_str());
+        optCartLeftArm.put("remote",fwslash+robot+"/cartesianController/left_arm");
+        optCartLeftArm.put("local",name+"/left_arm/cartesian");
 
-        optCartRightArm.put("remote",(fwslash+robot+"/cartesianController/right_arm").c_str());
-        optCartRightArm.put("local",(name+"/right_arm/cartesian").c_str());
+        optCartRightArm.put("remote",fwslash+robot+"/cartesianController/right_arm");
+        optCartRightArm.put("local",name+"/right_arm/cartesian");
 
         optGazeCtrl.put("remote","/iKinGazeCtrl");
-        optGazeCtrl.put("local",(name+"/gaze").c_str());
+        optGazeCtrl.put("local",name+"/gaze");
 
         if (useLeftArm)
         {
@@ -1905,7 +1905,7 @@ public:
     {
         Time::turboBoost();
 
-        thr=new managerThread(getName().c_str(),rf);
+        thr=new managerThread(getName(),rf);
         if (!thr->start())
         {
             delete thr;
@@ -1944,7 +1944,7 @@ public:
     void report(const SearchReport& report, const char *context)
     {
         string ctx=context;
-        string key=report.key.c_str();
+        string key=report.key;
         string prefix="";
 
         prefix=ctx;
@@ -1954,34 +1954,34 @@ public:
         if (key.substr(0,1)==".")
             key = key.substr(1,key.length());
 
-        if (!present.check(key.c_str()))
+        if (!present.check(key))
         {
-            present.put(key.c_str(),"present");
-            order.addString(key.c_str());
+            present.put(key,"present");
+            order.addString(key);
         }
 
         if (report.isFound)
-            actual.put(key.c_str(),report.value);
+            actual.put(key,report.value);
 
         if (report.isComment==true)
         {
-            comment.put(key.c_str(),report.value);
+            comment.put(key,report.value);
             return;
         }
 
         if (report.isDefault==true)
         {
-            fallback.put(key.c_str(),report.value);
+            fallback.put(key,report.value);
             return;
         }
 
-        if (comment.check(key.c_str()))
+        if (comment.check(key))
         {
-            if (!reported.check(key.c_str()))
+            if (!reported.check(key))
             {
                 if (report.isFound)
                 {
-                    string hasValue=report.value.c_str();
+                    string hasValue=report.value;
                     if (hasValue.length()>35)
                         hasValue=hasValue.substr(0,30)+" ...";
 
@@ -1990,15 +1990,15 @@ public:
                 }
                 else
                 {
-                    reported.put(key.c_str(),1);
-                    bool hasDefault=fallback.check(key.c_str());
+                    reported.put(key,1);
+                    bool hasDefault=fallback.check(key);
                     string defString="";
 
                     if (hasDefault)
                     {
                         defString+=" ";
                         defString+="(default ";
-                        string theDefault=fallback.find(key.c_str()).toString().c_str();
+                        string theDefault=fallback.find(key).toString();
 
                         if (theDefault=="")
                             defString+="is blank";

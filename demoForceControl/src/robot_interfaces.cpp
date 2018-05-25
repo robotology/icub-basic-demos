@@ -71,11 +71,11 @@ bool robot_interfaces::init(std::string robot)
 
         localPort  = "/demoForceControl/" + part;
         remotePort = "/" + robot + "/" + part;
-        options[i].put("robot",robot.c_str());
-        options[i].put("part",part.c_str());
+        options[i].put("robot",robot);
+        options[i].put("part",part);
         options[i].put("device","remote_controlboard");
-        options[i].put("local",localPort.c_str());
-        options[i].put("remote",remotePort.c_str());
+        options[i].put("local",localPort);
+        options[i].put("remote",remotePort);
 
         dd[i] = new PolyDriver(options[i]);
         if(!dd[i] || !(dd[i]->isValid()))

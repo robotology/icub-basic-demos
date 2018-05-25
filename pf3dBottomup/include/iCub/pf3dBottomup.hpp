@@ -80,9 +80,9 @@ typedef struct ObjectModel
 
 
 // parameters set during initialization.
-ConstString _inputVideoPortName;
+string _inputVideoPortName;
 BufferedPort<ImageOf<PixelRgb> > _inputVideoPort;
-ConstString _outputParticlePortName;
+string _outputParticlePortName;
 BufferedPort<Bottle> _outputParticlePort;
 
 double _perspectiveFx;

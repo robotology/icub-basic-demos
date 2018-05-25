@@ -17,7 +17,6 @@
 #include <sstream>
 #include <string>
 
-#include <yarp/os/ConstString.h>
 #include <yarp/os/BufferedPort.h>
 #include <yarp/os/LogStream.h>
 #include <yarp/os/Network.h>
@@ -70,19 +69,19 @@ private:
 int _numParticlesReceived;
 
 //parameters set during initialization.
-yarp::os::ConstString _inputVideoPortName;
+std::string _inputVideoPortName;
 yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> > _inputVideoPort;
-yarp::os::ConstString _outputVideoPortName;
+std::string _outputVideoPortName;
 yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelRgb> > _outputVideoPort;
-yarp::os::ConstString _outputDataPortName;
+std::string _outputDataPortName;
 yarp::os::BufferedPort<yarp::os::Bottle> _outputDataPort;
-yarp::os::ConstString _inputParticlePortName;
+std::string _inputParticlePortName;
 yarp::os::BufferedPort<yarp::os::Bottle> _inputParticlePort;
-yarp::os::ConstString _outputParticlePortName;
+std::string _outputParticlePortName;
 yarp::os::BufferedPort<yarp::os::Bottle> _outputParticlePort;
-yarp::os::ConstString _outputAttentionPortName;
+std::string _outputAttentionPortName;
 yarp::os::BufferedPort<yarp::sig::Vector> _outputAttentionPort;
-yarp::os::ConstString _outputUVDataPortName;
+std::string _outputUVDataPortName;
 yarp::os::BufferedPort<yarp::os::Bottle> _outputUVDataPort;
 bool supplyUVdata;
 
