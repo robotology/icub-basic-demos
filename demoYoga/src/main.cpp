@@ -492,8 +492,6 @@ public:
 int main(int argc, char *argv[])
 {
     Network yarp;
-    Time::turboBoost();
-
     // pick up name of main configuration file
 
     // find configuration file via ResourceFinder if needed

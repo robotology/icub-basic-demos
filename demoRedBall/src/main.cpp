@@ -1903,8 +1903,6 @@ public:
 
     bool configure(ResourceFinder &rf)
     {
-        Time::turboBoost();
-
         thr=new managerThread(getName(),rf);
         if (!thr->start())
         {
