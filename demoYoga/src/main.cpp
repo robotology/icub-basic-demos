@@ -79,7 +79,7 @@ Linux and Windows.
 #include <yarp/os/BufferedPort.h>
 #include <yarp/os/Time.h>
 #include <yarp/os/Network.h>
-#include <yarp/os/RateThread.h>
+#include <yarp/os/PeriodicThread.h>
 #include <yarp/os/Thread.h>
 #include <yarp/os/Semaphore.h>
 #include <yarp/os/Property.h>
@@ -264,7 +264,7 @@ public:
     }
 };
 
-class RobotMover : public RateThread
+class RobotMover : public PeriodicThread
 {
 private:
     RobotSequence sequences;
@@ -284,7 +284,7 @@ private:
     double motionTime;
     bool spoke;
 public:
-    RobotMover(Robot *r, int rate) : RateThread(rate)
+    RobotMover(Robot *r, int rate) : PeriodicThread((double)rate/1000.0)
     {
         sequencesF=false;
         robot=r;

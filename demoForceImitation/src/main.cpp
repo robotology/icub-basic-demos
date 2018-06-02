@@ -38,7 +38,7 @@ using namespace std;
 
 
 #define jjj 0
-class CtrlThread: public yarp::os::RateThread
+class CtrlThread: public yarp::os::PeriodicThread
 {
     public:
     robot_interfaces *robot;
@@ -55,7 +55,7 @@ class CtrlThread: public yarp::os::RateThread
 
 
     CtrlThread(unsigned int _period, ResourceFinder &_rf) :
-               RateThread(_period)
+               PeriodicThread((double)_period/1000.0)
     {
         autoconnect = false;
         robot=0;

@@ -295,7 +295,7 @@ public:
 };
 
 
-class managerThread : public RateThread
+class managerThread : public PeriodicThread
 {
 protected:
     ResourceFinder &rf;
@@ -1460,7 +1460,7 @@ protected:
 
 public:
     managerThread(const string &_name, ResourceFinder &_rf) :
-                  RateThread(DEFAULT_THR_PER), name(_name), rf(_rf)
+                  PeriodicThread((double)DEFAULT_THR_PER/1000.0), name(_name), rf(_rf)
     {
         drvTorso=drvHead=drvLeftArm=drvRightArm=NULL;
         drvCartLeftArm=drvCartRightArm=NULL;
@@ -1482,7 +1482,7 @@ public:
         reachTol=bGeneral.check("reach_tol",Value(0.01),"Getting reaching tolerance").asDouble();
         eyeUsed=bGeneral.check("eye",Value("left"),"Getting the used eye").asString();
         idleTmo=bGeneral.check("idle_tmo",Value(1e10),"Getting idle timeout").asDouble();
-        setRate(bGeneral.check("thread_period",Value(DEFAULT_THR_PER),"Getting thread period [ms]").asInt());
+        setPeriod((double)bGeneral.check("thread_period",Value(DEFAULT_THR_PER),"Getting thread period [ms]").asInt()/1000.0);
 
         if (!useTorso)
         {
