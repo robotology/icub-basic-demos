@@ -19,7 +19,6 @@ icubcontrib_set_default_prefix()
 set(sources src/main.cpp)
 source_group("Source Files" FILES ${sources})
 
-include_directories(${YARP_INCLUDE_DIRS})
 add_executable(${PROJECTNAME} ${sources})
 target_link_libraries(${PROJECTNAME} ${YARP_LIBRARIES})
 install(TARGETS ${PROJECTNAME} DESTINATION bin)

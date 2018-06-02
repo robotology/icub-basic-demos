@@ -38,8 +38,7 @@ source_group("Source Files" FILES ${sources})
 
 
 include_directories(${iCubDev_INCLUDE_DIRS}
-                    ${ctrlLib_INCLUDE_DIRS}
-                    ${YARP_INCLUDE_DIRS})
+                    ${ctrlLib_INCLUDE_DIRS})
 
 add_executable(${PROJECTNAME} WIN32 ${headers} ${sources} ${demoForceControl_UI_GEN_SRCS})
 

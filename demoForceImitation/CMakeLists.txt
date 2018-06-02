@@ -27,8 +27,7 @@ add_definitions(${GTK_DEFINITIONS})
 
 include_directories(${iCubDev_INCLUDE_DIRS}
                     ${ctrlLib_INCLUDE_DIRS}
-                    ${skinDynLib_INCLUDE_DIRS}
-                    ${YARP_INCLUDE_DIRS})
+                    ${skinDynLib_INCLUDE_DIRS})
 
 add_executable(${PROJECTNAME} ${headers} ${sources})
 
