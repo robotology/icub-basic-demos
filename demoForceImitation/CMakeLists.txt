@@ -2,9 +2,8 @@
 # Authors: Marco Randazzo
 # CopyPolicy: Released under the terms of the GNU GPL v2.0.
 
-cmake_minimum_required(VERSION 2.8)
-set(PROJECTNAME demoForceImitation)
-project(${PROJECTNAME})
+cmake_minimum_required(VERSION 3.5)
+project(demoForceImitation)
 
 find_package(YARP REQUIRED)
 find_package(ICUB REQUIRED)
@@ -25,17 +24,13 @@ source_group("Source Files" FILES ${sources})
 
 add_definitions(${GTK_DEFINITIONS})
 
-include_directories(${iCubDev_INCLUDE_DIRS}
-                    ${ctrlLib_INCLUDE_DIRS}
-                    ${skinDynLib_INCLUDE_DIRS})
+add_executable(${PROJECT_NAME} ${headers} ${sources})
 
-add_executable(${PROJECTNAME} ${headers} ${sources})
+target_link_libraries(${PROJECT_NAME} ctrlLib
+                                      skinDynLib
+                                      ${YARP_LIBRARIES})
 
-target_link_libraries(${PROJECTNAME} ctrlLib
-                                     skinDynLib
-                                     ${YARP_LIBRARIES})
-
-install(TARGETS ${PROJECTNAME} DESTINATION bin)
+install(TARGETS ${PROJECT_NAME} DESTINATION bin)
 
 if(NOT BUILD_BUNDLE)
     icubcontrib_add_uninstall_target()

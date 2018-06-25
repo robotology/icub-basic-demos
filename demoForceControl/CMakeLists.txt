@@ -2,9 +2,8 @@
 # Authors: Marco Randazzo
 # CopyPolicy: Released under the terms of the GNU GPL v2.0.
 
-cmake_minimum_required(VERSION 2.8.11)
-set(PROJECTNAME demoForceControl)
-project(${PROJECTNAME})
+cmake_minimum_required(VERSION 3.5)
+project(demoForceControl)
 
 find_package(YARP REQUIRED)
 find_package(ICUB REQUIRED)
@@ -36,22 +35,18 @@ set(sources src/robot_interfaces.cpp src/main.cpp src/mainwindow.cpp)
 source_group("Header Files" FILES ${headers})
 source_group("Source Files" FILES ${sources})
 
+add_executable(${PROJECT_NAME} WIN32 ${headers} ${sources} ${demoForceControl_UI_GEN_SRCS})
 
-include_directories(${iCubDev_INCLUDE_DIRS}
-                    ${ctrlLib_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} ctrlLib
+                                      ${YARP_LIBRARIES}
+                                      Qt5::Core
+                                      Qt5::Widgets
+                                      Qt5::Gui)
 
-add_executable(${PROJECTNAME} WIN32 ${headers} ${sources} ${demoForceControl_UI_GEN_SRCS})
-
-target_link_libraries(${PROJECTNAME} ctrlLib
-                                     ${YARP_LIBRARIES}
-                                     Qt5::Core
-                                     Qt5::Widgets
-                                     Qt5::Gui)
-
-install(TARGETS ${PROJECTNAME} DESTINATION bin)
+install(TARGETS ${PROJECT_NAME} DESTINATION bin)
 
 if(NOT BUILD_BUNDLE)
-    icubcontrib_add_uninstall_target()
+  icubcontrib_add_uninstall_target()
 endif()
 
 # app

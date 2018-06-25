@@ -2,9 +2,8 @@
 # Authors: Ugo Pattacini
 # CopyPolicy: Released under the terms of the GNU GPL v2.0.
 
-cmake_minimum_required(VERSION 2.8)
-set(PROJECTNAME demoRedBall)
-project(${PROJECTNAME})
+cmake_minimum_required(VERSION 3.5)
+project(demoRedBall)
 
 find_package(YARP REQUIRED)
 find_package(ICUB REQUIRED)
@@ -21,10 +20,9 @@ icubcontrib_set_default_prefix()
 set(sources src/main.cpp)
 source_group("Source Files" FILES ${sources})
 
-include_directories(${ctrlLib_INCLUDE_DIRS})
-add_executable(${PROJECTNAME} ${sources})
-target_link_libraries(${PROJECTNAME} ctrlLib ${YARP_LIBRARIES})
-install(TARGETS ${PROJECTNAME} DESTINATION bin)
+add_executable(${PROJECT_NAME} ${sources})
+target_link_libraries(${PROJECT_NAME} ctrlLib ${YARP_LIBRARIES})
+install(TARGETS ${PROJECT_NAME} DESTINATION bin)
 
 if(NOT BUILD_BUNDLE)
     icubcontrib_add_uninstall_target()
