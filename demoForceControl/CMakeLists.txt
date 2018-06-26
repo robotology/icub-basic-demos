@@ -8,8 +8,7 @@ project(demoForceControl)
 find_package(YARP REQUIRED)
 find_package(ICUB REQUIRED)
 find_package(ICUBcontrib REQUIRED)
-list(APPEND CMAKE_MODULE_PATH ${YARP_MODULE_PATH}
-                              ${ICUB_MODULE_PATH}
+list(APPEND CMAKE_MODULE_PATH ${ICUB_MODULE_PATH}
                               ${ICUBCONTRIB_MODULE_PATH})
 
 find_package(Qt5 COMPONENTS Core Widgets Gui REQUIRED)
@@ -25,7 +24,6 @@ file(GLOB demoForceControl_UI_FILES src/*.ui)
 qt5_add_resources(demoForceControl_QRC_GEN_SRCS ${demoForceControl_QRC_FILES})
 qt5_wrap_ui(demoForceControl_UI_GEN_SRCS ${demoForceControl_UI_FILES})
 
-include(YarpInstallationHelpers)
 include(ICUBcontribOptions)
 include(ICUBcontribHelpers)
 icubcontrib_set_default_prefix()
