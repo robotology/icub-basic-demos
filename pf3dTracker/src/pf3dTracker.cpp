@@ -267,6 +267,7 @@ bool PF3DTracker::configure(ResourceFinder &rf)
         {
             ResourceFinder camera_rf;
             camera_rf.setVerbose();
+            camera_rf.setDefaultContext(botConfig.find("cameraContext").asString().c_str());
             camera_rf.setDefaultConfigFile(botConfig.find("cameraFile").asString().c_str());
             camera_rf.configure(0,NULL);
             Bottle &params=camera_rf.findGroup(botConfig.find("cameraGroup").asString());
