@@ -263,7 +263,7 @@ bool PF3DTracker::configure(ResourceFinder &rf)
     if(_projectionModel=="perspective")
     {
         bool rfOk=false;
-        if (botConfig.check("cameraFile") && botConfig.check("cameraGroup"))
+        if (botConfig.check("cameraContext") && botConfig.check("cameraFile") && botConfig.check("cameraGroup"))
         {
             ResourceFinder camera_rf;
             camera_rf.setVerbose();
