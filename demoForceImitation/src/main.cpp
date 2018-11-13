@@ -124,7 +124,7 @@ class CtrlThread: public yarp::os::PeriodicThread
         while (timeout < 10); //10 seconds
         if (timeout >=10)
         {
-            yError("Unable to reach seafe initial position! Closing module");
+            yError("Unable to reach safe initial position! Closing module");
             return false;
         }
 
@@ -188,7 +188,7 @@ class CtrlThread: public yarp::os::PeriodicThread
             
             for (int i=jjj; i<5; i++)
             {
-                robot->ipid[RIGHT_ARM]->setPidReference(VOCAB_PIDTYPE_POSITION,i,encoders_master[i]);
+                robot->idir[RIGHT_ARM]->setPosition(i,encoders_master[i]);
             }
         }
         else
@@ -197,7 +197,7 @@ class CtrlThread: public yarp::os::PeriodicThread
             robot->ienc[LEFT_ARM] ->getEncoders(encoders_slave);
             for (int i=jjj; i<5; i++)
             {
-                robot->ipid[LEFT_ARM]->setPidReference(VOCAB_PIDTYPE_POSITION,i,encoders_master[i]);
+                robot->idir[LEFT_ARM]->setPosition(i,encoders_master[i]);
             }
 
         }
