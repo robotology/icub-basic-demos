@@ -16,10 +16,9 @@
 
 #include <iCub/ScaleSpace.h>
 
-#include <string.h>
-#include <stdlib.h>
+#include <cstring>
+#include <cstdlib>
 #include <cmath>
-//#include <malloc.h>
 
 ScaleSpace::ScaleSpace()
 {

@@ -30,28 +30,28 @@ private:
     float * temp;
 
 protected:
-    long m_i_lines;			        //image height (pixels)
-	long m_i_cols;			        //image width (pixels)
-	long m_i_stridepix;		        //number of pixels in a line (for data aligment)
-    int stride;				        //number of bytes in a line (for data alignment) : stride = m_i_stridepix*sizeof(float)
-	double m_scale;                 //scale value (in pixels)
-    float *filt_coeffs;			    //filter coefficients (max 6 coeffs : 1 gain + 5 autoregressive coefs)
-	complex<double> *filt_poles;    //filter poles (max 5 poles)
-	float *m_resid_step;            //step forced response residuals for a 3 tap gauss filter.
-	float *m_resid_ic;              //step natural response residuals for a 3 tap gauss filter.
+    long m_i_lines;                 //image height (pixels)
+    long m_i_cols;                  //image width (pixels)
+    long m_i_stridepix;             //number of pixels in a line (for data aligment)
+    int stride;                     //number of bytes in a line (for data alignment) : stride = m_i_stridepix*sizeof(float)
+    double m_scale;                 //scale value (in pixels)
+    float *filt_coeffs;             //filter coefficients (max 6 coeffs : 1 gain + 5 autoregressive coefs)
+    complex<double> *filt_poles;    //filter poles (max 5 poles)
+    float *m_resid_step;            //step forced response residuals for a 3 tap gauss filter.
+    float *m_resid_ic;              //step natural response residuals for a 3 tap gauss filter.
     
 public:
     FastGauss(void);
-	virtual ~FastGauss(void);
+    virtual ~FastGauss(void);
     long GetLines();
-	long GetCols();
-	long GetStridePix();
+    long GetCols();
+    long GetStridePix();
     double GetScale();
     bool GaussFilt(float * in, float * out);
-	bool AllocateResources(long lines, long cols, double scale);
-	bool FreeResources();
-	bool IsAllocated();
-	
+    bool AllocateResources(long lines, long cols, double scale);
+    bool FreeResources();
+    bool IsAllocated();
+    
     void compute_step_forward_ic(float bord_val, float *coeffs, float *i0);
     void compute_natural_backward_ic( float *resid_ic, float *i0 );
     void add_step_backward_ic( float *resid_step, float val, float *i0 );

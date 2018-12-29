@@ -12,14 +12,15 @@
  *
  */
 
+#include <yarp/cv/Cv.h>
 #include <iCub/pf3dBottomup.hpp>
 
-#include <highgui.h>
 #include <iostream>
 #include <iomanip>
 #include <fstream>
 #include <sstream>
-#include <time.h>
+#include <ctime>
+#include <utility>
 
 //member that is repeatedly called by YARP, to give this object the chance to do something.
 //should this function return "false", the object would be terminated.
@@ -81,11 +82,11 @@ bool pf3dBottomup::updateModule()
 
         // acquire a new image
         _yarpImage = _inputVideoPort.read(); //read one image from the buffer.
-            //temporary cheating (resize to 640x480)
-            cvResize((IplImage*)_yarpImage->getIplImage(), image, CV_INTER_LINEAR);
-            //--end
+        //temporary cheating (resize to 640x480)
+        cv::Mat imageMat=cv::cvarrToMat(image);
+        cv::resize(yarp::cv::toCvMat(std::move(*_yarpImage)),imageMat,imageMat.size());
+        //--end
         cvCvtColor(image, image, CV_RGB2BGR);
-
     }    
 
     return true; //continue. //in this case it means everything is fine.
@@ -181,7 +182,7 @@ bool pf3dBottomup::configure(ResourceFinder &rf)
     // read one image from the stream
     _yarpImage = _inputVideoPort.read();
     image = cvCreateImage(cvSize(_calibrationImageWidth, _calibrationImageHeight), 8, 3);
-    cvCvtColor((IplImage*)_yarpImage->getIplImage(), image, CV_RGB2BGR);
+    cv::cvtColor(yarp::cv::toCvMat(std::move(*_yarpImage)),cv::cvarrToMat(image),CV_RGB2BGR);
 
     // allocate all images
     infloat =         cvCreateImage( cvGetSize(image), IPL_DEPTH_32F, 1);
@@ -238,7 +239,6 @@ bool pf3dBottomup::interruptModule()
 //constructor
 pf3dBottomup::pf3dBottomup()
 {
-    ;
 }
 
 

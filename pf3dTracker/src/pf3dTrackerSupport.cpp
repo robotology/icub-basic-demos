@@ -12,7 +12,6 @@
 */
 
 #include <iostream>
-
 #include <iCub/pf3dTrackerSupport.hpp>
 
 using namespace std;

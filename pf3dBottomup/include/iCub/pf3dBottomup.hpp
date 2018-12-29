@@ -23,8 +23,7 @@
 #pragma package <opencv>
 #endif
 #ifndef _EiC
-#include "cv.h"
-#include "highgui.h"
+#include <opencv2/opencv.hpp>
 #endif
 
 // my definitions
