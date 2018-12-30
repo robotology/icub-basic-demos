@@ -84,7 +84,7 @@ bool pf3dBottomup::updateModule()
         _yarpImage = _inputVideoPort.read(); //read one image from the buffer.
         //temporary cheating (resize to 640x480)
         cv::Mat imageMat=cv::cvarrToMat(image);
-        cv::resize(yarp::cv::toCvMat(std::move(*_yarpImage)),imageMat,imageMat.size());
+        cv::resize(yarp::cv::toCvMat(*_yarpImage),imageMat,imageMat.size());
         //--end
         cvCvtColor(image, image, CV_RGB2BGR);
     }    
@@ -182,7 +182,7 @@ bool pf3dBottomup::configure(ResourceFinder &rf)
     // read one image from the stream
     _yarpImage = _inputVideoPort.read();
     image = cvCreateImage(cvSize(_calibrationImageWidth, _calibrationImageHeight), 8, 3);
-    cv::cvtColor(yarp::cv::toCvMat(std::move(*_yarpImage)),cv::cvarrToMat(image),CV_RGB2BGR);
+    cv::cvtColor(yarp::cv::toCvMat(*_yarpImage),cv::cvarrToMat(image),CV_RGB2BGR);
 
     // allocate all images
     infloat =         cvCreateImage( cvGetSize(image), IPL_DEPTH_32F, 1);

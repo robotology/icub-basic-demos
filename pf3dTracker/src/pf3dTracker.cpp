@@ -606,7 +606,7 @@ bool PF3DTracker::configure(ResourceFinder &rf)
 
         _rawImage = cvCreateImage(cvSize(_yarpImage->width(),_yarpImage->height()),IPL_DEPTH_8U, 3); //This allocates space for the image.
         _transformedImage = cvCreateImage(cvSize(_yarpImage->width(),_yarpImage->height()),IPL_DEPTH_8U, 3); //This allocates space for the image.
-        cv::cvtColor(toCvMat(std::move(*_yarpImage)),cv::cvarrToMat(_rawImage),CV_RGB2BGR);
+        cv::cvtColor(toCvMat(*_yarpImage),cv::cvarrToMat(_rawImage),CV_RGB2BGR);
 
         rgbToYuvBinImageLut(_rawImage,_transformedImage,_lut);
 
@@ -1044,7 +1044,7 @@ bool PF3DTracker::updateModule()
             if(_frameCounter<10) out << 0;
             out << _frameCounter;
             outputFileName=_saveImagesWithOpencvDir+out.str()+".jpeg";
-            cv::cvtColor(toCvMat(std::move(*_yarpImage)),cv::cvarrToMat(_rawImage),CV_RGB2BGR);
+            cv::cvtColor(toCvMat(*_yarpImage),cv::cvarrToMat(_rawImage),CV_RGB2BGR);
             cvSaveImage(outputFileName.c_str(), _rawImage);
         }
 
@@ -1063,7 +1063,7 @@ bool PF3DTracker::updateModule()
         _yarpImage = _inputVideoPort.read(); //read one image from the buffer.
         _inputVideoPort.getEnvelope(_yarpTimestamp);
 
-        cv::cvtColor(toCvMat(std::move(*_yarpImage)),cv::cvarrToMat(_rawImage),CV_RGB2BGR);
+        cv::cvtColor(toCvMat(*_yarpImage),cv::cvarrToMat(_rawImage),CV_RGB2BGR);
 
         //*************************************
         //transform the image in the YUV format
