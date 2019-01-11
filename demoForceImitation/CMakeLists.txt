@@ -20,9 +20,9 @@ set(sources src/robot_interfaces.cpp src/main.cpp)
 source_group("Header Files" FILES ${headers})
 source_group("Source Files" FILES ${sources})
 
-add_definitions(${GTK_DEFINITIONS})
-
 add_executable(${PROJECT_NAME} ${headers} ${sources})
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE ${GTK_DEFINITIONS})
 
 target_link_libraries(${PROJECT_NAME} ctrlLib
                                       skinDynLib
