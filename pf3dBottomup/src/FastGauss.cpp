@@ -14,7 +14,7 @@
  * 
  */
 
-
+#include <string.h> 
 #include <iCub/FastGauss.h>
 #include <iCub/IIRGausDeriv.h>
 #include <iCub/IIRFilt.h>
