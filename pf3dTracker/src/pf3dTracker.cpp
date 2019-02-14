@@ -606,7 +606,7 @@ bool PF3DTracker::configure(ResourceFinder &rf)
 
         _rawImage = cvCreateImage(cvSize(_yarpImage->width(),_yarpImage->height()),IPL_DEPTH_8U, 3); //This allocates space for the image.
         _transformedImage = cvCreateImage(cvSize(_yarpImage->width(),_yarpImage->height()),IPL_DEPTH_8U, 3); //This allocates space for the image.
-        cv::cvtColor(toCvMat(*_yarpImage),cv::cvarrToMat(_rawImage),CV_RGB2BGR);
+        toCvMat(*_yarpImage).copyTo(cv::cvarrToMat(_rawImage));        
 
         rgbToYuvBinImageLut(_rawImage,_transformedImage,_lut);
 
@@ -1044,12 +1044,14 @@ bool PF3DTracker::updateModule()
             if(_frameCounter<10) out << 0;
             out << _frameCounter;
             outputFileName=_saveImagesWithOpencvDir+out.str()+".jpeg";
-            cv::cvtColor(toCvMat(*_yarpImage),cv::cvarrToMat(_rawImage),CV_RGB2BGR);
+            toCvMat(*_yarpImage).copyTo(cv::cvarrToMat(_rawImage));
             cvSaveImage(outputFileName.c_str(), _rawImage);
         }
 
         //write the elaborated image on the output port.
-        _outputVideoPort.prepare() =  *_yarpImage;
+        cv::Mat tmpMat=toCvMat(*_yarpImage);
+        cvtColor(tmpMat,tmpMat,CV_BGR2RGB);
+        _outputVideoPort.prepare() = fromCvMat<PixelRgb>(tmpMat);
 
         //set the envelope for the output port
         _outputVideoPort.setEnvelope(_yarpTimestamp);
@@ -1063,7 +1065,7 @@ bool PF3DTracker::updateModule()
         _yarpImage = _inputVideoPort.read(); //read one image from the buffer.
         _inputVideoPort.getEnvelope(_yarpTimestamp);
 
-        cv::cvtColor(toCvMat(*_yarpImage),cv::cvarrToMat(_rawImage),CV_RGB2BGR);
+        toCvMat(*_yarpImage).copyTo(cv::cvarrToMat(_rawImage));
 
         //*************************************
         //transform the image in the YUV format
@@ -1122,13 +1124,13 @@ void PF3DTracker::drawSampledLinesPerspectiveYARP(CvMat* model3dPointsMat, float
         uPosition= (int)((float*)(_uv->data.ptr + _uv->step*0))[conta];
         if((uPosition<_rawImage->width)&&(uPosition>=0)&&(vPosition<_rawImage->height)&&(vPosition>=0))
         {
-            image->pixel(uPosition,vPosition)= PixelRgb(R,G,B);
+            image->pixel(uPosition,vPosition)= PixelRgb(B,G,R);
         }
         vPosition= (int)((float*)(_uv->data.ptr + _uv->step*1))[conta+nPixels];
         uPosition= (int)((float*)(_uv->data.ptr + _uv->step*0))[conta+nPixels];
         if((uPosition<_rawImage->width)&&(uPosition>=0)&&(vPosition<_rawImage->height)&&(vPosition>=0))
         {
-            image->pixel(uPosition,vPosition)= PixelRgb(R,G,B);
+            image->pixel(uPosition,vPosition)= PixelRgb(B,G,R);
         }
 
     }
@@ -1137,7 +1139,7 @@ void PF3DTracker::drawSampledLinesPerspectiveYARP(CvMat* model3dPointsMat, float
     meanV=floor(meanV/nPixels);
     if((meanU<_rawImage->width)&&(meanU>=0)&&(meanV<_rawImage->height)&&(meanV>=0))
     {
-        image->pixel((int)meanU,(int)meanV)= PixelRgb(R,G,B);
+        image->pixel((int)meanU,(int)meanV)= PixelRgb(B,G,R);
     }
 
 }
@@ -1186,7 +1188,7 @@ void PF3DTracker::drawContourPerspectiveYARP(CvMat* model3dPointsMat,float x, fl
 
                 if((uPosition<_rawImage->width)&&(uPosition>=0)&&(vPosition<_rawImage->height)&&(vPosition>=0))
                 {
-                    image->pixel(uPosition,vPosition)= PixelRgb(R,G,B);
+                    image->pixel(uPosition,vPosition)= PixelRgb(B,G,R);
                 }
 
             }
@@ -1196,7 +1198,7 @@ void PF3DTracker::drawContourPerspectiveYARP(CvMat* model3dPointsMat,float x, fl
     meanV=floor(meanV/nPixels);
     if((meanU<_rawImage->width)&&(meanU>=0)&&(meanV<_rawImage->height)&&(meanV>=0))
     {
-        image->pixel((int)meanU,(int)meanV)= PixelRgb(R,G,B);
+        image->pixel((int)meanU,(int)meanV)= PixelRgb(B,G,R);
     }
 
 }
