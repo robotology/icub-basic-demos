@@ -20,6 +20,7 @@
 #include <QFileDialog>
 #include <string>
 #include "robot_interfaces.h"
+#include <yarp/os/LogStream.h>
 #include <yarp/dev/all.h>
 
 using namespace std;
