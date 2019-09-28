@@ -81,7 +81,6 @@ Linux and Windows.
 #include <yarp/os/Network.h>
 #include <yarp/os/PeriodicThread.h>
 #include <yarp/os/Thread.h>
-#include <yarp/os/Semaphore.h>
 #include <yarp/os/Property.h>
 #include <yarp/os/Vocab.h>
 #include <yarp/os/Log.h>
