@@ -5,7 +5,7 @@
 cmake_minimum_required(VERSION 3.5)
 project(demoForceControl)
 
-find_package(YARP REQUIRED)
+find_package(YARP 3.3.0 REQUIRED)
 find_package(ICUB REQUIRED)
 find_package(ICUBcontrib REQUIRED)
 list(APPEND CMAKE_MODULE_PATH ${ICUB_MODULE_PATH}
