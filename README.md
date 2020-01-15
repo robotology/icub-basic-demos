@@ -6,6 +6,14 @@ icub-basic-demos
 ![ci](https://github.com/robotology/icub-basic-demos/workflows/Continuous%20Integration/badge.svg)
 ![gh-pages](https://github.com/robotology/icub-basic-demos/workflows/GitHub%20Pages/badge.svg)
 
+## Maintainers
+This repository is maintained by:
+
+| | |
+|:---:|:---:|
+| [<img src="https://github.com/Nicogene.png" width="40">](https://github.com/niNicogenecogene) | [@Nicogene](https://github.com/Nicogene) |
+
+
 This repository bundles a set of basic demos showing some of the iCub capabilities.
 - The well known Red-Ball demo.
 - The Yoga demo.
