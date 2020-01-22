@@ -323,8 +323,6 @@ void pf3dBottomup::calc_hist_from_model_2D(string file, CvHistogram **objhist, i
     cvConvertScale( hist->bins, hist->bins, max_val ? 255. / max_val : 0., 0 );
 
     *objhist = hist;
-
-    cvReleaseImage(&histmodel);
     cvReleaseImage(&histmask);
     cvReleaseImage(&histhue);
 }

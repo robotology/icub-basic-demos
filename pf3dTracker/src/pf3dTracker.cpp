@@ -73,6 +73,7 @@
 #include <utility>
 
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/core/core_c.h>
 
 #include <yarp/os/Log.h>
 #include <yarp/os/LogStream.h>
@@ -1045,7 +1046,7 @@ bool PF3DTracker::updateModule()
             out << _frameCounter;
             outputFileName=_saveImagesWithOpencvDir+out.str()+".jpeg";
             toCvMat(*_yarpImage).copyTo(cv::cvarrToMat(_rawImage));
-            cvSaveImage(outputFileName.c_str(), _rawImage);
+            imwrite(outputFileName, cv::cvarrToMat(_rawImage));
         }
 
         //write the elaborated image on the output port.
@@ -1224,9 +1225,12 @@ bool PF3DTracker::computeTemplateHistogram(string imageFileName,string dataFileN
     cvSetZero(histogram);
     IplImage *rawImage;
     IplImage* transformedImage;
-    
+    rawImage = cvCreateImage(cvSize(0,0),IPL_DEPTH_8U, 3);//initialize raw image.
+    auto matImage = cv::cvarrToMat(rawImage); // no copy involved, the memory is shared
     //load the image
-    if( (rawImage = cvLoadImage( imageFileName.c_str(), 1)) == 0 ) //load the image from file.
+
+    matImage = cv::imread(imageFileName);
+    if( ! matImage.data) //load the image from file.
     {
         yWarning("I wasn't able to open the image file!");
         return true; //if I can't do it, I just quit the program.
@@ -1296,9 +1300,6 @@ bool PF3DTracker::computeTemplateHistogram(string imageFileName,string dataFileN
     //clean memory up
     if (histogram != NULL)
         cvReleaseMatND(&histogram);
-
-    if (rawImage != NULL)
-        cvReleaseImage(&rawImage);
 
     return false;
 

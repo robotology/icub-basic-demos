@@ -28,12 +28,14 @@
 #include <yarp/sig/ImageFile.h>
 #include <yarp/sig/Vector.h>
 
+
 #ifdef _CH_
 #pragma package <opencv>
 #endif
 #ifndef _EiC
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/core/types_c.h>
 #endif
 
 #include <iCub/pf3dTrackerSupport.hpp>
