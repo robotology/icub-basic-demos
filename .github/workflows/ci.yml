@@ -44,13 +44,13 @@ jobs:
       if: matrix.os == 'windows-latest'
       shell: bash
       run: |
-        git clone https://github.com/microsoft/vcpkg.git --depth 1 --branch 2019.10 ${VCPKG_ROBOTOLOGY_ROOT}
-        git clone https://github.com/robotology/robotology-vcpkg-binary-ports.git ${VCPKG_ROBOTOLOGY_BIN_PORTS_ROOT}
-        ${VCPKG_ROBOTOLOGY_ROOT}/bootstrap-vcpkg.sh
-        ${VCPKG_ROBOTOLOGY_ROOT}/vcpkg.exe --overlay-ports=${VCPKG_ROBOTOLOGY_BIN_PORTS_ROOT} install --triplet x64-windows ace freeglut gsl eigen3 opencv[core,contrib] ipopt-binary
-        rm -rf ${VCPKG_ROBOTOLOGY_ROOT}/buildtrees ${VCPKG_ROBOTOLOGY_ROOT}/packages ${VCPKG_ROBOTOLOGY_ROOT}/downloads
-        ${VCPKG_ROBOTOLOGY_ROOT}/vcpkg.exe --overlay-ports=${VCPKG_ROBOTOLOGY_BIN_PORTS_ROOT} install --triplet x64-windows qt5-base
-        rm -rf ${VCPKG_ROBOTOLOGY_ROOT}/buildtrees ${VCPKG_ROBOTOLOGY_ROOT}/packages ${VCPKG_ROBOTOLOGY_ROOT}/downloads
+        # To avoid spending a huge time compiling vcpkg dependencies, we download a root that comes precompiled with all the ports that we need
+        choco install -y wget unzip
+        # To avoid problems with non-relocatable packages, we unzip the archive exactly in the same C:/vcpkg-robotology
+        # that has been used to create the pre-compiled archive
+        cd C:/
+        wget https://github.com/robotology-playground/robotology-superbuild-dependencies/releases/download/v0.0.2/vcpkg-robotology.zip
+        unzip vcpkg-robotology.zip
 
     - name: Dependencies [Ubuntu]
       if: matrix.os == 'ubuntu-latest'
@@ -140,7 +140,7 @@ jobs:
       run: |
         mkdir -p build
         cd build
-        cmake -A x64 -DCMAKE_TOOLCHAIN_FILE=${VCPKG_ROBOTOLOGY_ROOT}/scripts/buildsystems/vcpkg.cmake \
+        cmake -A x64 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg-robotology/scripts/buildsystems/vcpkg.cmake \
                      -DCMAKE_PREFIX_PATH=${GITHUB_WORKSPACE}/install -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/install \
                      -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} ..
 
