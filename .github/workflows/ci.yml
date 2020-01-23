@@ -19,7 +19,7 @@ jobs:
     strategy:
       matrix:
         build_type: [Release]
-        os: [windows-latest, ubuntu-latest]
+        os: [windows-latest, ubuntu-latest, macOS-latest]
 
     steps:
     - uses: actions/checkout@master
@@ -59,6 +59,11 @@ jobs:
         sudo apt install git build-essential pkg-config zip unzip zlib1g-dev cmake libace-dev coinor-libipopt-dev libeigen3-dev \
                          qtbase5-dev qtdeclarative5-dev qtmultimedia5-dev libtinyxml-dev libgsl-dev wget curl autoconf \
                          autogen automake libtool mlocate libopencv-dev
+
+    - name: Dependencies [macOS]
+      if: matrix.os == 'macOS-latest'
+      run: |
+        brew install ace cmake eigen gsl ipopt opencv pkg-config qt5
         
     - name: Source-based Dependencies [Windows] 
       if: matrix.os == 'windows-latest'
@@ -96,8 +101,8 @@ jobs:
                      -DCMAKE_PREFIX_PATH=${GITHUB_WORKSPACE}/install -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/install -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} ..        
         cmake --build . --config ${{ matrix.build_type }} --target INSTALL
         
-    - name: Source-based Dependencies [Ubuntu] 
-      if: matrix.os == 'ubuntu-latest'
+    - name: Source-based Dependencies [Ubuntu/macOS]
+      if: matrix.os == 'ubuntu-latest' || matrix.os == 'macOS-latest'
       shell: bash
       run: |
         # ycm
@@ -139,8 +144,8 @@ jobs:
                      -DCMAKE_PREFIX_PATH=${GITHUB_WORKSPACE}/install -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/install \
                      -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} ..
 
-    - name: Configure [Ubuntu]
-      if: matrix.os == 'ubuntu-latest'
+    - name: Configure [Ubuntu/macOS]
+      if: matrix.os == 'ubuntu-latest' || matrix.os == 'macOS-latest'
       shell: bash
       run: |
         mkdir -p build
