@@ -63,8 +63,9 @@ jobs:
     - name: Dependencies [macOS]
       if: matrix.os == 'macOS-latest'
       run: |
+        brew update
+        brew upgrade
         brew install ace cmake eigen gsl ipopt opencv pkg-config qt5
-        
     - name: Source-based Dependencies [Windows] 
       if: matrix.os == 'windows-latest'
       shell: bash
@@ -130,7 +131,9 @@ jobs:
         cd icub-contrib-common && mkdir -p build && cd build
         cmake  -DCMAKE_PREFIX_PATH=${GITHUB_WORKSPACE}/install -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/install -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} ..
         cmake --build . --config ${{ matrix.build_type }} --target install 
- 
+      env:
+        # This is necessary only on macOS/homebrew, but on Linux it should be ignored
+        Qt5_DIR: /usr/local/opt/qt5/lib/cmake/Qt5
     # ===================
     # CMAKE-BASED PROJECT
     # ===================
@@ -152,6 +155,9 @@ jobs:
         cd build    
         cmake -DCMAKE_PREFIX_PATH=${GITHUB_WORKSPACE}/install -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
               -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/install -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} ..
+      env:
+        # This is necessary only on macOS/homebrew, but on Linux it should be ignored
+        Qt5_DIR: /usr/local/opt/qt5/lib/cmake/Qt5
       
     - name: Build
       shell: bash
