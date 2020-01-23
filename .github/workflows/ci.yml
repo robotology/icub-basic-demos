@@ -58,7 +58,7 @@ jobs:
         sudo apt update
         sudo apt install git build-essential pkg-config zip unzip zlib1g-dev cmake libace-dev coinor-libipopt-dev libeigen3-dev \
                          qtbase5-dev qtdeclarative5-dev qtmultimedia5-dev libtinyxml-dev libgsl-dev wget curl autoconf \
-                         autogen automake libtool mlocate
+                         autogen automake libtool mlocate libopencv-dev
         
     - name: Source-based Dependencies [Windows] 
       if: matrix.os == 'windows-latest'
@@ -100,13 +100,6 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       shell: bash
       run: |
-        # opencv
-        cd ${GITHUB_WORKSPACE}
-        git clone https://github.com/opencv/opencv.git --depth 1 --branch 3.4.0
-        git clone https://github.com/opencv/opencv_contrib.git --depth 1 --branch 3.4.0
-        cd opencv && mkdir -p build && cd build
-        cmake -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/install -DOPENCV_EXTRA_MODULES_PATH=${GITHUB_WORKSPACE}/opencv_contrib/modules -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} ..
-        cmake --build . --config ${{ matrix.build_type }} --target install 
         # ycm
         cd ${GITHUB_WORKSPACE}
         git clone https://github.com/robotology/ycm.git --depth 1 --branch master
