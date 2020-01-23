@@ -48,7 +48,7 @@ jobs:
         choco install -y wget unzip
         # To avoid problems with non-relocatable packages, we unzip the archive exactly in the same C:/vcpkg-robotology
         # that has been used to create the pre-compiled archive
-        cd C:/
+        cd D:/
         wget https://github.com/robotology-playground/robotology-superbuild-dependencies/releases/download/v0.0.2/vcpkg-robotology.zip
         unzip vcpkg-robotology.zip
 
@@ -143,7 +143,7 @@ jobs:
       run: |
         mkdir -p build
         cd build
-        cmake -A x64 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg-robotology/scripts/buildsystems/vcpkg.cmake \
+        cmake -A x64 -DCMAKE_TOOLCHAIN_FILE=${VCPKG_ROBOTOLOGY_ROOT}/scripts/buildsystems/vcpkg.cmake \
                      -DCMAKE_PREFIX_PATH=${GITHUB_WORKSPACE}/install -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/install \
                      -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} ..
 
