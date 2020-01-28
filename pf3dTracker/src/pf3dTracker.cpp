@@ -1223,39 +1223,36 @@ bool PF3DTracker::computeTemplateHistogram(string imageFileName,string dataFileN
     }
     //set content of the matrix to zero.
     cvSetZero(histogram);
-    IplImage *rawImage;
-    IplImage* transformedImage;
-    rawImage = cvCreateImage(cvSize(0,0),IPL_DEPTH_8U, 3);//initialize raw image.
-    auto matImage = cv::cvarrToMat(rawImage); // no copy involved, the memory is shared
     //load the image
-
-    matImage = cv::imread(imageFileName);
-    if( ! matImage.data) //load the image from file.
+    auto rawImage = cv::imread(imageFileName);
+    if( ! rawImage.data) //load the image from file.
     {
         yWarning("I wasn't able to open the image file!");
         return true; //if I can't do it, I just quit the program.
     }
+    cv::Mat transformedImage(rawImage.rows, rawImage.cols, CV_8UC3);
+
 
     //allocate space for the transformed image
-    transformedImage = cvCreateImage(cvSize(rawImage->width,rawImage->height),IPL_DEPTH_8U,3);
 
     //transform the image in the YUV format
-    rgbToYuvBinImageLut(rawImage,transformedImage,_lut);
+    rgbToYuvBinMatLut(rawImage,transformedImage,_lut);
     
     //count the frequencies of colour bins, build the histogram.
-    for(v=0;v<rawImage->height;v++)
-        for(u=0;u<rawImage->width;u++)
+    for(v=0;v<rawImage.rows;v++)
+        for(u=0;u<rawImage.cols;u++)
         {
             //discard white pixels [255,255,255].
+
             if(!(
-                    (((uchar*)(rawImage->imageData + rawImage->widthStep*v))[u*3+0])==255 && (((uchar*)(rawImage->imageData + rawImage->widthStep*v))[u*3+1])==255 && (((uchar*)(rawImage->imageData + rawImage->widthStep*v))[u*3+2])==255) 
+                    (((uchar*)(rawImage.data + rawImage.step*v))[u*3+0])==255 && (((uchar*)(rawImage.data + rawImage.step*v))[u*3+1])==255 && (((uchar*)(rawImage.data + rawImage.step*v))[u*3+2])==255)
 
                 )
             {
 
-                a=(((uchar*)(transformedImage->imageData + transformedImage->widthStep*v))[u*3+0]);//Y bin
-                b=(((uchar*)(transformedImage->imageData + transformedImage->widthStep*v))[u*3+1]);//U bin
-                c=(((uchar*)(transformedImage->imageData + transformedImage->widthStep*v))[u*3+2]);//V bin
+                a=(((uchar*)(transformedImage.data + transformedImage.step*v))[u*3+0]);//Y bin
+                b=(((uchar*)(transformedImage.data + transformedImage.step*v))[u*3+1]);//U bin
+                c=(((uchar*)(transformedImage.data + transformedImage.step*v))[u*3+2]);//V bin
 
                 //TEST printf("histogram->size[0].step,%d\n",histogram->dim[0].step);  256
                 //TEST printf("histogram->size[1].step,%d\n",histogram->dim[1].step);   32
