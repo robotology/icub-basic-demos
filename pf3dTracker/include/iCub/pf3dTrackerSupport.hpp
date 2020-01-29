@@ -22,6 +22,7 @@
 #ifndef _EiC
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/core/types_c.h>
 #endif
 
 struct Lut
@@ -35,6 +36,7 @@ void rgbToYuvBin(int &R, int &G, int &B, int &YBin, int &UBin, int &VBin);
 
 void rgbToYuvBinImage(IplImage *image,IplImage *yuvBinsImage);
 
+void rgbToYuvBinMatLut(const cv::Mat& image, cv::Mat& yuvBinsImage, Lut *lut);
 void rgbToYuvBinImageLut(IplImage *image,IplImage *yuvBinsImage, Lut *lut);
 
 void setPixel(int u, int v, int r, int g, int b, IplImage *image);

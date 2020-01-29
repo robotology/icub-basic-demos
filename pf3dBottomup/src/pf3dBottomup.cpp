@@ -274,7 +274,12 @@ void pf3dBottomup::calc_hist_from_model_2D(string file, CvHistogram **objhist, i
     float* ranges[]  = {cbRanges, crRanges};
     IplImage* imgs[] = {0, 0};
 
-    histmodel = cvLoadImage(file.c_str());
+    auto histMat = cv::imread(file);
+    histmodel = cvCreateImage(cvSize(histMat.cols,histMat.rows),histMat.depth(),histMat.channels());
+    IplImage ipltemp;
+    cvInitImageHeader(&ipltemp, cvSize(histMat.cols, histMat.rows), cvIplDepth(histMat.flags), histMat.channels());
+    cvSetData(&ipltemp, histMat.data, (int)histMat.step[0]);
+    histmodel = &ipltemp;
     cvCvtColor(histmodel, histmodel, CV_BGR2HSV);
     histmask = cvCreateImage(cvGetSize(histmodel), 8, 1);
     histhue = cvCreateImage(cvGetSize(histmodel), 8, 1);
@@ -318,8 +323,6 @@ void pf3dBottomup::calc_hist_from_model_2D(string file, CvHistogram **objhist, i
     cvConvertScale( hist->bins, hist->bins, max_val ? 255. / max_val : 0., 0 );
 
     *objhist = hist;
-
-    cvReleaseImage(&histmodel);
     cvReleaseImage(&histmask);
     cvReleaseImage(&histhue);
 }

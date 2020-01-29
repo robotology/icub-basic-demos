@@ -24,6 +24,8 @@
 #endif
 #ifndef _EiC
 #include <opencv2/opencv.hpp>
+#include <opencv2/core/types_c.h>
+#include <opencv2/imgproc/imgproc_c.h>
 #endif
 
 // my definitions

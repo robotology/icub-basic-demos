@@ -49,6 +49,8 @@
  */
 
 #include <opencv2/opencv.hpp>
+#include <opencv2/core/types_c.h>
+#include <opencv2/imgproc/imgproc_c.h>
 
 #ifndef __BEGIN__
 #define __BEGIN__ __CV_BEGIN__
