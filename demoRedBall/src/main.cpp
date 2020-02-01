@@ -676,34 +676,43 @@ protected:
         icart->getInfo(info);
         double hwver=info.find("arm_version").asDouble();
 
-        Vector sw_=sw;
-        Matrix lim_=lim;
-        if (hwver>=3.0)
+        if (useTorso)
         {
-            sw_[0]=sw[1];
-            sw_[1]=sw[0];
-
-            lim_.setSubrow(lim.getRow(1),0,0);
-            lim_.setSubrow(lim.getRow(0),1,0);
-        }
-
-        for (size_t j=0; j<sw_.length(); j++)
-        {
-            dof[j]=sw_[j];
-            if ((sw_[j]!=0.0) && ((lim_(j,0)!=0.0) || (lim_(j,2)!=0.0)))
+            Vector sw_ = sw;
+            Matrix lim_=lim;
+            if (hwver>=3.0)
             {
-                double min, max;
-                icart->getLimits(j,&min,&max);
+                sw_[0]=sw[1];
+                sw_[1]=sw[0];
 
-                if (lim_(j,0)!=0.0)
-                    min=lim_(j,1);
-
-                if (lim_(j,2)!=0.0)
-                    max=lim_(j,3);
-
-                bool ok=icart->setLimits(j,min,max);
-                yInfo("jnt #%d in [%g, %g] deg => %s",(int)j,min,max,ok?"ok":"failed");
+                lim_.setSubrow(lim.getRow(1),0,0);
+                lim_.setSubrow(lim.getRow(0),1,0);
             }
+
+            for (size_t j=0; j<sw_.length(); j++)
+            {
+                dof[j]=sw_[j];
+                if ((sw_[j]!=0.0) && ((lim_(j,0)!=0.0) || (lim_(j,2)!=0.0)))
+                {
+                    double min, max;
+                    icart->getLimits(j,&min,&max);
+
+                    if (lim_(j,0)!=0.0)
+                        min=lim_(j,1);
+
+                    if (lim_(j,2)!=0.0)
+                        max=lim_(j,3);
+
+                    bool ok=icart->setLimits(j,min,max);
+                    yInfo("jnt #%d in [%g, %g] deg => %s",(int)j,min,max,ok?"ok":"failed");
+                }
+            }
+        }
+        // there exist robots w/o torso, hence equipped w/ only 7 DOFs
+        else if (dof.size()>7)
+        {
+            dof[0]=dof[1]=dof[2]=0.0;
+            yInfo("Disabled torso joints");
         }
 
         icart->setDOF(dof,dof);
@@ -1500,8 +1509,6 @@ public:
         if (!useTorso)
         {
             yWarning("Part \"torso\" is not employed!");
-            yWarning("Disabling arms too!");
-            useLeftArm=useRightArm=false;
         }
 
         // torso part
@@ -1790,9 +1797,12 @@ public:
         targetPos.resize(3,0.0);
         R=Rx=Ry=Rz=eye(3,3);
 
-        if (useTorso)
+        if (useLeftArm)
         {
             initCartesianCtrl(torsoSwitch,torsoLimits,LEFTARM);
+        }
+        if (useRightArm)
+        {
             initCartesianCtrl(torsoSwitch,torsoLimits,RIGHTARM);
         }
 
