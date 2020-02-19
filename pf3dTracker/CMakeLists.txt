@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.5)
 project(pf3dTracker)
 
 find_package(ICUBcontrib REQUIRED)
-find_package(YARP 3.3.1 REQUIRED COMPONENTS os sig cv)
+find_package(YARP 3.3.2 REQUIRED COMPONENTS os sig cv)
 list(APPEND CMAKE_MODULE_PATH ${ICUBCONTRIB_MODULE_PATH})
 find_package(OpenCV REQUIRED)
 
