@@ -501,7 +501,6 @@ int main(int argc, char *argv[])
     ResourceFinder finder;
     finder.setDefaultContext("demoYoga");
     finder.configure(argc,argv);
-    finder.setVerbose(true);
     finder.setDefault("positions","yoga.ini");
     finder.setDefault("robot","icub");
     std::string inifile=finder.findFile("positions").c_str();

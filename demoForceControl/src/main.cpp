@@ -41,7 +41,6 @@ int main(int argc, char * argv[])
     }
 
     yarp::os::ResourceFinder* rf = new ResourceFinder;
-    rf->setVerbose();
     rf->configure(argc, argv);
     
     robot_interfaces *robot;

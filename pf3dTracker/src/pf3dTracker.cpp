@@ -177,7 +177,6 @@ bool PF3DTracker::configure(ResourceFinder &rf)
     /*
     //create and initialize the resource finder
     ResourceFinder rf;
-    rf.setVerbose(true);
     rf.setDefaultContext(context);
     rf.setDefaultConfigFile(initializationFile);
     rf.configure(0, NULL);
@@ -270,7 +269,6 @@ bool PF3DTracker::configure(ResourceFinder &rf)
         if (botConfig.check("cameraContext") && botConfig.check("cameraFile") && botConfig.check("cameraGroup"))
         {
             ResourceFinder camera_rf;
-            camera_rf.setVerbose();
             camera_rf.setDefaultContext(botConfig.find("cameraContext").asString().c_str());
             camera_rf.setDefaultConfigFile(botConfig.find("cameraFile").asString().c_str());
             camera_rf.configure(0,NULL);

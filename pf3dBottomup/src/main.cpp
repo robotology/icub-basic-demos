@@ -38,7 +38,6 @@ int main(int argc, char *argv[])
     }
 
     ResourceFinder rf;
-    rf.setVerbose(true);
     rf.setDefaultContext("pf3dBottomup");
     rf.setDefaultConfigFile("pf3dBottomup.ini");
     rf.configure(argc, argv);

@@ -2050,7 +2050,6 @@ int main(int argc, char *argv[])
     myReport rep;
 
     ResourceFinder rf;
-    rf.setVerbose(true);
     rf.setMonitor(&rep);
     rf.setDefaultContext("demoRedBall");
     rf.setDefaultConfigFile("config.ini");

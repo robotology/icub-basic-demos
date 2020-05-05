@@ -176,7 +176,6 @@ int main(int argc, char *argv[])
     }
 
     ResourceFinder rf;
-    rf.setVerbose(true);
     rf.setDefaultContext("pf3dTracker");        // overridden by --context
     rf.setDefaultConfigFile("pf3dTracker.ini"); // overridden by --from
     rf.configure(argc, argv);
