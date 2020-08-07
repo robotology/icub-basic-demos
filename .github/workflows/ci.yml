@@ -70,7 +70,6 @@ jobs:
     - name: Dependencies [macOS]
       if: matrix.os == 'macOS-latest'
       run: |
-        brew unlink bazel
         brew update
         brew upgrade
         brew install ace cmake eigen gsl ipopt opencv pkg-config qt5
