@@ -136,6 +136,8 @@ typedef std::vector<PositionList> RobotSequence;
 typedef std::vector<LimbInterfaces> RobotInterfaces;
 typedef RobotInterfaces::iterator RobotInterfacesIterator;
 
+uint8_t LIMBS = 6;
+
 enum Index
 {
     RIGHTARM=0,
@@ -143,8 +145,7 @@ enum Index
     HEAD=2,
     TORSO=3,
     RIGHTLEG=4,
-    LEFTLEG=5,
-    LIMBS=6};
+    LEFTLEG=5};
 
 class DemoSequences
 {
@@ -499,6 +500,7 @@ int main(int argc, char *argv[])
     // There is also the possibility of user overrides in
     // standardized forms not anticipated in this program.
     ResourceFinder finder;
+    bool no_legs{ false };
     finder.setDefaultContext("demoYoga");
     finder.configure(argc,argv);
     finder.setDefault("positions","yoga.ini");
@@ -508,6 +510,9 @@ int main(int argc, char *argv[])
 
     bool verbose=finder.check("verbose");
     bool diagnostic=finder.check("diagnostic");
+    no_legs = finder.check("no_legs");
+    if (no_legs)
+        LIMBS = 4;
 
     if (inifile=="")
     {
@@ -543,19 +548,21 @@ int main(int argc, char *argv[])
     icub.options[3].put("remote",(prefix+"torso").c_str());
     icub.tags[3]="TORSO";
 
-    icub.options[4].put("device","remote_controlboard");
-    icub.options[4].put("local",(prefix+"demoYoga/right_leg/client").c_str());
-    icub.options[4].put("remote",(prefix+"right_leg").c_str());
-    icub.tags[4]="RIGHTLEG";
+    if (!no_legs) {
+        icub.options[4].put("device", "remote_controlboard");
+        icub.options[4].put("local", (prefix + "demoYoga/right_leg/client").c_str());
+        icub.options[4].put("remote", (prefix + "right_leg").c_str());
+        icub.tags[4] = "RIGHTLEG";
 
-    icub.options[5].put("device","remote_controlboard");
-    icub.options[5].put("local",(prefix+"demoYoga/left_leg/client").c_str());
-    icub.options[5].put("remote",(prefix+"left_leg").c_str());
-    icub.tags[5]="LEFTLEG";
+        icub.options[5].put("device", "remote_controlboard");
+        icub.options[5].put("local", (prefix + "demoYoga/left_leg/client").c_str());
+        icub.options[5].put("remote", (prefix + "left_leg").c_str());
+        icub.tags[5] = "LEFTLEG";
+    }
 
     if (diagnostic)
     {
-        for (int k=0; k<6; k++)
+        for (int k=0; k<LIMBS; k++)
             icub.options[k].put("diagnostic","");
     }
 
