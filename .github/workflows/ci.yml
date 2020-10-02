@@ -30,7 +30,7 @@ jobs:
       run: |
         # the following fix the problem described in https://github.community/t5/GitHub-Actions/Windows-tests-worked-yesterday-broken-today/m-p/43839#M5530
         echo "C:\Program Files\Git\bin" >> ${GITHUB_PATH}
-        echo "VCPKG_ROBOTOLOGY_ROOT=C:/vcpkg-robotology" >> ${GITHUB_ENV}
+        echo "VCPKG_ROBOTOLOGY_ROOT=C:/robotology/vcpkg" >> ${GITHUB_ENV}
         
     - name: Display environment variables
       shell: bash
