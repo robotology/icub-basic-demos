@@ -30,7 +30,7 @@ jobs:
       run: |
         # the following fix the problem described in https://github.community/t5/GitHub-Actions/Windows-tests-worked-yesterday-broken-today/m-p/43839#M5530
         echo "C:\Program Files\Git\bin" >> ${GITHUB_PATH}
-        echo "VCPKG_ROBOTOLOGY_ROOT=D:/vcpkg-robotology" >> ${GITHUB_ENV}
+        echo "VCPKG_ROBOTOLOGY_ROOT=C:/vcpkg-robotology" >> ${GITHUB_ENV}
         
     - name: Display environment variables
       shell: bash
@@ -53,9 +53,10 @@ jobs:
         choco install -y curl wget unzip
         latest_tag=$(curl --silent https://api.github.com/repos/robotology/robotology-superbuild-dependencies-vcpkg/releases/latest | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
         echo "Installing robotology-superbuild-dependencies-vcpkg@${latest_tag}"
-        cd D:/
+        cd C:/
         wget https://github.com/robotology/robotology-superbuild-dependencies-vcpkg/releases/download/${latest_tag}/vcpkg-robotology.zip
-        unzip vcpkg-robotology.zip
+        unzip vcpkg-robotology.zip -d C:/
+        rm vcpkg-robotology.zip
 
     - name: Dependencies [Ubuntu]
       if: matrix.os == 'ubuntu-latest'
