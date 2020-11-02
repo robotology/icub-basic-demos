@@ -41,6 +41,8 @@ estimate the 3-d object position using stereo vision that needs
 to be calibrated in advance relying on a feed-forward neural
 network.
 
+Finally, a simulation modality is available to run the demo within gazebo.
+
 \section lib_sec Libraries
 - ctrlLib.
 - iKin.
@@ -53,6 +55,10 @@ None.
 The robot interface is assumed to be operative; in particular,
 the ICartesianControl interface must be available. The
 \ref iKinGazeCtrl must be running.
+
+In order to run the demo in simulation, such modules can be run with `--context gazeboCartesianControl`.
+A template is also available in the folder app/scripts/demoRedBall_gazebo.xml.template.
+
 \section portsc_sec Ports Created
 
 - \e /demoRedBall/trackTarget:i receives the 3-d
@@ -81,7 +87,9 @@ the ICartesianControl interface must be available. The
 - \e /demoRedBall/lookSkin:rpc interfaces with the lookSkin module
   (if available) and disables/enables it according when needed
 - \e /demoRedBall/gui:o sends out info to update target
-  within the icub_gui.
+  within the icub_gui
+- \e /demoRedBall/gazebo:o interfaces with the ball model in gazebo
+
 
 - \e /demoRedBall/rpc remote procedure
     call. Recognized remote commands:
@@ -117,6 +125,10 @@ idle_tmo        5.0
 use_network off
 // NN configuration file
 network         network.ini
+// enable the use of speech
+speech          on
+// enable the simulation
+simulation      off
 
 [torso]
 // joint switch (min **) (max **) [deg]; 'min', 'max' optional
@@ -207,6 +219,19 @@ by the manager at runtime. The speech file should look as follows:
 "Playing with the red ball makes me happy, let's do it again."
 "I don't feel tired, let's play again."
 "Oh my Gosh!! Where's the red ball??"
+\endcode
+
+\section commands_sec Available commands
+
+To run the demo in gazebo, the following commands can be used:
+
+- `start`: to start the demo
+- `stop`: to stop the demo
+- `update_pose dx dy dz`: to update the ball position with respect
+to the initial position defined in the world.
+
+Note that on the real robot the demo automatically starts.
+
 \endcode
 
 \section tested_os_sec Tested OS
@@ -313,6 +338,8 @@ protected:
     bool useRightArm;
     bool useTorso;
     int  armSel;
+    bool simulation;
+    bool go;
 
     PolyDriver *drvTorso, *drvHead, *drvLeftArm, *drvRightArm;
     PolyDriver *drvCartLeftArm, *drvCartRightArm;
@@ -340,6 +367,7 @@ protected:
     RpcClient breatherRArpc;
     RpcClient blinkerrpc;
     RpcClient lookSkinrpc;
+    BufferedPort<Bottle> gazeboMoverPort;
 
     Vector leftArmReachOffs;
     Vector leftArmGraspOffs;
@@ -800,9 +828,9 @@ protected:
         {
             yInfo("--- Target timeout => IDLE");
 
-            steerHeadToHome();
             stopControl();
             steerTorsoToHome();
+            steerHeadToHome();
             steerArmToHome(LEFTARM);
             steerArmToHome(RIGHTARM);
 
@@ -1478,6 +1506,11 @@ protected:
         breatherRArpc.close();
         blinkerrpc.close();
         lookSkinrpc.close();
+        if (simulation)
+        {            
+            gazeboMoverPort.interrupt();
+            gazeboMoverPort.close();
+        }
     }
 
 public:
@@ -1500,6 +1533,7 @@ public:
         useTorso=bGeneral.check("torso",Value("on"),"Getting torso use flag").asString()=="on"?true:false;
         useSpeech=bGeneral.check("speech",Value("on"),"Getting speech use flag").asString()=="on"?true:false;
         useNetwork=bGeneral.check("use_network",Value("off"),"Getting network enable").asString()=="on"?true:false;
+        simulation=bGeneral.check("simulation",Value("off"),"Getting simulation enable").asString()=="on"?true:false;
         trajTime=bGeneral.check("traj_time",Value(2.0),"Getting trajectory time").asDouble();
         reachTol=bGeneral.check("reach_tol",Value(0.01),"Getting reaching tolerance").asDouble();
         eyeUsed=bGeneral.check("eye",Value("left"),"Getting the used eye").asString();
@@ -1590,6 +1624,22 @@ public:
         breatherRArpc.open(name+"/breather/right_arm:rpc");
         blinkerrpc.open(name+"/blinker:rpc");
         lookSkinrpc.open(name+"/lookSkin:rpc");
+        if (simulation)
+        {
+            go=false;
+            gazeboMoverPort.open(name+"/gazebo:o");
+            if (!Network::connect(gazeboMoverPort.getName(),"/red-ball/mover:i"))
+            {
+                yError()<<"Unable to connect to the redball mover!";
+                gazeboMoverPort.interrupt();
+                gazeboMoverPort.close();
+                return false;
+            }
+        }
+        else
+        {
+            go=true;
+        }
 
         string fwslash="/";
 
@@ -1807,9 +1857,9 @@ public:
         }
 
         // steer the robot to the initial configuration
-        steerHeadToHome();
         stopControl();
         steerTorsoToHome();
+        steerHeadToHome();
         steerArmToHome(LEFTARM);
         steerArmToHome(RIGHTARM);
 
@@ -1839,30 +1889,71 @@ public:
         return true;
     }
 
+    bool updateBall(const double &x, const double &y, const double &z)
+    {
+        if (simulation)
+        {
+            if (gazeboMoverPort.getOutputCount() > 0)
+            {
+                Bottle pose;
+                pose.addDouble(x);
+                pose.addDouble(y);
+                pose.addDouble(z);
+                gazeboMoverPort.prepare() = pose;
+                gazeboMoverPort.writeStrict();
+                return true;
+            }
+
+        }
+        return false;
+    }
+
+    void startDemo()
+    {
+        go=true;
+    }
+
+    void stopDemo()
+    {
+        go=false;
+        stopControl();
+        Time::delay(1.0);
+        steerTorsoToHome();
+        steerHeadToHome();
+        steerArmToHome(LEFTARM);
+        steerArmToHome(RIGHTARM);
+        wentHome=true;
+        deleteGuiTarget();
+        if(useSpeech) sendSpeak(speech_idle[(int)Rand::scalar(0,speech_idle.size()-1e-3)]);
+        state=STATE_IDLE;
+    }
+
     void run()
     {
-        getSensorData();
-        doIdle();
-        commandHead();
-        selectArm();
-        doReach();
-
-        if (((armSel==LEFTARM)  && leftGraspEnable) ||
-            ((armSel==RIGHTARM) && rightGraspEnable))
+        if (go)
         {
-            doGrasp();
-            doRelease();
-            doWait();
-        }
+            getSensorData();
+            doIdle();
+            commandHead();
+            selectArm();
+            doReach();
+            if (((armSel==LEFTARM)  && leftGraspEnable) ||
+                ((armSel==RIGHTARM) && rightGraspEnable))
+            {
+                doGrasp();
+                doRelease();
+                doWait();
+            }
 
-        commandFace();
+            commandFace();
+        }
     }
 
     void threadRelease()
     {
-        steerHeadToHome();
         stopControl();
         steerTorsoToHome();
+        steerHeadToHome();
         steerArmToHome(LEFTARM);
         steerArmToHome(RIGHTARM);
 
@@ -1947,6 +2038,48 @@ public:
         thr->stop();
         delete thr;
 
+        return true;
+    }
+
+    bool respond(const Bottle& cmd, Bottle& reply) override
+    {
+        if (cmd.get(0).asString() == "update_pose")
+        {
+            if (!simulation)
+            {
+                yError() << "This command is meant for gazebo simulation";
+                reply.addVocab(Vocab::encode("fail"));
+                return false;
+            }
+            if (cmd.size()<4)
+            {
+                yError() << "Requires x y z";
+                reply.addVocab(Vocab::encode("fail"));
+                return false;
+            }
+            double x=cmd.get(1).asDouble();
+            double y=cmd.get(2).asDouble();
+            double z=cmd.get(3).asDouble();
+            bool ok=thr->updateBall(x,y,z);
+            if (ok)
+            {
+                reply.addVocab(Vocab::encode("ok"));
+            }
+            else
+            {
+                reply.addVocab(Vocab::encode("fail"));
+            }
+        }
+        if (cmd.get(0).asString() == "start")
+        {
+            thr->startDemo();
+            reply.addVocab(Vocab::encode("ok"));
+        }
+        if (cmd.get(0).asString() == "stop")
+        {
+            thr->stopDemo();
+            reply.addVocab(Vocab::encode("ok"));
+        }
         return true;
     }
 

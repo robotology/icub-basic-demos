@@ -1,0 +1,49 @@
+<?xml version="1.0" ?>
+<sdf version="1.7">
+  <world name="default">
+
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <state world_name='default'>
+      <light name='sun'>
+        <pose frame=''>0 0 10 0 -0 3.14</pose>
+      </light>
+    </state>
+
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <model name="iCub">
+      <include>
+        <uri>model://iCubGazeboV2_5_visuomanip</uri>
+        <pose>0.0 0.0 0.63 0.0 0.0 0.0</pose>
+      </include>
+    </model>
+
+    <model name="red-ball">
+     <include>
+      <uri>model://red-ball</uri>
+      <plugin name="pose_mover" filename='libdemoRedBall-world.so'/>
+     </include>
+      <pose>-0.35 0.0 0.935 0.0 0.0 0.0</pose>
+      <!--<static>true</static>-->
+     <!-- workaround, as the static flag does not allow to update the visual position in gazebo -->
+     <!--<joint name="fixed_to_ground" type="fixed">
+       <parent>world</parent>
+       <child>red-ball::root_link</child>
+     </joint>-->
+    </model>
+
+    <gui fullscreen='0'>
+      <camera name='user_camera'>
+        <pose frame=''>-1.3907 -0.0286 0.9762 0 0.15 0</pose>
+        <view_controller>orbit</view_controller>
+        <projection_type>perspective</projection_type>
+      </camera>
+    </gui>
+
+  </world>
+</sdf>
