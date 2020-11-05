@@ -62,9 +62,9 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       run: |
         sudo apt update
-        sudo apt install git build-essential pkg-config zip unzip zlib1g-dev cmake libace-dev coinor-libipopt-dev libeigen3-dev \
-                         qtbase5-dev qtdeclarative5-dev qtmultimedia5-dev libtinyxml-dev libgsl-dev wget curl autoconf \
-                         autogen automake libtool mlocate libopencv-dev
+        sudo apt install -y git build-essential pkg-config zip unzip zlib1g-dev cmake libace-dev coinor-libipopt-dev libeigen3-dev \
+                            qtbase5-dev qtdeclarative5-dev qtmultimedia5-dev libtinyxml-dev libgsl-dev wget curl autoconf \
+                            autogen automake libtool mlocate libopencv-dev
 
     - name: Dependencies [macOS]
       if: matrix.os == 'macOS-latest'
