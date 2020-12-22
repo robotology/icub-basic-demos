@@ -69,10 +69,6 @@ jobs:
     - name: Dependencies [macOS]
       if: matrix.os == 'macOS-latest'
       run: |
-        brew uninstall python@2.7.17
-        brew untap local/python2
-        brew update
-        brew upgrade
         brew install ace cmake eigen gsl ipopt opencv pkg-config qt5
     - name: Source-based Dependencies [Windows] 
       if: matrix.os == 'windows-latest'
