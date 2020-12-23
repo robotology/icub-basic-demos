@@ -2,6 +2,7 @@ icub-basic-demos
 ================
 
 [![ZenHub](https://img.shields.io/badge/Shipping_faster_with-ZenHub-435198.svg)](https://zenhub.com)
+[![Community](https://img.shields.io/badge/Join-Robotology_Community-blue?style=plastic&logo=github)](https://github.com/robotology/community)
 
 ![ci](https://github.com/robotology/icub-basic-demos/workflows/Continuous%20Integration/badge.svg)
 ![gh-pages](https://github.com/robotology/icub-basic-demos/workflows/GitHub%20Pages/badge.svg)
