@@ -28,6 +28,7 @@ This repository bundles a set of basic demos showing some of the iCub capabiliti
 - [iCub](https://github.com/robotology/icub-main)
 - [icub-contrib-common](https://github.com/robotology/icub-contrib-common)
 - Qt5 (for Force Control demo).
+- OpenCV (for Red Ball demo)
 
 ##### Compilation
 Demos can be compiled independently or altogether as a bundle. For the former
