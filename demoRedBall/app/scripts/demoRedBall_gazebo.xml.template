@@ -1,0 +1,122 @@
+<application>
+<name>Red-Ball Demo Gazebo</name>
+
+        <dependencies>
+               <port>/icubSim/left/out</port>
+                <port>/iKinGazeCtrl/rpc</port>
+                <port>/icubSim/cartesianController/right_arm/state:o</port>
+                <port>/icubSim/cartesianController/left_arm/state:o</port>
+                <port>/wholeBodyDynamics/right_arm/FT:i</port>
+                <port>/wholeBodyDynamics/left_arm/FT:i</port>
+        </dependencies>
+      
+        <module>
+                <name>gzserver</name>
+                <parameters>grasp-ball-gazebo.sdf</parameters>
+                <node>localhost</node>
+        </module>
+
+        <module>
+                <name>gzclient</name>
+                <node>localhost</node>
+        </module>
+
+        <module>
+                <name>iKinGazeCtrl</name>
+                <parameters>--context gazeboCartesianControl --from iKinGazeCtrl.ini</parameters>
+                <dependencies>
+                    <port timeout="20">/icubSim/torso/state:o</port>
+                    <port timeout="20">/icubSim/head/state:o</port>
+                    <port timeout="20">/icubSim/inertial</port>
+                </dependencies>
+                <ensure>
+                   <wait when="stop">5</wait>
+                </ensure>
+                <node>localhost</node>
+        </module>
+
+       <module>
+                <name>yarprobotinterface</name>
+                <parameters>--context gazeboCartesianControl --config no_legs.xml</parameters>
+                <dependencies>
+                    <port timeout="20">/icubSim/torso/state:o</port>
+                    <port timeout="20">/icubSim/left_arm/state:o</port>
+                    <port timeout="20">/icubSim/right_arm/state:o</port>
+                </dependencies>
+                <ensure>
+                   <wait when="stop">5</wait>
+                </ensure>
+                <node>localhost</node>
+        </module>
+
+        <module>
+                <name>iKinCartesianSolver</name>
+                <parameters>--context gazeboCartesianControl --part right_arm</parameters>
+                <dependencies>
+                    <port timeout="20">/icubSim/torso/state:o</port>
+                    <port timeout="20">/icubSim/right_arm/state:o</port>
+                </dependencies>
+                <node>localhost</node>
+        </module>
+
+        <module>
+                <name>iKinCartesianSolver</name>
+                <parameters>--context gazeboCartesianControl --part left_arm</parameters>
+                <dependencies>
+                    <port timeout="20">/icubSim/torso/state:o</port>
+                    <port timeout="20">/icubSim/left_arm/state:o</port>
+                </dependencies>
+                <node>localhost</node>
+        </module>
+
+        <module>
+                <name>wholeBodyDynamics</name>
+                <parameters>--robot icubSim --autoconnect --dummy_ft --headV2 --no_legs</parameters>
+                <dependencies>
+                    <port timeout="20">/icubSim/head/state:o</port>
+                    <port timeout="20">/icubSim/torso/state:o</port>
+                    <port timeout="20">/icubSim/right_arm/state:o</port>
+                    <port timeout="20">/icubSim/left_arm/state:o</port>
+                    <port timeout="20">/icubSim/inertial</port>
+                </dependencies>
+                <node>localhost</node>
+        </module>
+
+
+        <module>
+                <name>pf3dTracker</name>
+                <parameters>--from pf3dTracker-gazebo.ini</parameters>
+                <node>pwrNode1</node>
+        </module>
+   
+        <module>
+                <name>demoRedBall</name>
+                <parameters>--from config-gazebo.ini</parameters>
+                <dependencies>
+                    <port timeout="20">/iKinGazeCtrl/rpc</port>
+                </dependencies>
+                <node>pwrNode2</node>
+        </module>
+  
+        <module>
+                <name>yarpview</name>
+                <parameters>--name /PF3DTracker_viewer --x 320 --y 0 --p 50 --compact</parameters>
+                <node>console</node>
+        </module>
+  
+        <connection>
+                <from>/icubSim/cam/left/rgbImage:o</from>
+                <to>/pf3dTracker/video:i</to>
+                <protocol>fast_tcp</protocol>
+        </connection>
+        <connection>
+                <from>/pf3dTracker/video:o</from>
+                <to>/PF3DTracker_viewer</to>
+                <protocol>fast_tcp</protocol>
+        </connection>
+        <connection>
+                <from>/pf3dTracker/data:o</from>
+                <to>/demoRedBall/trackTarget:i</to>
+                <protocol>fast_tcp</protocol>
+        </connection>
+</application>
