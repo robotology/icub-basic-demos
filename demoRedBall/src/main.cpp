@@ -2045,12 +2045,6 @@ public:
     {
         if (cmd.get(0).asString() == "update_pose")
         {
-            if (!simulation)
-            {
-                yError() << "This command is meant for gazebo simulation";
-                reply.addVocab(Vocab::encode("fail"));
-                return false;
-            }
             if (cmd.size()<4)
             {
                 yError() << "Requires x y z";
