@@ -36,7 +36,7 @@ method go inside the directory corresponding to the demo you want to compile and
 cmake the project; for the latter method, just cmake from the root directory.
 
 ## Documentation
-Online documentation is available here: [http://robotology.github.com/icub-basic-demos](http://robotology.github.com/icub-basic-demos).
+Online documentation is available here: [http://robotology.github.io/icub-basic-demos](http://robotology.github.io/icub-basic-demos).
 
 ## License
 Material included here is Copyright of _iCub Tech Facility - Istituto Italiano di Tecnologia_ and is released under the terms of the GPL v2.0 or later. See the file LICENSE for details.
