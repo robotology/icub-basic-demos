@@ -1,15 +1,5 @@
 <application>
 <name>Red-Ball Demo Gazebo</name>
-
-        <dependencies>
-               <port>/icubSim/left/out</port>
-                <port>/iKinGazeCtrl/rpc</port>
-                <port>/icubSim/cartesianController/right_arm/state:o</port>
-                <port>/icubSim/cartesianController/left_arm/state:o</port>
-                <port>/wholeBodyDynamics/right_arm/FT:i</port>
-                <port>/wholeBodyDynamics/left_arm/FT:i</port>
-        </dependencies>
-      
         <module>
                 <name>gzserver</name>
                 <parameters>grasp-ball-gazebo.sdf</parameters>
