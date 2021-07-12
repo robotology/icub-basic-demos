@@ -225,7 +225,8 @@ by the manager at runtime. The speech file should look as follows:
 
 To run the demo in gazebo, the following commands can be used:
 
-- `start`: to start the demo
+- `start` [azi ele ver]: to start the demo; optionally, one can provide the
+position where the robot initially needs to gaze at.
 - `stop`: to stop the demo
 - `update_pose dx dy dz`: to update the ball position with respect
 to the initial position defined in the world.
@@ -824,7 +825,7 @@ protected:
             }
         }
         else if (((state==STATE_IDLE) || (state==STATE_REACH)) &&
-                 ((Time::now()-idleTimer)>idleTmo) && !wentHome)
+                 ((Time::now()-idleTimer)>idleTmo) && !wentHome && !simulation)
         {
             yInfo("--- Target timeout => IDLE");
 
@@ -1908,8 +1909,13 @@ public:
         return false;
     }
 
-    void startDemo()
+    void startDemo(const Vector& lookat)
     {
+        if (lookat.length() == 3)
+        {
+            gazeCtrl->lookAtAbsAnglesSync(lookat);
+            gazeCtrl->waitMotionDone(.1, 5.);
+        }
         go=true;
     }
 
@@ -2066,7 +2072,15 @@ public:
         }
         if (cmd.get(0).asString() == "start")
         {
-            thr->startDemo();
+            Vector lookat;
+            if (cmd.size() >=4)
+            {
+                lookat.resize(3);
+                lookat[0]=cmd.get(1).asDouble();
+                lookat[1]=cmd.get(2).asDouble();
+                lookat[2]=cmd.get(3).asDouble();
+            }
+            thr->startDemo(lookat);
             reply.addVocab(Vocab::encode("ok"));
         }
         if (cmd.get(0).asString() == "stop")
