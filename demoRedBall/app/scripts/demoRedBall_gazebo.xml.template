@@ -83,6 +83,8 @@
                 <name>demoRedBall</name>
                 <parameters>--from config-gazebo.ini</parameters>
                 <dependencies>
+                    <port timeout="20">/icubSim/cartesianController/left_arm/state:o</port>
+                    <port timeout="20">/icubSim/cartesianController/right_arm/state:o</port>
                     <port timeout="20">/iKinGazeCtrl/rpc</port>
                 </dependencies>
                 <node>localhost</node>
