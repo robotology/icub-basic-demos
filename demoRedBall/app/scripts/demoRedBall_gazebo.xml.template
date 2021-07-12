@@ -76,7 +76,7 @@
         <module>
                 <name>pf3dTracker</name>
                 <parameters>--from pf3dTracker-gazebo.ini</parameters>
-                <node>pwrNode1</node>
+                <node>localhost</node>
         </module>
    
         <module>
@@ -85,13 +85,13 @@
                 <dependencies>
                     <port timeout="20">/iKinGazeCtrl/rpc</port>
                 </dependencies>
-                <node>pwrNode2</node>
+                <node>localhost</node>
         </module>
   
         <module>
                 <name>yarpview</name>
                 <parameters>--name /PF3DTracker_viewer --x 320 --y 0 --p 50 --compact</parameters>
-                <node>console</node>
+                <node>localhost</node>
         </module>
   
         <connection>
