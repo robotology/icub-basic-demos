@@ -219,14 +219,14 @@ bool PF3DTracker::configure(ResourceFinder &rf)
 
     _likelihoodThreshold = (float)botConfig.check("likelihoodThreshold",
                                                   Value(1.0),
-                                                  "Likelihood threshold value (double)").asDouble();
+                                                  "Likelihood threshold value (double)").asFloat64();
 
     _attentionOutputMax = botConfig.check("attentionOutputMax",
                                         Value(257),
-                                        "attentionOutputMax (double)").asDouble();
+                                        "attentionOutputMax (double)").asFloat64();
     _attentionOutputDecrease = botConfig.check("attentionOutputDecrease",
                                         Value(0.99),
-                                        "attentionOutputDecrease (double)").asDouble();
+                                        "attentionOutputDecrease (double)").asFloat64();
 
     if (botConfig.check("outputUVDataPort"))
     {
@@ -244,11 +244,11 @@ bool PF3DTracker::configure(ResourceFinder &rf)
 
     _nParticles = botConfig.check("nParticles",
                                     Value("1000"),
-                                    "Number of particles used in the tracker (int)").asInt();
+                                    "Number of particles used in the tracker (int)").asInt32();
 
     _colorTransfPolicy = botConfig.check("colorTransfPolicy",
                                     Value("1"),
-                                    "Color transformation policy (int)").asInt();
+                                    "Color transformation policy (int)").asInt32();
     if(_colorTransfPolicy!=0 && _colorTransfPolicy!=1)
     {
         yWarning() << "Color trasformation policy "<<_colorTransfPolicy<<" is not yet implemented.";
@@ -257,7 +257,7 @@ bool PF3DTracker::configure(ResourceFinder &rf)
 
     _inside_outside_difference_weight = (float)botConfig.check("insideOutsideDiffWeight",
                                     Value("1.5"),
-                                    "Inside-outside difference weight in the likelihood function (double)").asDouble();
+                                    "Inside-outside difference weight in the likelihood function (double)").asFloat64();
 
     _projectionModel = botConfig.check("projectionModel",
                                        Value("perspective"),
@@ -275,24 +275,24 @@ bool PF3DTracker::configure(ResourceFinder &rf)
             Bottle &params=camera_rf.findGroup(botConfig.find("cameraGroup").asString());
             if (!params.isNull())
             {
-                _calibrationImageWidth =params.check("w",Value(320)).asInt();
-                _calibrationImageHeight=params.check("h",Value(240)).asInt();
-                _perspectiveFx         =(float)params.check("fx",Value(257.34)).asDouble();
-                _perspectiveFy         =(float)params.check("fy",Value(257.34)).asDouble();
-                _perspectiveCx         =(float)params.check("cx",Value(160.0)).asDouble();
-                _perspectiveCy         =(float)params.check("cy",Value(120.0)).asDouble();
+                _calibrationImageWidth =params.check("w",Value(320)).asInt32();
+                _calibrationImageHeight=params.check("h",Value(240)).asInt32();
+                _perspectiveFx         =(float)params.check("fx",Value(257.34)).asFloat64();
+                _perspectiveFy         =(float)params.check("fy",Value(257.34)).asFloat64();
+                _perspectiveCx         =(float)params.check("cx",Value(160.0)).asFloat64();
+                _perspectiveCy         =(float)params.check("cy",Value(120.0)).asFloat64();
                 rfOk=true;
             }
         }
 
         if (!rfOk)
         {
-            _calibrationImageWidth =botConfig.check("w",Value(320)).asInt();
-            _calibrationImageHeight=botConfig.check("h",Value(240)).asInt();
-            _perspectiveFx         =(float)botConfig.check("perspectiveFx",Value(257.34)).asDouble();
-            _perspectiveFy         =(float)botConfig.check("perspectiveFy",Value(257.34)).asDouble();
-            _perspectiveCx         =(float)botConfig.check("perspectiveCx",Value(160.0)).asDouble();
-            _perspectiveCy         =(float)botConfig.check("perspectiveCy",Value(120.0)).asDouble();
+            _calibrationImageWidth =botConfig.check("w",Value(320)).asInt32();
+            _calibrationImageHeight=botConfig.check("h",Value(240)).asInt32();
+            _perspectiveFx         =(float)botConfig.check("perspectiveFx",Value(257.34)).asFloat64();
+            _perspectiveFy         =(float)botConfig.check("perspectiveFy",Value(257.34)).asFloat64();
+            _perspectiveCx         =(float)botConfig.check("perspectiveCx",Value(160.0)).asFloat64();
+            _perspectiveCy         =(float)botConfig.check("perspectiveCy",Value(120.0)).asFloat64();
         }
 
         cout<<"w ="<<_calibrationImageWidth<<endl;
@@ -324,13 +324,13 @@ bool PF3DTracker::configure(ResourceFinder &rf)
     {
         _initialX = botConfig.check("initialX",
                                     Value("0"),
-                                    "Estimated initial X position [m] (double)").asDouble()*1000; //meters to millimeters
+                                    "Estimated initial X position [m] (double)").asFloat64()*1000; //meters to millimeters
         _initialY = botConfig.check("initialY",
                                     Value("0"),
-                                    "Estimated initial Y position [m] (double)").asDouble()*1000; //meters to millimeters
+                                    "Estimated initial Y position [m] (double)").asFloat64()*1000; //meters to millimeters
         _initialZ = botConfig.check("initialZ",
                                     Value("1000"),
-                                    "Estimated initial Z position [m] (double)").asDouble()*1000; //meters to millimeters
+                                    "Estimated initial Z position [m] (double)").asFloat64()*1000; //meters to millimeters
     }
     else
     {
@@ -355,7 +355,7 @@ bool PF3DTracker::configure(ResourceFinder &rf)
     //0 means inner and outer circle, 1 means just one circle of the correct size.
     _circleVisualizationMode = botConfig.check("circleVisualizationMode",
                                     Value("0"),
-                                    "Visualization mode for the sphere (int)").asInt();
+                                    "Visualization mode for the sphere (int)").asInt32();
     }
     else
     {
@@ -425,7 +425,7 @@ bool PF3DTracker::configure(ResourceFinder &rf)
 
     _accelStDev = (float)botConfig.check("accelStDev",
                                         Value(150.0),
-                                        "StDev of acceleration noise (double)").asDouble();
+                                        "StDev of acceleration noise (double)").asFloat64();
 
     motionModelMatrix = rf.findFile("motionModelMatrix");
 
@@ -767,13 +767,13 @@ bool PF3DTracker::updateModule()
         //         particleOutput.clear();
         //         for(count=0;count<_nParticles;count++)
         //         {
-        //             particleOutput.addDouble((double)(_particles[0][count]));
-        //             particleOutput.addDouble((double)(_particles[1][count]));
-        //             particleOutput.addDouble((double)(_particles[2][count]));
-        //             particleOutput.addDouble((double)(_particles[3][count]));
-        //             particleOutput.addDouble((double)(_particles[4][count]));
-        //             particleOutput.addDouble((double)(_particles[5][count]));
-        //             particleOutput.addDouble((double)(_particles[6][count]));
+        //             particleOutput.addFloat64((double)(_particles[0][count]));
+        //             particleOutput.addFloat64((double)(_particles[1][count]));
+        //             particleOutput.addFloat64((double)(_particles[2][count]));
+        //             particleOutput.addFloat64((double)(_particles[3][count]));
+        //             particleOutput.addFloat64((double)(_particles[4][count]));
+        //             particleOutput.addFloat64((double)(_particles[5][count]));
+        //             particleOutput.addFloat64((double)(_particles[6][count]));
         //         }
         //         _outputParticlePort.write();
         //     }
@@ -866,7 +866,7 @@ bool PF3DTracker::updateModule()
             if (particleInput==NULL)
                 _numParticlesReceived=0;
             else
-                _numParticlesReceived=(particleInput->get(0)).asInt();
+                _numParticlesReceived=(particleInput->get(0)).asInt32();
             if(_numParticlesReceived > _nParticles)
             {
                 _numParticlesReceived=0;
@@ -924,15 +924,15 @@ bool PF3DTracker::updateModule()
         if(_numParticlesReceived > 0){
             int topdownParticles = _nParticles - _numParticlesReceived;
             for(count=0 ; count<_numParticlesReceived ; count++){
-                cvmSet(_particles,0,topdownParticles+count, (particleInput->get(1+count*3+0)).asDouble());
-                cvmSet(_particles,1,topdownParticles+count, (particleInput->get(1+count*3+1)).asDouble());
-                cvmSet(_particles,2,topdownParticles+count, (particleInput->get(1+count*3+2)).asDouble());
+                cvmSet(_particles,0,topdownParticles+count, (particleInput->get(1+count*3+0)).asFloat64());
+                cvmSet(_particles,1,topdownParticles+count, (particleInput->get(1+count*3+1)).asFloat64());
+                cvmSet(_particles,2,topdownParticles+count, (particleInput->get(1+count*3+2)).asFloat64());
                 cvmSet(_particles,3,topdownParticles+count, 0);
                 cvmSet(_particles,4,topdownParticles+count, 0);
                 cvmSet(_particles,5,topdownParticles+count, 0);
                 cvmSet(_particles,6,topdownParticles+count, 0.8); //??
             }
-            //num_bottomup_objects=(particleInput->get(1+count*3)).asInt();
+            //num_bottomup_objects=(particleInput->get(1+count*3)).asInt32();
         }
         //------------------------------------------------------------end martim
         }
@@ -982,13 +982,13 @@ bool PF3DTracker::updateModule()
 
         Bottle& output=_outputDataPort.prepare();
         output.clear();
-        output.addDouble(weightedMeanX/1000);//millimeters to meters
-        output.addDouble(weightedMeanY/1000);//millimeters to meters
-        output.addDouble(weightedMeanZ/1000);//millimeters to meters
-        output.addDouble(maxLikelihood/exp((float)20.0));//normalizing likelihood
-        output.addDouble(meanU);
-        output.addDouble(meanV);
-        output.addDouble(_seeingObject);
+        output.addFloat64(weightedMeanX/1000);//millimeters to meters
+        output.addFloat64(weightedMeanY/1000);//millimeters to meters
+        output.addFloat64(weightedMeanZ/1000);//millimeters to meters
+        output.addFloat64(maxLikelihood/exp((float)20.0));//normalizing likelihood
+        output.addFloat64(meanU);
+        output.addFloat64(meanV);
+        output.addFloat64(_seeingObject);
 
         //set the envelope for the output port
         _outputDataPort.setEnvelope(_yarpTimestamp);
@@ -1000,8 +1000,8 @@ bool PF3DTracker::updateModule()
             Bottle& outputUV=_outputUVDataPort.prepare();
 
             outputUV.clear();
-            outputUV.addDouble(meanU);
-            outputUV.addDouble(meanV);
+            outputUV.addFloat64(meanU);
+            outputUV.addFloat64(meanV);
 
             //set the envelope for the output port
             _outputUVDataPort.setEnvelope(_yarpTimestamp);

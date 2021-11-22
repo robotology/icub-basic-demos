@@ -311,10 +311,10 @@ public:
         in[0]=head[3];                              // tilt
         in[1]=head[4];                              // pan
         in[2]=head[5];                              // ver
-        in[3]=firstBlobLeft->get(0).asDouble();     // ul
-        in[4]=firstBlobLeft->get(1).asDouble();     // vl
-        in[5]=firstBlobRight->get(0).asDouble();    // ur
-        in[6]=firstBlobRight->get(1).asDouble();    // vr
+        in[3]=firstBlobLeft->get(0).asFloat64();     // ul
+        in[4]=firstBlobLeft->get(1).asFloat64();     // vl
+        in[5]=firstBlobRight->get(0).asFloat64();    // ur
+        in[6]=firstBlobRight->get(1).asFloat64();    // vr
 
         return net.predict(in);
     }
@@ -474,13 +474,13 @@ protected:
             if (grp.check("min","Getting minimum value"))
             {
                 lim(i,0)=1.0;
-                lim(i,1)=grp.find("min").asDouble();
+                lim(i,1)=grp.find("min").asFloat64();
             }
 
             if (grp.check("max","Getting maximum value"))
             {
                 lim(i,2)=1.0;
-                lim(i,3)=grp.find("max").asDouble();
+                lim(i,3)=grp.find("max").asFloat64();
             }
         }
     }
@@ -498,7 +498,7 @@ protected:
             int len=sz>3?3:sz;
 
             for (int i=0; i<len; i++)
-                reachOffs[i]=grp.get(1+i).asDouble();
+                reachOffs[i]=grp.get(1+i).asFloat64();
         }
 
         if (b.check("grasp_offset","Getting grasping offset"))
@@ -508,7 +508,7 @@ protected:
             int len=sz>3?3:sz;
 
             for (int i=0; i<len; i++)
-                graspOffs[i]=grp.get(1+i).asDouble();
+                graspOffs[i]=grp.get(1+i).asFloat64();
         }
 
         if (b.check("hand_orientation","Getting hand orientation"))
@@ -518,7 +518,7 @@ protected:
             int len=sz>4?4:sz;
 
             for (int i=0; i<len; i++)
-                orien[i]=grp.get(1+i).asDouble();
+                orien[i]=grp.get(1+i).asFloat64();
         }
 
         impVelMode=b.check("impedance_velocity_mode",Value("off"),"Getting arm impedance-velocity-mode").asString()=="on"?true:false;
@@ -530,7 +530,7 @@ protected:
             size_t len=sz>impStiff.length()?impStiff.length():sz;
 
             for (size_t i=0; i<len; i++)
-                impStiff[i]=grp.get(1+i).asDouble();
+                impStiff[i]=grp.get(1+i).asFloat64();
         }
 
         if (b.check("impedance_damping","Getting joints damping"))
@@ -540,7 +540,7 @@ protected:
             size_t len=sz>impDamp.length()?impDamp.length():sz;
 
             for (size_t i=0; i<len; i++)
-                impDamp[i]=grp.get(1+i).asDouble();
+                impDamp[i]=grp.get(1+i).asFloat64();
         }
     }
 
@@ -554,7 +554,7 @@ protected:
             int len=sz>7?7:sz;
 
             for (int i=0; i<len; i++)
-                poss[i]=grp.get(1+i).asDouble();
+                poss[i]=grp.get(1+i).asFloat64();
         }
         else
         {
@@ -569,7 +569,7 @@ protected:
             int len=sz>7?7:sz;
 
             for (int i=0; i<len; i++)
-                vels[i]=grp.get(1+i).asDouble();
+                vels[i]=grp.get(1+i).asFloat64();
         }
         else
         {
@@ -589,7 +589,7 @@ protected:
             int len=sz>9?9:sz;
 
             for (int i=0; i<len; i++)
-                openPoss[i]=grp.get(1+i).asDouble();
+                openPoss[i]=grp.get(1+i).asFloat64();
         }
         else
         {
@@ -604,7 +604,7 @@ protected:
             int len=sz>9?9:sz;
 
             for (int i=0; i<len; i++)
-                closePoss[i]=grp.get(1+i).asDouble();
+                closePoss[i]=grp.get(1+i).asFloat64();
         }
         else
         {
@@ -619,7 +619,7 @@ protected:
             int len=sz>9?9:sz;
 
             for (int i=0; i<len; i++)
-                vels[i]=grp.get(1+i).asDouble();
+                vels[i]=grp.get(1+i).asFloat64();
         }
         else
         {
@@ -703,7 +703,7 @@ protected:
 
         Bottle info;
         icart->getInfo(info);
-        double hwver=info.find("arm_version").asDouble();
+        double hwver=info.find("arm_version").asFloat64();
 
         if (useTorso)
         {
@@ -782,12 +782,12 @@ protected:
         {
             if (targetPosNew->size()>6)
             {
-                if (targetPosNew->get(6).asDouble()==1.0)
+                if (targetPosNew->get(6).asFloat64()==1.0)
                 {
                     Vector fp(4);
-                    fp[0]=targetPosNew->get(0).asDouble();
-                    fp[1]=targetPosNew->get(1).asDouble();
-                    fp[2]=targetPosNew->get(2).asDouble();
+                    fp[0]=targetPosNew->get(0).asFloat64();
+                    fp[1]=targetPosNew->get(1).asFloat64();
+                    fp[2]=targetPosNew->get(2).asFloat64();
                     fp[3]=1.0;
 
                     if ((isnan(fp[0])==0) && (isnan(fp[1])==0) && (isnan(fp[2])==0))
@@ -904,27 +904,27 @@ protected:
                 obj.addString("ball");
 
                 // size
-                obj.addDouble(50.0);
-                obj.addDouble(50.0);
-                obj.addDouble(50.0);
+                obj.addFloat64(50.0);
+                obj.addFloat64(50.0);
+                obj.addFloat64(50.0);
 
                 // positions
-                obj.addDouble(1000.0*targetPos[0]);
-                obj.addDouble(1000.0*targetPos[1]);
-                obj.addDouble(1000.0*targetPos[2]);
+                obj.addFloat64(1000.0*targetPos[0]);
+                obj.addFloat64(1000.0*targetPos[1]);
+                obj.addFloat64(1000.0*targetPos[2]);
 
                 // orientation
-                obj.addDouble(0.0);
-                obj.addDouble(0.0);
-                obj.addDouble(0.0);
+                obj.addFloat64(0.0);
+                obj.addFloat64(0.0);
+                obj.addFloat64(0.0);
 
                 // color
-                obj.addInt(255);
-                obj.addInt(0);
-                obj.addInt(0);
+                obj.addInt32(255);
+                obj.addInt32(0);
+                obj.addInt32(0);
 
                 // transparency
-                obj.addDouble(1.0);
+                obj.addFloat64(1.0);
 
                 outportGui.write(obj);
             }
@@ -1397,23 +1397,23 @@ protected:
     {
         Bottle in, out;
 
-        out.addVocab(Vocab::encode("set"));
-        out.addVocab(Vocab::encode("mou"));
-        out.addVocab(Vocab::encode(type));
+        out.addVocab32("set");
+        out.addVocab32("mou");
+        out.addVocab32(type);
         outportCmdFace.write(out,in);
 
         out.clear();
 
-        out.addVocab(Vocab::encode("set"));
-        out.addVocab(Vocab::encode("leb"));
-        out.addVocab(Vocab::encode(type));
+        out.addVocab32("set");
+        out.addVocab32("leb");
+        out.addVocab32(type);
         outportCmdFace.write(out,in);
 
         out.clear();
 
-        out.addVocab(Vocab::encode("set"));
-        out.addVocab(Vocab::encode("reb"));
-        out.addVocab(Vocab::encode(type));
+        out.addVocab32("set");
+        out.addVocab32("reb");
+        out.addVocab32(type);
         outportCmdFace.write(out,in);
     }
 
@@ -1535,11 +1535,11 @@ public:
         useSpeech=bGeneral.check("speech",Value("on"),"Getting speech use flag").asString()=="on"?true:false;
         useNetwork=bGeneral.check("use_network",Value("off"),"Getting network enable").asString()=="on"?true:false;
         simulation=bGeneral.check("simulation",Value("off"),"Getting simulation enable").asString()=="on"?true:false;
-        trajTime=bGeneral.check("traj_time",Value(2.0),"Getting trajectory time").asDouble();
-        reachTol=bGeneral.check("reach_tol",Value(0.01),"Getting reaching tolerance").asDouble();
+        trajTime=bGeneral.check("traj_time",Value(2.0),"Getting trajectory time").asFloat64();
+        reachTol=bGeneral.check("reach_tol",Value(0.01),"Getting reaching tolerance").asFloat64();
         eyeUsed=bGeneral.check("eye",Value("left"),"Getting the used eye").asString();
-        idleTmo=bGeneral.check("idle_tmo",Value(1e10),"Getting idle timeout").asDouble();
-        setPeriod((double)bGeneral.check("thread_period",Value(DEFAULT_THR_PER),"Getting thread period [ms]").asInt()/1000.0);
+        idleTmo=bGeneral.check("idle_tmo",Value(1e10),"Getting idle timeout").asFloat64();
+        setPeriod((double)bGeneral.check("thread_period",Value(DEFAULT_THR_PER),"Getting thread period [ms]").asInt32()/1000.0);
 
         if (!useTorso)
         {
@@ -1588,14 +1588,14 @@ public:
         // arm_selection part
         Bottle &bArmSel=rf.findGroup("arm_selection");
         bArmSel.setMonitor(rf.getMonitor());
-        hystThres=bArmSel.check("hysteresis_thres",Value(0.0),"Getting hysteresis threshold").asDouble();
+        hystThres=bArmSel.check("hysteresis_thres",Value(0.0),"Getting hysteresis threshold").asFloat64();
 
         // grasp part
         Bottle &bGrasp=rf.findGroup("grasp");
         bGrasp.setMonitor(rf.getMonitor());
-        sphereRadius=bGrasp.check("sphere_radius",Value(0.0),"Getting sphere radius").asDouble();
-        sphereTmo=bGrasp.check("sphere_tmo",Value(0.0),"Getting sphere timeout").asDouble();
-        releaseTmo=bGrasp.check("release_tmo",Value(0.0),"Getting release timeout").asDouble();
+        sphereRadius=bGrasp.check("sphere_radius",Value(0.0),"Getting sphere radius").asFloat64();
+        sphereTmo=bGrasp.check("sphere_tmo",Value(0.0),"Getting sphere timeout").asFloat64();
+        releaseTmo=bGrasp.check("release_tmo",Value(0.0),"Getting release timeout").asFloat64();
 
         openHandPoss.resize(9,0.0); closeHandPoss.resize(9,0.0);
         handVels.resize(9,0.0);
@@ -1897,9 +1897,9 @@ public:
             if (gazeboMoverPort.getOutputCount() > 0)
             {
                 Bottle pose;
-                pose.addDouble(x);
-                pose.addDouble(y);
-                pose.addDouble(z);
+                pose.addFloat64(x);
+                pose.addFloat64(y);
+                pose.addFloat64(z);
                 gazeboMoverPort.prepare() = pose;
                 gazeboMoverPort.writeStrict();
                 return true;
@@ -2054,20 +2054,20 @@ public:
             if (cmd.size()<4)
             {
                 yError() << "Requires x y z";
-                reply.addVocab(Vocab::encode("fail"));
+                reply.addVocab32("fail");
                 return false;
             }
-            double x=cmd.get(1).asDouble();
-            double y=cmd.get(2).asDouble();
-            double z=cmd.get(3).asDouble();
+            double x=cmd.get(1).asFloat64();
+            double y=cmd.get(2).asFloat64();
+            double z=cmd.get(3).asFloat64();
             bool ok=thr->updateBall(x,y,z);
             if (ok)
             {
-                reply.addVocab(Vocab::encode("ok"));
+                reply.addVocab32("ok");
             }
             else
             {
-                reply.addVocab(Vocab::encode("fail"));
+                reply.addVocab32("fail");
             }
         }
         if (cmd.get(0).asString() == "start")
@@ -2076,17 +2076,17 @@ public:
             if (cmd.size() >=4)
             {
                 lookat.resize(3);
-                lookat[0]=cmd.get(1).asDouble();
-                lookat[1]=cmd.get(2).asDouble();
-                lookat[2]=cmd.get(3).asDouble();
+                lookat[0]=cmd.get(1).asFloat64();
+                lookat[1]=cmd.get(2).asFloat64();
+                lookat[2]=cmd.get(3).asFloat64();
             }
             thr->startDemo(lookat);
-            reply.addVocab(Vocab::encode("ok"));
+            reply.addVocab32("ok");
         }
         if (cmd.get(0).asString() == "stop")
         {
             thr->stopDemo();
-            reply.addVocab(Vocab::encode("ok"));
+            reply.addVocab32("ok");
         }
         return true;
     }

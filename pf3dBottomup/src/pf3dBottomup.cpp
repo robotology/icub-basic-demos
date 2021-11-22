@@ -69,14 +69,14 @@ bool pf3dBottomup::updateModule()
         if(num_detected_objects>0){
             Bottle& particleOutput=_outputParticlePort.prepare(); int count;
             particleOutput.clear();
-            particleOutput.addInt(_nParticles);
+            particleOutput.addInt32(_nParticles);
             for(count=0;count<_nParticles;count++)
             {
-                particleOutput.addDouble((double)cvmGet(_object_model.particles,0,count));
-                particleOutput.addDouble((double)cvmGet(_object_model.particles,1,count));
-                particleOutput.addDouble((double)cvmGet(_object_model.particles,2,count));
+                particleOutput.addFloat64((double)cvmGet(_object_model.particles,0,count));
+                particleOutput.addFloat64((double)cvmGet(_object_model.particles,1,count));
+                particleOutput.addFloat64((double)cvmGet(_object_model.particles,2,count));
             }
-            //particleOutput.addInt(num_detected_objects);
+            //particleOutput.addInt32(num_detected_objects);
             _outputParticlePort.write();
         }
 
@@ -118,43 +118,43 @@ bool pf3dBottomup::configure(ResourceFinder &rf)
 
     _nParticles = rf.check("nParticles",
                 Value("100"),
-                "Number of particles used in the tracker (int)").asInt();
+                "Number of particles used in the tracker (int)").asInt32();
     _calibrationImageWidth = rf.check("w",
                 Value(640),
-                "Image width  (int)").asInt();
+                "Image width  (int)").asInt32();
     _calibrationImageHeight = rf.check("h",
                 Value(480),
-                "Image height (int)").asInt();
+                "Image height (int)").asInt32();
     _camera.fx = rf.check("perspectiveFx",
                 Value(1),
-                "Focal distance * kx  (double)").asDouble();
+                "Focal distance * kx  (double)").asFloat64();
     _camera.fy = rf.check("perspectiveFy",
                 Value(1),
-                "Focal distance * ky  (double)").asDouble();
+                "Focal distance * ky  (double)").asFloat64();
     _camera.cx = rf.check("perspectiveCx",
                 Value(1),
-                "X position of the projection center, in pixels (double)").asDouble();
+                "X position of the projection center, in pixels (double)").asFloat64();
     _camera.cy = rf.check("perspectiveCy",
                 Value(1),
-                "Y position of the projection center, in pixels (double)").asDouble();
+                "Y position of the projection center, in pixels (double)").asFloat64();
     _scaleSpaceLevels = rf.check("scaleSpaceLevels",
                 Value(3),
-                "Number of levels on the scale space (int)").asInt();
+                "Number of levels on the scale space (int)").asInt32();
     _maskVmin = rf.check("maskVmin",
                 Value(15),
-                "Minimum acceptable image value (int)").asInt();
+                "Minimum acceptable image value (int)").asInt32();
     _maskVmax = rf.check("maskVmax",
                 Value(255),
-                "Maximum acceptable image value (int)").asInt();
+                "Maximum acceptable image value (int)").asInt32();
     _maskSmin = rf.check("maskSmin",
                 Value(70),
-                "Minimum acceptable image saturation (int)").asInt();
+                "Minimum acceptable image saturation (int)").asInt32();
     _blur = rf.check("Blur",
                 Value(0),
-                "Blur variance applied to the input image (int)").asInt();
+                "Blur variance applied to the input image (int)").asInt32();
     _object_model.raio_esfera = rf.check("sphereRadius",
                 Value(0.03),
-                "Radius of the sphere in case that is our object (double)").asDouble();
+                "Radius of the sphere in case that is our object (double)").asFloat64();
 
     trackedObjectColorTemplate = rf.findFile("trackedObjectColorTemplate");
     if(trackedObjectColorTemplate==""){ 

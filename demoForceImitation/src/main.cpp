@@ -265,7 +265,7 @@ class CtrlModule: public RFModule
 
     virtual bool configure(ResourceFinder &rf)
     {
-        int rate = rf.check("period",Value(20)).asInt();
+        int rate = rf.check("period",Value(20)).asInt32();
         control_thr=new CtrlThread(rate,rf);
         if (!control_thr->start())
         {

@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.5)
 set(PROJECTNAME demoYoga)
 project(${PROJECTNAME})
 
-find_package(YARP 3.3.2 REQUIRED)
+find_package(YARP 3.5.1 REQUIRED)
 find_package(ICUBcontrib REQUIRED)
 list(APPEND CMAKE_MODULE_PATH ${ICUBCONTRIB_MODULE_PATH})
 

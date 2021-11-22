@@ -168,22 +168,22 @@ public:
         for (int k=0; k<LIMBS; k++)
         {
             Bottle seqFile=config.findGroup(tags[k].c_str());
-            int length=(seqFile.findGroup("DIMENSIONS").find("numberOfPoses")).asInt();
-            int nj=seqFile.findGroup("DIMENSIONS").find("numberOfJoints").asInt();
+            int length=(seqFile.findGroup("DIMENSIONS").find("numberOfPoses")).asInt32();
+            int nj=seqFile.findGroup("DIMENSIONS").find("numberOfJoints").asInt32();
             for (int ii=0; ii<length; ii++)
             {
                 char tmp[80];
                 if (seqFile.findGroup("REORDER").isNull())
                     sprintf(tmp,"POSITION%d",ii);
                 else
-                    sprintf(tmp,"POSITION%d",seqFile.findGroup("REORDER").findGroup("order").get(ii+1).asInt());
+                    sprintf(tmp,"POSITION%d",seqFile.findGroup("REORDER").findGroup("order").get(ii+1).asInt32());
                 Bottle &xtmp=seqFile.findGroup(tmp).findGroup("jointPositions");
                 Vector vect;
                 vect.resize(nj);
                 if (nj!=xtmp.size()-1)
                     yWarning("**** WARNING: mismatch of sizes in the input file! nj=%d, xtmp=%d \n",nj,xtmp.size());
                 for (int l=0; l<xtmp.size()-1; l++)
-                    vect[l]=xtmp.get(l+1).asDouble();
+                    vect[l]=xtmp.get(l+1).asFloat64();
                 sequences[k].push_back(vect);
             }
         }
@@ -576,7 +576,7 @@ int main(int argc, char *argv[])
     op.fromConfigFile(inifile.c_str());
     double dT=-1;
     if (op.check("time"))
-        dT=op.find("time").asDouble();
+        dT=op.find("time").asFloat64();
 
     if (!icub.createDevices())
     {

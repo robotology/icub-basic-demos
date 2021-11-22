@@ -45,9 +45,9 @@ class ModelMover : public gazebo::ModelPlugin
                     }
                 }
 
-                const auto x = starting_pos.X() + b->get(0).asDouble();
-                const auto y = starting_pos.Y() + b->get(1).asDouble();
-                const auto z = starting_pos.Z() + b->get(2).asDouble();
+                const auto x = starting_pos.X() + b->get(0).asFloat64();
+                const auto y = starting_pos.Y() + b->get(1).asFloat64();
+                const auto z = starting_pos.Z() + b->get(2).asFloat64();
                 ignition::math::Pose3d new_pose(x, y, z, 0.0, 0.0, 0.0);
                 yInfo() << "New pose:" << x << y << z;
                 model->SetWorldPose(new_pose);
