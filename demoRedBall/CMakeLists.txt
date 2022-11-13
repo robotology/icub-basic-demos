@@ -19,7 +19,7 @@ set(sources src/main.cpp)
 source_group("Source Files" FILES ${sources})
 
 add_executable(${PROJECT_NAME} ${sources})
-target_link_libraries(${PROJECT_NAME} ctrlLib ${YARP_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ctrlLib iKin ${YARP_LIBRARIES})
 install(TARGETS ${PROJECT_NAME} DESTINATION bin)
 
 # world
