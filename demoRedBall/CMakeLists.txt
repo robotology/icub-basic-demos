@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.5)
 project(demoRedBall)
 
 find_package(YARP 3.5.1 REQUIRED)
-find_package(ICUB REQUIRED)
+find_package(ICUB 2.0.0 REQUIRED)
 find_package(ICUBcontrib REQUIRED)
 list(APPEND CMAKE_MODULE_PATH ${ICUB_MODULE_PATH}
                               ${ICUBCONTRIB_MODULE_PATH})
