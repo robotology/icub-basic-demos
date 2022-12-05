@@ -251,7 +251,9 @@ Windows, Linux
 #include <yarp/sig/Vector.h>
 #include <yarp/math/Math.h>
 #include <yarp/math/Rand.h>
+
 #include <iCub/ctrl/neuralNetworks.h>
+#include <iCub/iKin/iKinFwd.h>
 
 #define DEFAULT_THR_PER     20
 
@@ -283,6 +285,7 @@ using namespace yarp::sig;
 using namespace yarp::dev;
 using namespace yarp::math;
 using namespace iCub::ctrl;
+using namespace iCub::iKin;
 
 
 class Predictor
@@ -703,13 +706,13 @@ protected:
 
         Bottle info;
         icart->getInfo(info);
-        double hwver=info.find("arm_version").asFloat64();
+        auto hwver=iKinLimbVersion(info.find("arm_version").asString());
 
         if (useTorso)
         {
             Vector sw_ = sw;
             Matrix lim_=lim;
-            if (hwver>=3.0)
+            if (hwver>=iKinLimbVersion("3.0"))
             {
                 sw_[0]=sw[1];
                 sw_[1]=sw[0];

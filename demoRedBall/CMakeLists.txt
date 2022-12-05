@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.5)
 project(demoRedBall)
 
 find_package(YARP 3.5.1 REQUIRED)
-find_package(ICUB REQUIRED)
+find_package(ICUB 2.0.0 REQUIRED)
 find_package(ICUBcontrib REQUIRED)
 list(APPEND CMAKE_MODULE_PATH ${ICUB_MODULE_PATH}
                               ${ICUBCONTRIB_MODULE_PATH})
@@ -19,7 +19,7 @@ set(sources src/main.cpp)
 source_group("Source Files" FILES ${sources})
 
 add_executable(${PROJECT_NAME} ${sources})
-target_link_libraries(${PROJECT_NAME} ctrlLib ${YARP_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ctrlLib iKin ${YARP_LIBRARIES})
 install(TARGETS ${PROJECT_NAME} DESTINATION bin)
 
 # world
