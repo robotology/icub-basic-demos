@@ -1530,7 +1530,6 @@ public:
     {
         // general part
         Bottle &bGeneral=rf.findGroup("general");
-        bGeneral.setMonitor(rf.getMonitor());
         robot=bGeneral.check("robot",Value("icub"),"Getting robot name").asString();
         useLeftArm=bGeneral.check("left_arm",Value("on"),"Getting left arm use flag").asString()=="on"?true:false;
         useRightArm=bGeneral.check("right_arm",Value("on"),"Getting right arm use flag").asString()=="on"?true:false;
@@ -1551,7 +1550,6 @@ public:
 
         // torso part
         Bottle &bTorso=rf.findGroup("torso");
-        bTorso.setMonitor(rf.getMonitor());
 
         Vector torsoSwitch(3);   torsoSwitch.zero();
         Matrix torsoLimits(3,4); torsoLimits.zero();
@@ -1563,8 +1561,6 @@ public:
         // arm parts
         Bottle &bLeftArm=rf.findGroup("left_arm");
         Bottle &bRightArm=rf.findGroup("right_arm");
-        bLeftArm.setMonitor(rf.getMonitor());
-        bRightArm.setMonitor(rf.getMonitor());
 
         leftArmReachOffs.resize(3,0.0);
         leftArmGraspOffs.resize(3,0.0);
@@ -1584,18 +1580,15 @@ public:
 
         // home part
         Bottle &bHome=rf.findGroup("home_arm");
-        bHome.setMonitor(rf.getMonitor());
         homePoss.resize(7,0.0); homeVels.resize(7,0.0);
         if (!getHomeOptions(bHome, homePoss, homeVels)) { yError ("Error in parameters section 'home_arm'"); return false; }
 
         // arm_selection part
         Bottle &bArmSel=rf.findGroup("arm_selection");
-        bArmSel.setMonitor(rf.getMonitor());
         hystThres=bArmSel.check("hysteresis_thres",Value(0.0),"Getting hysteresis threshold").asFloat64();
 
         // grasp part
         Bottle &bGrasp=rf.findGroup("grasp");
-        bGrasp.setMonitor(rf.getMonitor());
         sphereRadius=bGrasp.check("sphere_radius",Value(0.0),"Getting sphere radius").asFloat64();
         sphereTmo=bGrasp.check("sphere_tmo",Value(0.0),"Getting sphere timeout").asFloat64();
         releaseTmo=bGrasp.check("release_tmo",Value(0.0),"Getting release timeout").asFloat64();
@@ -2099,89 +2092,6 @@ public:
 };
 
 
-class myReport : public SearchMonitor
-{
-protected:
-    Property comment, fallback, present, actual, reported;
-    Bottle order;
-
-public:
-    void report(const SearchReport& report, const char *context)
-    {
-        string ctx=context;
-        string key=report.key;
-        string prefix="";
-
-        prefix=ctx;
-        prefix+=".";
-
-        key=prefix+key;
-        if (key.substr(0,1)==".")
-            key = key.substr(1,key.length());
-
-        if (!present.check(key))
-        {
-            present.put(key,"present");
-            order.addString(key);
-        }
-
-        if (report.isFound)
-            actual.put(key,report.value);
-
-        if (report.isComment==true)
-        {
-            comment.put(key,report.value);
-            return;
-        }
-
-        if (report.isDefault==true)
-        {
-            fallback.put(key,report.value);
-            return;
-        }
-
-        if (comment.check(key))
-        {
-            if (!reported.check(key))
-            {
-                if (report.isFound)
-                {
-                    string hasValue=report.value;
-                    if (hasValue.length()>35)
-                        hasValue=hasValue.substr(0,30)+" ...";
-
-                    yInfo("Checking \"%s\": = %s (%s)",key.c_str(),
-                          hasValue.c_str(),comment.check(key.c_str(),Value("")).toString().c_str());
-                }
-                else
-                {
-                    reported.put(key,1);
-                    bool hasDefault=fallback.check(key);
-                    string defString="";
-
-                    if (hasDefault)
-                    {
-                        defString+=" ";
-                        defString+="(default ";
-                        string theDefault=fallback.find(key).toString();
-
-                        if (theDefault=="")
-                            defString+="is blank";
-                        else
-                            defString+=theDefault;
-
-                        defString+=")";
-                    }
-
-                    yInfo("Checking \"%s\": %s%s",key.c_str(),
-                          comment.check(key.c_str(),Value("")).toString().c_str(),defString.c_str());
-                }
-            }
-        }
-    }
-};
-
-
 int main(int argc, char *argv[])
 {
     Network yarp;
@@ -2191,10 +2101,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    myReport rep;
-
     ResourceFinder rf;
-    rf.setMonitor(&rep);
     rf.setDefaultContext("demoRedBall");
     rf.setDefaultConfigFile("config.ini");
     rf.configure(argc,argv);
