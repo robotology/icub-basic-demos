@@ -34,7 +34,7 @@ jobs:
         # Compilation related dependencies
         conda install cmake compilers make ninja pkg-config
         # Actual dependencies
-        conda install yarp icub-main gazebo icub-contrib-common qt opencv opencv-contrib
+        conda install yarp icub-main gazebo icub-contrib-common qt opencv
     
     # Additional dependencies useful only on Linux when using Qt
     - name: Dependencies [Conda/Linux]
