@@ -65,7 +65,7 @@ jobs:
         sudo apt update
         sudo apt install -y git build-essential pkg-config zip unzip zlib1g-dev cmake libace-dev coinor-libipopt-dev libeigen3-dev \
                             qtbase5-dev qtdeclarative5-dev qtmultimedia5-dev libtinyxml-dev libgsl-dev wget curl autoconf \
-                            autogen automake libtool mlocate libopencv-dev
+                            autogen automake libtool libopencv-dev
 
     - name: Source-based Dependencies [Windows] 
       if: matrix.os == 'windows-latest'
