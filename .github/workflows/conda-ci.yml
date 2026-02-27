@@ -24,7 +24,7 @@ jobs:
 
     - uses: conda-incubator/setup-miniconda@v3
       with:
-        miniforge-version: latest
+        miniforge-variant: Miniforge3
         channels: conda-forge,robotology
         channel-priority: true
 
