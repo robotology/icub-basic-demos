@@ -32,6 +32,7 @@ jobs:
       shell: bash -l {0}
       run: |
         # Compilation related dependencies
+        conda update -n base -c defaults conda
         conda install cmake compilers make ninja pkg-config
         # Actual dependencies
         conda install yarp icub-main gazebo icub-contrib-common qt opencv
