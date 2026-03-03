@@ -9,10 +9,10 @@ on:
   pull_request:
   schedule:
   # * is a special character in YAML so you have to quote this string
-  # Execute a "nightly" build at 2 AM UTC 
+  # Execute a "nightly" build at 2 AM UTC
   - cron:  '0 2 * * *'
   workflow_dispatch:
-    
+
 jobs:
   build:
     name: '[${{ matrix.os }}@${{ matrix.build_type }}]'
@@ -20,19 +20,19 @@ jobs:
     strategy:
       matrix:
         build_type: [Release]
-        os: [windows-latest, ubuntu-latest]
+        os: [windows-2022, ubuntu-latest]
 
     steps:
     - uses: actions/checkout@main
-        
+
     - name: Set up environment variables [Windows]
-      if: matrix.os == 'windows-latest'
+      if: matrix.os == 'windows-2022'
       shell: bash
       run: |
         # the following fix the problem described in https://github.community/t5/GitHub-Actions/Windows-tests-worked-yesterday-broken-today/m-p/43839#M5530
         echo "C:\Program Files\Git\bin" >> ${GITHUB_PATH}
         echo "VCPKG_ROBOTOLOGY_ROOT=C:/robotology/vcpkg" >> ${GITHUB_ENV}
-        
+
     - name: Display environment variables
       shell: bash
       run: env
@@ -48,7 +48,7 @@ jobs:
     # DEPENDENCIES
     # ============
     - name: Dependencies [Windows]
-      if: matrix.os == 'windows-latest'
+      if: matrix.os == 'windows-2022'
       shell: bash
       run: |
         choco install -y curl wget unzip
@@ -65,10 +65,10 @@ jobs:
         sudo apt update
         sudo apt install -y git build-essential pkg-config zip unzip zlib1g-dev cmake libace-dev coinor-libipopt-dev libeigen3-dev \
                             qtbase5-dev qtdeclarative5-dev qtmultimedia5-dev libtinyxml-dev libgsl-dev wget curl autoconf \
-                            autogen automake libtool mlocate libopencv-dev
+                            autogen automake libtool libopencv-dev
 
-    - name: Source-based Dependencies [Windows] 
-      if: matrix.os == 'windows-latest'
+    - name: Source-based Dependencies [Windows]
+      if: matrix.os == 'windows-2022'
       shell: bash
       run: |
         # ycm
@@ -77,32 +77,33 @@ jobs:
         cd ycm && mkdir -p build && cd build
         cmake -A x64 -DCMAKE_TOOLCHAIN_FILE=${VCPKG_ROBOTOLOGY_ROOT}/scripts/buildsystems/vcpkg.cmake \
                      -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/install -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} ..
-        cmake --build . --config ${{ matrix.build_type }} --target INSTALL 
+        cmake --build . --config ${{ matrix.build_type }} --target INSTALL
         # yarp
         cd ${GITHUB_WORKSPACE}
-        git clone https://github.com/robotology/yarp.git --depth 1 --branch master
+        git clone https://github.com/robotology/yarp.git --depth 1 --branch yarp-3.12
         cd yarp && mkdir -p build && cd build
         cmake -A x64 -DCMAKE_TOOLCHAIN_FILE=${VCPKG_ROBOTOLOGY_ROOT}/scripts/buildsystems/vcpkg.cmake \
-                     -DCMAKE_PREFIX_PATH=${GITHUB_WORKSPACE}/install -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/install \
+                     -DCMAKE_PREFIX_PATH=${GITHUB_WORKSPACE}/install -DYARP_COMPILE_GUIS:BOOL=OFF -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/install \
                      -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} ..
         cmake --build . --config ${{ matrix.build_type }} --target INSTALL
+
         # icub-main
         cd ${GITHUB_WORKSPACE}
-        git clone https://github.com/robotology/icub-main.git --depth 1 --branch devel
+        git clone https://github.com/robotology/icub-main.git --depth 1 --branch master
         cd icub-main && mkdir -p build && cd build
         cmake -A x64 -DCMAKE_TOOLCHAIN_FILE=${VCPKG_ROBOTOLOGY_ROOT}/scripts/buildsystems/vcpkg.cmake \
                      -DCMAKE_PREFIX_PATH=${GITHUB_WORKSPACE}/install -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/install \
                      -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DENABLE_icubmod_cartesiancontrollerserver=ON -DENABLE_icubmod_cartesiancontrollerclient=ON \
-                     -DENABLE_icubmod_gazecontrollerclient=ON ..
-        cmake --build . --config ${{ matrix.build_type }} --target INSTALL 
+                     -DENABLE_icubmod_gazecontrollerclient=ON -DENABLE_icubmod_couplingICubHandMk2=OFF -DENABLE_icubmod_couplingICubEye=OFF ..
+        cmake --build . --config ${{ matrix.build_type }} --target INSTALL
         # icub-contrib-common
         cd ${GITHUB_WORKSPACE}
         git clone https://github.com/robotology/icub-contrib-common.git --depth 1
         cd icub-contrib-common && mkdir -p build && cd build
         cmake -A x64 -DCMAKE_TOOLCHAIN_FILE=${VCPKG_ROBOTOLOGY_ROOT}/scripts/buildsystems/vcpkg.cmake \
-                     -DCMAKE_PREFIX_PATH=${GITHUB_WORKSPACE}/install -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/install -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} ..        
+                     -DCMAKE_PREFIX_PATH=${GITHUB_WORKSPACE}/install -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/install -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} ..
         cmake --build . --config ${{ matrix.build_type }} --target INSTALL
-        
+
     - name: Source-based Dependencies [Ubuntu]
       if: matrix.os == 'ubuntu-latest'
       shell: bash
@@ -112,26 +113,26 @@ jobs:
         git clone https://github.com/robotology/ycm.git --depth 1 --branch master
         cd ycm && mkdir -p build && cd build
         cmake -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/install -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} ..
-        cmake --build . --config ${{ matrix.build_type }} --target install 
+        cmake --build . --config ${{ matrix.build_type }} --target install
         # yarp
         cd ${GITHUB_WORKSPACE}
-        git clone https://github.com/robotology/yarp.git --depth 1 --branch master
+        git clone https://github.com/robotology/yarp.git --depth 1 --branch yarp-3.12
         cd yarp && mkdir -p build && cd build
-        cmake  -DCMAKE_PREFIX_PATH=${GITHUB_WORKSPACE}/install -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/install -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} ..
-        cmake --build . --config ${{ matrix.build_type }} --target install 
+        cmake  -DCMAKE_PREFIX_PATH=${GITHUB_WORKSPACE}/install -DYARP_COMPILE_GUIS:BOOL=OFF -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/install -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} ..
+        cmake --build . --config ${{ matrix.build_type }} --target install
         # icub-main
         cd ${GITHUB_WORKSPACE}
-        git clone https://github.com/robotology/icub-main.git --depth 1 --branch devel
+        git clone https://github.com/robotology/icub-main.git --depth 1 --branch master
         cd icub-main && mkdir -p build && cd build
         cmake  -DCMAKE_PREFIX_PATH=${GITHUB_WORKSPACE}/install -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/install -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
                -DENABLE_icubmod_cartesiancontrollerserver=ON -DENABLE_icubmod_cartesiancontrollerclient=ON -DENABLE_icubmod_gazecontrollerclient=ON ..
-        cmake --build . --config ${{ matrix.build_type }} --target install 
+        cmake --build . --config ${{ matrix.build_type }} --target install
         # icub-contrib-common
         cd ${GITHUB_WORKSPACE}
         git clone https://github.com/robotology/icub-contrib-common.git --depth 1
         cd icub-contrib-common && mkdir -p build && cd build
         cmake  -DCMAKE_PREFIX_PATH=${GITHUB_WORKSPACE}/install -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/install -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} ..
-        cmake --build . --config ${{ matrix.build_type }} --target install 
+        cmake --build . --config ${{ matrix.build_type }} --target install
       env:
         # This is necessary only on macOS/homebrew, but on Linux it should be ignored
         Qt5_DIR: /usr/local/opt/qt5/lib/cmake/Qt5
@@ -139,7 +140,7 @@ jobs:
     # CMAKE-BASED PROJECT
     # ===================
     - name: Configure [Windows]
-      if: matrix.os == 'windows-latest'
+      if: matrix.os == 'windows-2022'
       shell: bash
       run: |
         mkdir -p build
@@ -153,22 +154,22 @@ jobs:
       shell: bash
       run: |
         mkdir -p build
-        cd build    
+        cd build
         cmake -DCMAKE_PREFIX_PATH=${GITHUB_WORKSPACE}/install -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
               -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/install -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} ..
       env:
         # This is necessary only on macOS/homebrew, but on Linux it should be ignored
         Qt5_DIR: /usr/local/opt/qt5/lib/cmake/Qt5
-      
+
     - name: Build
       shell: bash
       run: |
         cd build
-        # Fix for using YARP idl generators (that link ACE) in Windows 
+        # Fix for using YARP idl generators (that link ACE) in Windows
         # See https://github.com/robotology/idyntree/issues/569 for more details
         export PATH=$PATH:${GITHUB_WORKSPACE}/install/bin:${VCPKG_ROBOTOLOGY_ROOT}/installed/x64-windows/bin
         cmake --build . --config ${{ matrix.build_type }}
-        
+
     - name: Install
       shell: bash
       run: |
