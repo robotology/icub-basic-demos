@@ -35,7 +35,7 @@ jobs:
         conda update -n base -c defaults conda
         conda install cmake compilers make ninja pkg-config
         # Actual dependencies
-        conda install yarp icub-main icub-contrib-common qt opencv
+        conda install yarp icub-main icub-contrib-common "qt6-main>=6.7.2" "libopencv>=4.10.0"
         # See https://github.com/robotology/robotology-superbuild/issues/477
         conda install expat-cos7-x86_64 libselinux-cos7-x86_64 libxau-cos7-x86_64 libxcb-cos7-x86_64 libxdamage-cos7-x86_64 libxext-cos7-x86_64 libxfixes-cos7-x86_64 libxxf86vm-cos7-x86_64 mesa-libgl-devel-cos7-x86_64 libxshmfence-cos7-x86_64 libxshmfence-devel-cos7-x86_64
 
