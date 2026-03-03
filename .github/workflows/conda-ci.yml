@@ -36,6 +36,8 @@ jobs:
         conda install cmake compilers make ninja pkg-config
         # Actual dependencies
         conda install yarp icub-main icub-contrib-common "qt6-main>=6.7.2" "libopencv>=4.10.0"
+        # See https://github.com/robotology/robotology-superbuild/issues/477
+        conda install mesa-libgl-devel-cos7-x86_64
 
 
     - name: Configure [Linux]
