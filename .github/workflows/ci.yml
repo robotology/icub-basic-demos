@@ -94,7 +94,7 @@ jobs:
         cmake -A x64 -DCMAKE_TOOLCHAIN_FILE=${VCPKG_ROBOTOLOGY_ROOT}/scripts/buildsystems/vcpkg.cmake \
                      -DCMAKE_PREFIX_PATH=${GITHUB_WORKSPACE}/install -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/install \
                      -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DENABLE_icubmod_cartesiancontrollerserver=ON -DENABLE_icubmod_cartesiancontrollerclient=ON \
-                     -DENABLE_icubmod_gazecontrollerclient=ON -DENABLE_icubmod_couplingICubHandMk2=OFF -DENABLE_icubmod_couplingICubEye=OFF..
+                     -DENABLE_icubmod_gazecontrollerclient=ON -DENABLE_icubmod_couplingICubHandMk2=OFF -DENABLE_icubmod_couplingICubEye=OFF ..
         cmake --build . --config ${{ matrix.build_type }} --target INSTALL
         # icub-contrib-common
         cd ${GITHUB_WORKSPACE}
