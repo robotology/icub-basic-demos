@@ -18,6 +18,7 @@
 #include <yarp/os/all.h>
 #include <yarp/sig/all.h>
 #include <yarp/dev/all.h>
+#include <yarp/conf/version.h>
 #include <iCub/ctrl/math.h>
 #include <iCub/skinDynLib/skinContact.h>
 #include <iCub/skinDynLib/skinContactList.h>
@@ -30,6 +31,29 @@ using namespace yarp::os;
 using namespace yarp::sig;
 using namespace yarp::dev;
 using namespace std;
+
+#if YARP_VERSION_MAJOR >= 4
+constexpr auto positionControlMode = yarp::dev::SelectableControlModeEnum::VOCAB_CM_POSITION;
+constexpr auto positionDirectControlMode = yarp::dev::SelectableControlModeEnum::VOCAB_CM_POSITION_DIRECT;
+constexpr auto torqueControlMode = yarp::dev::SelectableControlModeEnum::VOCAB_CM_TORQUE;
+constexpr auto stiffInteractionMode = yarp::dev::InteractionModeEnum::VOCAB_IM_STIFF;
+constexpr auto compliantInteractionMode = yarp::dev::InteractionModeEnum::VOCAB_IM_COMPLIANT;
+#else
+constexpr auto positionControlMode = VOCAB_CM_POSITION;
+constexpr auto positionDirectControlMode = VOCAB_CM_POSITION_DIRECT;
+constexpr auto torqueControlMode = VOCAB_CM_TORQUE;
+constexpr auto stiffInteractionMode = VOCAB_IM_STIFF;
+constexpr auto compliantInteractionMode = VOCAB_IM_COMPLIANT;
+#endif
+
+void setTrajectorySpeed(yarp::dev::IPositionControl* positionControl, int joint, double speed)
+{
+#if YARP_VERSION_MAJOR >= 4
+    positionControl->setTrajSpeed(joint, speed);
+#else
+    positionControl->setRefSpeed(joint, speed);
+#endif
+}
 
 #define POS  0
 #define TRQ  1
@@ -98,11 +122,11 @@ class CtrlThread: public yarp::os::PeriodicThread
         {
             double tmp_pos=0.0;
             robot->ienc[RIGHT_ARM]->getEncoder(i,&tmp_pos);
-            robot->icmd[LEFT_ARM]->setControlMode(i, VOCAB_CM_POSITION);
-            robot->icmd[RIGHT_ARM]->setControlMode(i, VOCAB_CM_POSITION);
-            robot->iint[LEFT_ARM]->setInteractionMode(i,VOCAB_IM_STIFF);
-            robot->iint[RIGHT_ARM]->setInteractionMode(i,VOCAB_IM_STIFF);
-            robot->ipos[LEFT_ARM]->setRefSpeed(i,10);
+            robot->icmd[LEFT_ARM]->setControlMode(i, positionControlMode);
+            robot->icmd[RIGHT_ARM]->setControlMode(i, positionControlMode);
+            robot->iint[LEFT_ARM]->setInteractionMode(i,stiffInteractionMode);
+            robot->iint[RIGHT_ARM]->setInteractionMode(i,stiffInteractionMode);
+            setTrajectorySpeed(robot->ipos[LEFT_ARM], i, 10);
             robot->ipos[LEFT_ARM]->positionMove(i,tmp_pos);
         }
         double timeout = 0;
@@ -210,20 +234,20 @@ class CtrlThread: public yarp::os::PeriodicThread
         {
             for (int i=jjj; i<5; i++)
             {
-                robot->icmd[LEFT_ARM]->setControlMode(i, VOCAB_CM_TORQUE);
-                robot->icmd[RIGHT_ARM]->setControlMode(i, VOCAB_CM_POSITION_DIRECT);
-                if (stiff==false) robot->iint[RIGHT_ARM]->setInteractionMode(i,VOCAB_IM_COMPLIANT);
-                else              robot->iint[RIGHT_ARM]->setInteractionMode(i,VOCAB_IM_STIFF);
+                robot->icmd[LEFT_ARM]->setControlMode(i, torqueControlMode);
+                robot->icmd[RIGHT_ARM]->setControlMode(i, positionDirectControlMode);
+                if (stiff==false) robot->iint[RIGHT_ARM]->setInteractionMode(i,compliantInteractionMode);
+                else              robot->iint[RIGHT_ARM]->setInteractionMode(i,stiffInteractionMode);
             }
         }
         else
         {
             for (int i=jjj; i<5; i++)
             {
-                robot->icmd[LEFT_ARM]->setControlMode(i, VOCAB_CM_POSITION_DIRECT);
-                if (stiff==false) robot->iint[LEFT_ARM]->setInteractionMode(i,VOCAB_IM_COMPLIANT);
-                else              robot->iint[LEFT_ARM]->setInteractionMode(i,VOCAB_IM_STIFF);
-                robot->icmd[RIGHT_ARM]->setControlMode(i, VOCAB_CM_TORQUE);
+                robot->icmd[LEFT_ARM]->setControlMode(i, positionDirectControlMode);
+                if (stiff==false) robot->iint[LEFT_ARM]->setInteractionMode(i,compliantInteractionMode);
+                else              robot->iint[LEFT_ARM]->setInteractionMode(i,stiffInteractionMode);
+                robot->icmd[RIGHT_ARM]->setControlMode(i, torqueControlMode);
             }
         }
     }
@@ -244,10 +268,10 @@ class CtrlThread: public yarp::os::PeriodicThread
     {  
         for (int i=0; i<5; i++)
         {
-            robot->icmd[LEFT_ARM] ->setControlMode(i, VOCAB_CM_POSITION);
-            robot->icmd[RIGHT_ARM]->setControlMode(i, VOCAB_CM_POSITION);
-            robot->iint[LEFT_ARM] ->setInteractionMode(i,VOCAB_IM_STIFF);
-            robot->iint[RIGHT_ARM]->setInteractionMode(i,VOCAB_IM_STIFF);
+            robot->icmd[LEFT_ARM] ->setControlMode(i, positionControlMode);
+            robot->icmd[RIGHT_ARM]->setControlMode(i, positionControlMode);
+            robot->iint[LEFT_ARM] ->setInteractionMode(i,stiffInteractionMode);
+            robot->iint[RIGHT_ARM]->setInteractionMode(i,stiffInteractionMode);
         }
         closePort(port_skin_contacts);
         closePort(port_left_arm);
@@ -326,5 +350,3 @@ int main(int argc, char * argv[])
 
     return mod.runModule(rf);
 }
-
-

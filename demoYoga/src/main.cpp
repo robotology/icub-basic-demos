@@ -90,11 +90,21 @@ Linux and Windows.
 #include <yarp/dev/PolyDriver.h>
 #include <yarp/sig/Vector.h>
 #include <yarp/os/ResourceFinder.h>
+#include <yarp/conf/version.h>
 
 using namespace std;
 using namespace yarp::dev;
 using namespace yarp::os;
 using namespace yarp::sig;
+
+void setTrajectorySpeeds(yarp::dev::IPositionControl* positionControl, const double* speeds)
+{
+#if YARP_VERSION_MAJOR >= 4
+    positionControl->setTrajSpeeds(speeds);
+#else
+    positionControl->setRefSpeeds(speeds);
+#endif
+}
 
 const int FIXED_TIME_MOVE=5;
 const int SAMPLER_RATE=100;
@@ -429,7 +439,7 @@ public:
 
             for (int l=0; l<LIMBS; l++)
             {
-                robot->interfaces[l].ipos->setRefSpeeds(robot->interfaces[l].speed.data());
+                setTrajectorySpeeds(robot->interfaces[l].ipos, robot->interfaces[l].speed.data());
                 robot->interfaces[l].ipos->positionMove(robot->interfaces[l].cmd.data());
 
                 if (verbose)
