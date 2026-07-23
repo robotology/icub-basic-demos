@@ -5,7 +5,7 @@
 cmake_minimum_required(VERSION 3.5)
 project(demoRedBall)
 
-find_package(YARP 3.5.1 REQUIRED)
+find_package(YARP REQUIRED)
 find_package(ICUB 2.0.0 REQUIRED)
 find_package(ICUBcontrib REQUIRED)
 list(APPEND CMAKE_MODULE_PATH ${ICUB_MODULE_PATH}
@@ -45,4 +45,3 @@ file(GLOB scripts ${CMAKE_CURRENT_SOURCE_DIR}/app/scripts/*.template
 
 yarp_install(FILES ${conf}    DESTINATION ${ICUBCONTRIB_CONTEXTS_INSTALL_DIR}/${PROJECT_NAME})
 yarp_install(FILES ${scripts} DESTINATION ${ICUBCONTRIB_APPLICATIONS_TEMPLATES_INSTALL_DIR})
-

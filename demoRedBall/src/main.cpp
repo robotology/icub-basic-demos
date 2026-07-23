@@ -248,6 +248,7 @@ Windows, Linux
 
 #include <yarp/os/all.h>
 #include <yarp/dev/all.h>
+#include <yarp/conf/version.h>
 #include <yarp/sig/Vector.h>
 #include <yarp/math/Math.h>
 #include <yarp/math/Rand.h>
@@ -286,6 +287,43 @@ using namespace yarp::dev;
 using namespace yarp::math;
 using namespace iCub::ctrl;
 using namespace iCub::iKin;
+
+#if YARP_VERSION_MAJOR >= 4
+constexpr auto positionControlMode = yarp::dev::SelectableControlModeEnum::VOCAB_CM_POSITION;
+constexpr auto stiffInteractionMode = yarp::dev::InteractionModeEnum::VOCAB_IM_STIFF;
+constexpr auto compliantInteractionMode = yarp::dev::InteractionModeEnum::VOCAB_IM_COMPLIANT;
+#else
+constexpr auto positionControlMode = VOCAB_CM_POSITION;
+constexpr auto stiffInteractionMode = VOCAB_IM_STIFF;
+constexpr auto compliantInteractionMode = VOCAB_IM_COMPLIANT;
+#endif
+
+void setTrajectorySpeed(yarp::dev::IPositionControl* positionControl, int joint, double speed)
+{
+#if YARP_VERSION_MAJOR >= 4
+    positionControl->setTrajSpeed(joint, speed);
+#else
+    positionControl->setRefSpeed(joint, speed);
+#endif
+}
+
+void setTrajectorySpeeds(yarp::dev::IPositionControl* positionControl, const double* speeds)
+{
+#if YARP_VERSION_MAJOR >= 4
+    positionControl->setTrajSpeeds(speeds);
+#else
+    positionControl->setRefSpeeds(speeds);
+#endif
+}
+
+void checkPositionMotionDone(yarp::dev::IPositionControl* positionControl, bool& done)
+{
+#if YARP_VERSION_MAJOR >= 4
+    positionControl->checkMotionDone(done);
+#else
+    positionControl->checkMotionDone(&done);
+#endif
+}
 
 
 class Predictor
@@ -960,10 +998,15 @@ protected:
 
         yInfo("*** Homing torso");
 
-        vector<int> modes(3,VOCAB_CM_POSITION);
+#if YARP_VERSION_MAJOR >= 4
+        vector<yarp::dev::SelectableControlModeEnum> modes(3, positionControlMode);
+        modeTorso->setControlModes(modes);
+#else
+        vector<int> modes(3, positionControlMode);
         modeTorso->setControlModes(modes.data());
+#endif
 
-        posTorso->setRefSpeeds(velTorso.data());
+        setTrajectorySpeeds(posTorso, velTorso.data());
         posTorso->positionMove(homeTorso.data());
     }
 
@@ -978,7 +1021,7 @@ protected:
         double t0=Time::now();
         while (!done && (Time::now()-t0<timeout))
         {
-            posTorso->checkMotionDone(&done);
+            checkPositionMotionDone(posTorso, done);
             Time::delay(0.1);
         }
 
@@ -1022,11 +1065,11 @@ protected:
 
         yInfo("*** Homing %s",type.c_str());
         for (size_t j=0; j<homeVels.length(); j++)
-            imode->setControlMode(j,VOCAB_CM_POSITION);
+            imode->setControlMode(j,positionControlMode);
 
         for (size_t j=0; j<homeVels.length(); j++)
         {
-            ipos->setRefSpeed(j,homeVels[j]);
+            setTrajectorySpeed(ipos, j, homeVels[j]);
             ipos->positionMove(j,homePoss[j]);
         }
 
@@ -1067,7 +1110,7 @@ protected:
         double t0=Time::now();
         while (!done && (Time::now()-t0<timeout))
         {
-            ipos->checkMotionDone(&done);
+            checkPositionMotionDone(ipos, done);
             Time::delay(0.1);
         }
 
@@ -1114,7 +1157,7 @@ protected:
 
         yInfo("*** Stopping %s joints",type.c_str());
         for (size_t j=0; j<homeVels.length(); j++)
-            imode->setControlMode(j,VOCAB_CM_POSITION);
+            imode->setControlMode(j,positionControlMode);
 
         for (size_t j=0; j<homeVels.length(); j++)
         {
@@ -1164,12 +1207,12 @@ protected:
 
         yInfo("*** %s %s",actionStr.c_str(),type.c_str());
         for (size_t j=0; j<handVels.length(); j++)
-            imode->setControlMode(homeVels.length()+j,VOCAB_CM_POSITION);
+            imode->setControlMode(homeVels.length()+j,positionControlMode);
 
         for (size_t j=0; j<handVels.length(); j++)
         {
             int k=homeVels.length()+j;
-            ipos->setRefSpeed(k,handVels[j]);
+            setTrajectorySpeed(ipos, k, handVels[j]);
             ipos->positionMove(k,(*poss)[j]);
         }
     }
@@ -1732,7 +1775,7 @@ public:
                 for (int j=0; j<len; j++)
                 {
                     iimp->setImpedance(j,leftArmJointsStiffness[j],leftArmJointsDamping[j]);
-                    imode->setInteractionMode(j,VOCAB_IM_COMPLIANT);
+                    imode->setInteractionMode(j,compliantInteractionMode);
                 }
             }
         }
@@ -1760,7 +1803,7 @@ public:
                 for (int j=0; j<len; j++)
                 {
                     iimp->setImpedance(j,rightArmJointsStiffness[j],rightArmJointsDamping[j]);
-                    imode->setInteractionMode(j,VOCAB_IM_COMPLIANT);
+                    imode->setInteractionMode(j,compliantInteractionMode);
                 }
             }
         }
@@ -1978,7 +2021,7 @@ public:
                         leftArmJointsStiffness.length():leftArmJointsDamping.length();
 
                 for (int j=0; j<len; j++)
-                    imode->setInteractionMode(j,VOCAB_IM_STIFF);
+                    imode->setInteractionMode(j,stiffInteractionMode);
             }
         }
 
@@ -1997,7 +2040,7 @@ public:
                         rightArmJointsStiffness.length():rightArmJointsDamping.length();
 
                 for (int j=0; j<len; j++)
-                    imode->setInteractionMode(j,VOCAB_IM_STIFF);
+                    imode->setInteractionMode(j,stiffInteractionMode);
             }
         }
 
