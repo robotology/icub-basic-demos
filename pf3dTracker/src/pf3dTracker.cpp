@@ -1049,7 +1049,7 @@ bool PF3DTracker::updateModule()
 
         //write the elaborated image on the output port.
         cv::Mat tmpMat=toCvMat(*_yarpImage);
-        cvtColor(tmpMat,tmpMat,CV_BGR2RGB);
+        cv::cvtColor(tmpMat, tmpMat, cv::COLOR_BGR2RGB);
         _outputVideoPort.prepare() = fromCvMat<PixelRgb>(tmpMat);
 
         //set the envelope for the output port

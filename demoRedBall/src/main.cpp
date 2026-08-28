@@ -325,6 +325,17 @@ void checkPositionMotionDone(yarp::dev::IPositionControl* positionControl, bool&
 #endif
 }
 
+void getNumberOfAxes(yarp::dev::IEncoders* encoders, std::size_t& axes)
+{
+#if YARP_VERSION_MAJOR >= 4
+    encoders->getAxes(axes);
+#else
+    int legacyAxes = 0;
+    encoders->getAxes(&legacyAxes);
+    axes = static_cast<std::size_t>(legacyAxes);
+#endif
+}
+
 
 class Predictor
 {
@@ -908,12 +919,12 @@ protected:
                 return false;
         }
 
-        int axes;
+        std::size_t axes = 0;
         Vector encs;
 
         if (useLeftArm && breatherLArpc.getOutputCount()>0)
         {
-            iencsLA->getAxes(&axes);
+            getNumberOfAxes(iencsLA, axes);
             encs.resize(axes,0.0);
             iencsLA->getEncoders(encs.data());
             if (norm(encs.subVector(0,homePoss.length()-1)-homePoss)>4.0)
@@ -922,7 +933,7 @@ protected:
 
         if (useRightArm && breatherRArpc.getOutputCount()>0)
         {
-            iencsRA->getAxes(&axes);
+            getNumberOfAxes(iencsRA, axes);
             encs.resize(axes,0.0);
             iencsRA->getEncoders(encs.data());
             if (norm(encs.subVector(0,homePoss.length()-1)-homePoss)>4.0)
@@ -1875,13 +1886,13 @@ public:
         // init
         if (useTorso)
         {
-            int torsoAxes;
-            encTorso->getAxes(&torsoAxes);
+            std::size_t torsoAxes = 0;
+            getNumberOfAxes(encTorso, torsoAxes);
             torso.resize(torsoAxes,0.0);
         }
 
-        int headAxes;
-        encHead->getAxes(&headAxes);
+        std::size_t headAxes = 0;
+        getNumberOfAxes(encHead, headAxes);
         head.resize(headAxes,0.0);
 
         targetPos.resize(3,0.0);

@@ -106,6 +106,17 @@ void setTrajectorySpeeds(yarp::dev::IPositionControl* positionControl, const dou
 #endif
 }
 
+void getNumberOfAxes(yarp::dev::IPositionControl* positionControl, std::size_t& axes)
+{
+#if YARP_VERSION_MAJOR >= 4
+    positionControl->getAxes(axes);
+#else
+    int legacyAxes = 0;
+    positionControl->getAxes(&legacyAxes);
+    axes = static_cast<std::size_t>(legacyAxes);
+#endif
+}
+
 const int FIXED_TIME_MOVE=5;
 const int SAMPLER_RATE=100;
 ////////////////////////////
@@ -190,9 +201,10 @@ public:
                 Bottle &xtmp=seqFile.findGroup(tmp).findGroup("jointPositions");
                 Vector vect;
                 vect.resize(nj);
-                if (nj!=xtmp.size()-1)
-                    yWarning("**** WARNING: mismatch of sizes in the input file! nj=%d, xtmp=%d \n",nj,xtmp.size());
-                for (int l=0; l<xtmp.size()-1; l++)
+                const int xtmpSize = static_cast<int>(xtmp.size());
+                if (nj != xtmpSize - 1)
+                    yWarning("**** WARNING: mismatch of sizes in the input file! nj=%d, xtmp=%d \n", nj, xtmpSize);
+                for (int l=0; l<xtmpSize-1; l++)
                     vect[l]=xtmp.get(l+1).asFloat64();
                 sequences[k].push_back(vect);
             }
@@ -401,9 +413,9 @@ public:
         resetSequence();
         for (int l=0; l<LIMBS; l++)
         {
-            int nj;
-            robot->interfaces[l].ipos->getAxes(&nj);
-            robot->interfaces[l].resize(nj);
+            std::size_t nj = 0;
+            getNumberOfAxes(robot->interfaces[l].ipos, nj);
+            robot->interfaces[l].resize(static_cast<int>(nj));
             robot->interfaces[l].speed=0;
             robot->interfaces[l].encoders=0;
             robot->interfaces[l].cmd=0;
