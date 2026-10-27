@@ -31,8 +31,6 @@ jobs:
     - name: Dependencies
       shell: bash -l {0}
       run: |
-        # Compilation related dependencies
-        conda update -n base -c defaults conda
         conda install cmake compilers make ninja pkg-config
         # Actual dependencies
         conda install yarp icub-main icub-contrib-common "qt6-main>=6.7.2" "libopencv>=4.10.0"
